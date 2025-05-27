@@ -6,6 +6,7 @@ import {
  Inventory,
  People,
  ShoppingCart,
+ BugReport,
 } from "@mui/icons-material";
 import { Box, Tab, Tabs, useMediaQuery, useTheme } from "@mui/material";
 import Link from "next/link";
@@ -15,13 +16,13 @@ const Navigation = () => {
  const pathname = usePathname();
  const theme = useTheme();
  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
  const getTabValue = () => {
   if (pathname === "/") return 0;
   if (pathname.startsWith("/users")) return 1;
   if (pathname.startsWith("/products")) return 2;
   if (pathname.startsWith("/orders")) return 3;
   if (pathname.startsWith("/subscriptions")) return 4;
+  if (pathname.startsWith("/test-data")) return 5;
   return 0;
  };
 
@@ -31,6 +32,7 @@ const Navigation = () => {
   { label: "Sản phẩm", href: "/products", icon: <Inventory /> },
   { label: "Đơn hàng", href: "/orders", icon: <ShoppingCart /> },
   { label: "Subscription", href: "/subscriptions", icon: <Assignment /> },
+  { label: "Test Data", href: "/test-data", icon: <Assignment /> },
  ];
 
  return (

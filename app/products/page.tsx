@@ -191,7 +191,11 @@ export default function ProductsPage() {
             maxWidth: 200,
             overflow: "hidden",
             textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
             fontFamily: "monospace",
+            lineHeight: 1.2,
            }}
           >
            {product.cookie}

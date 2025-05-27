@@ -1,24 +1,3 @@
-import {
- AccountCircle,
- CheckCircle,
- Error,
- ExitToApp,
- Schedule,
- Web,
-} from "@mui/icons-material";
-import {
- Avatar,
- Box,
- Button,
- Chip,
- Divider,
- List,
- ListItem,
- ListItemAvatar,
- ListItemText,
- Paper,
- Typography,
-} from "@mui/material";
 import React from "react";
 import { ProductAccess, StoredUserData } from "../../shared/types";
 
@@ -40,8 +19,10 @@ const Dashboard: React.FC<DashboardProps> = ({ userData, onLogout }) => {
   return new Date(product.endDate) < new Date();
  };
 
- const getProductStatusColor = (product: ProductAccess) => {
-  return isProductExpired(product) ? "error" : "success";
+ const getProductStatusClass = (product: ProductAccess) => {
+  return isProductExpired(product)
+   ? "bg-red-100 text-red-800 border-red-200"
+   : "bg-green-100 text-green-800 border-green-200";
  };
 
  const getProductStatusText = (product: ProductAccess) => {
@@ -49,127 +30,148 @@ const Dashboard: React.FC<DashboardProps> = ({ userData, onLogout }) => {
  };
 
  return (
-  <Box sx={{ p: 3, height: "100%", display: "flex", flexDirection: "column" }}>
+  <div className="p-4 h-full flex flex-col">
    {/* Header */}
-   <Box
-    sx={{
-     display: "flex",
-     alignItems: "center",
-     justifyContent: "space-between",
-     mb: 2,
-    }}
-   >
-    <Typography variant="h6" color="primary" fontWeight="bold">
-     Dashboard
-    </Typography>
-    <Button
-     variant="outlined"
-     color="error"
-     size="small"
-     startIcon={<ExitToApp />}
+   <div className="flex items-center justify-between mb-4">
+    <h2 className="text-lg font-bold text-primary-600">Dashboard</h2>
+    <button
+     className="px-3 py-1 text-sm border border-red-300 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200 flex items-center gap-1"
      onClick={onLogout}
     >
+     <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+     >
+      <path
+       strokeLinecap="round"
+       strokeLinejoin="round"
+       strokeWidth={2}
+       d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+      />
+     </svg>
      Đăng xuất
-    </Button>
-   </Box>
+    </button>
+   </div>
 
    {/* User Info */}
-   <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-     <Avatar sx={{ bgcolor: "primary.main", mr: 2 }}>
-      <AccountCircle />
-     </Avatar>
-     <Box>
-      <Typography variant="subtitle1" fontWeight="bold">
-       {userData.user.fullName}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-       {userData.user.phoneNumber}
-      </Typography>
-     </Box>
-    </Box>
-    <Typography variant="caption" color="text.secondary">
+   <div className="card mb-4">
+    <div className="flex items-center mb-2">
+     <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white mr-3">
+      <svg
+       className="w-6 h-6"
+       fill="none"
+       stroke="currentColor"
+       viewBox="0 0 24 24"
+      >
+       <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+       />
+      </svg>
+     </div>
+     <div>
+      <h3 className="font-semibold text-gray-900">{userData.user.fullName}</h3>
+      <p className="text-sm text-gray-600">{userData.user.phoneNumber}</p>
+     </div>
+    </div>
+    <p className="text-xs text-gray-500">
      Đăng nhập: {new Date(userData.loginTime).toLocaleString("vi-VN")}
-    </Typography>
-   </Paper>
+    </p>
+   </div>
 
    {/* Products */}
-   <Paper
-    elevation={2}
-    sx={{
-     flex: 1,
-     overflow: "hidden",
-     display: "flex",
-     flexDirection: "column",
-    }}
-   >
-    <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-     <Typography variant="h6" fontWeight="bold">
+   <div className="card flex-1 flex flex-col">
+    <div className="border-b border-gray-200 pb-3 mb-3">
+     <h3 className="font-semibold text-gray-900">
       Sản phẩm của bạn ({userData.productAccess.length})
-     </Typography>
-    </Box>
+     </h3>
+    </div>
 
-    <Box sx={{ flex: 1, overflow: "auto" }}>
+    <div className="flex-1 overflow-auto">
      {userData.productAccess.length === 0 ? (
-      <Box sx={{ p: 3, textAlign: "center" }}>
-       <Typography variant="body2" color="text.secondary">
-        Bạn chưa có sản phẩm nào
-       </Typography>
-      </Box>
+      <div className="text-center py-8">
+       <p className="text-gray-500 text-sm">Bạn chưa có sản phẩm nào</p>
+      </div>
      ) : (
-      <List sx={{ p: 0 }}>
+      <div className="space-y-3">
        {userData.productAccess.map((product, index) => (
-        <React.Fragment key={product.id}>
-         <ListItem sx={{ py: 2 }}>
-          <ListItemAvatar>
-           <Avatar sx={{ bgcolor: "primary.light" }}>
-            <Web />
-           </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-           primary={
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-             <Typography variant="subtitle2" fontWeight="bold">
-              {product.productName}
-             </Typography>
-             <Chip
-              size="small"
-              label={getProductStatusText(product)}
-              color={getProductStatusColor(product)}
-              icon={isProductExpired(product) ? <Error /> : <CheckCircle />}
+        <div
+         key={product.id}
+         className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors duration-200"
+        >
+         <div className="flex items-start justify-between mb-2">
+          <div className="flex items-center gap-2">
+           <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <svg
+             className="w-4 h-4 text-primary-600"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24"
+            >
+             <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
              />
-            </Box>
-           }
-           secondary={
-            <Box sx={{ mt: 1 }}>
-             <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-             >
-              <Web fontSize="small" />
-              {product.website}
-             </Typography>
-             <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}
-             >
-              <Schedule fontSize="small" />
-              Hết hạn: {formatDate(product.endDate)}
-             </Typography>
-            </Box>
-           }
-          />
-         </ListItem>
-         {index < userData.productAccess.length - 1 && <Divider />}
-        </React.Fragment>
+            </svg>
+           </div>
+           <h4 className="font-medium text-gray-900">{product.productName}</h4>
+          </div>
+          <span
+           className={`px-2 py-1 text-xs font-medium rounded-full border ${getProductStatusClass(
+            product
+           )}`}
+          >
+           {getProductStatusText(product)}
+          </span>
+         </div>
+
+         <div className="text-sm text-gray-600 space-y-1">
+          <div className="flex items-center gap-1">
+           <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+           >
+            <path
+             strokeLinecap="round"
+             strokeLinejoin="round"
+             strokeWidth={2}
+             d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
+            />
+           </svg>
+           <span className="break-all">{product.website}</span>
+          </div>
+          <div className="flex items-center gap-1">
+           <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+           >
+            <path
+             strokeLinecap="round"
+             strokeLinejoin="round"
+             strokeWidth={2}
+             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+           </svg>
+           <span>Hết hạn: {formatDate(product.endDate)}</span>
+          </div>
+         </div>
+        </div>
        ))}
-      </List>
+      </div>
      )}
-    </Box>
-   </Paper>
-  </Box>
+    </div>
+   </div>
+  </div>
  );
 };
 

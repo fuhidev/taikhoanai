@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { StorageService } from "../shared/storage";
 import { StoredUserData } from "../shared/types";
@@ -46,13 +45,13 @@ const App: React.FC = () => {
  }
 
  return (
-  <Box sx={{ width: "100%", height: "100%" }}>
+  <div className="w-full h-full bg-gray-50">
    {userData ? (
     <Dashboard userData={userData} onLogout={handleLogout} />
    ) : (
     <LoginForm onLoginSuccess={handleLoginSuccess} />
    )}
-  </Box>
+  </div>
  );
 };
 

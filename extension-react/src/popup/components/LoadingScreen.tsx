@@ -1,23 +1,11 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
 import React from "react";
 
 const LoadingScreen: React.FC = () => {
  return (
-  <Box
-   sx={{
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    p: 3,
-   }}
-  >
-   <CircularProgress size={40} sx={{ mb: 2 }} />
-   <Typography variant="body2" color="text.secondary">
-    Đang tải...
-   </Typography>
-  </Box>
+  <div className="h-full flex flex-col items-center justify-center p-6">
+   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600 mb-4"></div>
+   <p className="text-gray-600 text-sm">Đang tải...</p>
+  </div>
  );
 };
 
