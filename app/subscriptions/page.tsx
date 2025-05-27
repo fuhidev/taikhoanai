@@ -5,9 +5,10 @@ import {
  getAllProducts,
  getAllUserSubscriptions,
  getAllUsers,
+ revokeUserSubscription,
 } from "@/lib/firebaseService";
 import { Product, User, UserSubscription } from "@/types";
-import { Add, Assignment } from "@mui/icons-material";
+import { Add, Assignment, Block } from "@mui/icons-material";
 import {
  Alert,
  Box,
@@ -47,6 +48,9 @@ export default function SubscriptionsPage() {
  const [products, setProducts] = useState<Product[]>([]);
  const [loading, setLoading] = useState(true);
  const [open, setOpen] = useState(false);
+ const [revokeDialogOpen, setRevokeDialogOpen] = useState(false);
+ const [selectedSubscription, setSelectedSubscription] =
+  useState<UserSubscription | null>(null);
  const [alert, setAlert] = useState<{
   type: "success" | "error";
   message: string;
@@ -82,7 +86,6 @@ export default function SubscriptionsPage() {
  useEffect(() => {
   loadData();
  }, []);
-
  const onSubmit = async (data: CreateSubscriptionForm) => {
   try {
    await createUserSubscription(data.userId, data.productId, data.duration);
@@ -93,6 +96,25 @@ export default function SubscriptionsPage() {
   } catch (error) {
    setAlert({ type: "error", message: "Có lỗi khi tạo subscription" });
   }
+ };
+
+ const handleRevokeSubscription = async () => {
+  if (!selectedSubscription) return;
+
+  try {
+   await revokeUserSubscription(selectedSubscription.id);
+   setAlert({ type: "success", message: "Thu hồi subscription thành công" });
+   setRevokeDialogOpen(false);
+   setSelectedSubscription(null);
+   loadData();
+  } catch (error) {
+   setAlert({ type: "error", message: "Có lỗi khi thu hồi subscription" });
+  }
+ };
+
+ const openRevokeDialog = (subscription: UserSubscription) => {
+  setSelectedSubscription(subscription);
+  setRevokeDialogOpen(true);
  };
 
  const getUserName = (userId: string) => {
@@ -139,6 +161,7 @@ export default function SubscriptionsPage() {
 
    <TableContainer component={Paper}>
     <Table>
+     {" "}
      <TableHead>
       <TableRow>
        <TableCell>ID</TableCell>
@@ -148,18 +171,20 @@ export default function SubscriptionsPage() {
        <TableCell>Ngày kết thúc</TableCell>
        <TableCell>Trạng thái</TableCell>
        <TableCell>Ngày tạo</TableCell>
+       <TableCell>Thao tác</TableCell>
       </TableRow>
      </TableHead>
      <TableBody>
+      {" "}
       {loading ? (
        <TableRow>
-        <TableCell colSpan={7} align="center">
+        <TableCell colSpan={8} align="center">
          Đang tải...
         </TableCell>
        </TableRow>
       ) : subscriptions.length === 0 ? (
        <TableRow>
-        <TableCell colSpan={7} align="center">
+        <TableCell colSpan={8} align="center">
          Chưa có subscription nào
         </TableCell>
        </TableRow>
@@ -183,9 +208,22 @@ export default function SubscriptionsPage() {
             color={active ? "success" : expired ? "error" : "default"}
             size="small"
            />
-          </TableCell>
+          </TableCell>{" "}
           <TableCell>
            {format(subscription.createdAt, "dd/MM/yyyy HH:mm")}
+          </TableCell>
+          <TableCell>
+           {active && (
+            <Button
+             variant="outlined"
+             color="error"
+             size="small"
+             startIcon={<Block />}
+             onClick={() => openRevokeDialog(subscription)}
+            >
+             Thu hồi
+            </Button>
+           )}
           </TableCell>
          </TableRow>
         );
@@ -256,9 +294,58 @@ export default function SubscriptionsPage() {
       <Button onClick={() => setOpen(false)}>Hủy</Button>
       <Button type="submit" variant="contained">
        Tạo
-      </Button>
+      </Button>{" "}
      </DialogActions>
     </form>
+   </Dialog>
+
+   {/* Dialog xác nhận thu hồi subscription */}
+   <Dialog
+    open={revokeDialogOpen}
+    onClose={() => setRevokeDialogOpen(false)}
+    maxWidth="sm"
+    fullWidth
+   >
+    <DialogTitle>
+     <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Block sx={{ mr: 1, color: "error.main" }} />
+      Xác nhận thu hồi subscription
+     </Box>
+    </DialogTitle>
+    <DialogContent>
+     <Typography>
+      Bạn có chắc chắn muốn thu hồi subscription này không?
+     </Typography>
+     {selectedSubscription && (
+      <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
+       <Typography variant="body2">
+        <strong>Khách hàng:</strong> {getUserName(selectedSubscription.userId)}
+       </Typography>
+       <Typography variant="body2">
+        <strong>Sản phẩm:</strong>{" "}
+        {getProductName(selectedSubscription.productId)}
+       </Typography>
+       <Typography variant="body2">
+        <strong>Ngày kết thúc:</strong>{" "}
+        {format(selectedSubscription.endDate, "dd/MM/yyyy")}
+       </Typography>
+      </Box>
+     )}
+     <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+      <strong>Lưu ý:</strong> Hành động này sẽ vô hiệu hóa quyền truy cập của
+      người dùng ngay lập tức và không thể hoàn tác.
+     </Typography>
+    </DialogContent>
+    <DialogActions>
+     <Button onClick={() => setRevokeDialogOpen(false)}>Hủy</Button>
+     <Button
+      onClick={handleRevokeSubscription}
+      variant="contained"
+      color="error"
+     >
+      Thu hồi
+     </Button>
+    </DialogActions>
    </Dialog>
   </Box>
  );

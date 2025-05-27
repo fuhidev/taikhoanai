@@ -6,7 +6,6 @@ import {
  Inventory,
  People,
  ShoppingCart,
- BugReport,
 } from "@mui/icons-material";
 import { Box, Tab, Tabs, useMediaQuery, useTheme } from "@mui/material";
 import Link from "next/link";
@@ -32,7 +31,6 @@ const Navigation = () => {
   { label: "Sản phẩm", href: "/products", icon: <Inventory /> },
   { label: "Đơn hàng", href: "/orders", icon: <ShoppingCart /> },
   { label: "Subscription", href: "/subscriptions", icon: <Assignment /> },
-  { label: "Test Data", href: "/test-data", icon: <Assignment /> },
  ];
 
  return (

@@ -220,6 +220,16 @@ export const getAllUserSubscriptions = async (): Promise<
  });
 };
 
+export const revokeUserSubscription = async (
+ subscriptionId: string
+): Promise<void> => {
+ const docRef = doc(db, "userSubscriptions", subscriptionId);
+ await updateDoc(docRef, {
+  isActive: false,
+  updatedAt: Timestamp.fromDate(new Date()),
+ });
+};
+
 // Orders
 export const createOrder = async (
  userId: string,
@@ -268,6 +278,10 @@ export const updateOrderStatus = async (
 ): Promise<void> => {
  const docRef = doc(db, "orders", id);
  await updateDoc(docRef, { status });
+};
+
+export const deleteOrder = async (id: string): Promise<void> => {
+ await deleteDoc(doc(db, "orders", id));
 };
 
 // Authentication for Extension

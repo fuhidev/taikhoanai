@@ -25,7 +25,7 @@ export default function RootLayout({
      <AppBar position="static">
       <Toolbar>
        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-        AI Access Management
+        aigiare.vn
        </Typography>
       </Toolbar>
      </AppBar>
