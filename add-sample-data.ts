@@ -67,13 +67,15 @@ const sampleData = {
  ],
 
  // Sample product access
- productAccess: [  {
+ productAccess: [
+  {
    id: "access1",
    userId: "user1",
    productId: "prod1",
    productName: "ChatGPT Plus",
    website: "https://chat.openai.com",
-   cookies: "__Secure-next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..sample_token_here; _dd_s=rum=1&id=sample_id&created=sample_created&expire=sample_expire",
+   cookies:
+    "__Secure-next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..sample_token_here; _dd_s=rum=1&id=sample_id&created=sample_created&expire=sample_expire",
    startDate: new Date(),
    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
    isActive: true,
@@ -84,7 +86,8 @@ const sampleData = {
    productId: "prod2",
    productName: "Google Gemini Pro",
    website: "https://gemini.google.com",
-   cookies: "__Secure-1PSID=sample_google_session_id; __Secure-1PSIDTS=sample_timestamp; __Secure-1PSIDCC=sample_cc_token",
+   cookies:
+    "__Secure-1PSID=sample_google_session_id; __Secure-1PSIDTS=sample_timestamp; __Secure-1PSIDCC=sample_cc_token",
    startDate: new Date(),
    endDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000), // 25 days from now
    isActive: true,
@@ -95,7 +98,8 @@ const sampleData = {
    productId: "prod3",
    productName: "Leonardo AI",
    website: "https://app.leonardo.ai",
-   cookies: "leonardo_session=sample_leonardo_session; auth_token=sample_auth_token; user_tier=pro",
+   cookies:
+    "leonardo_session=sample_leonardo_session; auth_token=sample_auth_token; user_tier=pro",
    startDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // Started 10 days ago
    endDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000), // 20 days from now
    isActive: true,
@@ -179,46 +183,44 @@ const sampleData = {
 
 async function addSampleData() {
  try {
-  console.log("Adding sample data to Firebase...");
+  // Adding sample data to Firebase...
 
   // Add users
   for (const user of sampleData.users) {
    await setDoc(doc(db, "users", user.id), user);
-   console.log(`Added user: ${user.fullName}`);
+   // Added user: ${user.fullName}
   }
 
   // Add products
   for (const product of sampleData.products) {
    await setDoc(doc(db, "products", product.id), product);
-   console.log(`Added product: ${product.name}`);
+   // Added product: ${product.name}
   }
 
   // Add product access
   for (const access of sampleData.productAccess) {
    await setDoc(doc(db, "productAccess", access.id), access);
-   console.log(
-    `Added product access: ${access.productName} for user ${access.userId}`
-   );
+   // Added product access: ${access.productName} for user ${access.userId}
   }
 
   // Add subscriptions
   for (const subscription of sampleData.subscriptions) {
    await setDoc(doc(db, "subscriptions", subscription.id), subscription);
-   console.log(`Added subscription: ${subscription.id}`);
+   // Added subscription: ${subscription.id}
   }
 
   // Add orders
   for (const order of sampleData.orders) {
    await setDoc(doc(db, "orders", order.id), order);
-   console.log(`Added order: ${order.productName}`);
+   // Added order: ${order.productName}
   }
 
-  console.log("✅ Sample data added successfully!");
-  console.log("\n📋 Test Accounts:");
-  console.log("User 1: 0123456789 / 123456");
-  console.log("User 2: 0987654321 / 123456");
+  // ✅ Sample data added successfully!
+  // 📋 Test Accounts:
+  // User 1: 0123456789 / 123456
+  // User 2: 0987654321 / 123456
  } catch (error) {
-  console.error("❌ Error adding sample data:", error);
+  // ❌ Error adding sample data: ${error}
  }
 }
 

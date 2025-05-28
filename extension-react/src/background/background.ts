@@ -2,11 +2,11 @@
 import { ApiService } from "../shared/api";
 import { versionChecker } from "../shared/version-checker";
 
-console.log("aigiare.vn background script loaded");
+// aigiare.vn background script loaded
 
 // Handle extension installation
 chrome.runtime.onInstalled.addListener((details) => {
- console.log("Extension installed:", details);
+ // Extension installed: ${details}
 
  // Đặt lịch kiểm tra phiên bản định kỳ (mỗi 15 phút cho force update)
  chrome.alarms.create("version-check", { periodInMinutes: 15 });
@@ -66,7 +66,7 @@ chrome.notifications.onButtonClicked.addListener(
 
 // Handle messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
- console.log("Message received in background:", message);
+ // Message received in background: ${message}
 
  switch (message.type) {
   case "CHECK_EXTENSION_STATUS":
@@ -91,7 +91,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
    handleCheckSubscriptionStatus(sendResponse);
    return true; // Keep the message channel open for async response
   default:
-   console.log("Unknown message type:", message.type);
+  // Unknown message type: ${message.type}
  }
 });
 
