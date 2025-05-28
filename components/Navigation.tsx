@@ -2,6 +2,7 @@
 
 import {
  Assignment,
+ Extension,
  Home,
  Inventory,
  People,
@@ -21,16 +22,21 @@ const Navigation = () => {
   if (pathname.startsWith("/products")) return 2;
   if (pathname.startsWith("/orders")) return 3;
   if (pathname.startsWith("/subscriptions")) return 4;
-  if (pathname.startsWith("/test-data")) return 5;
+  if (pathname.startsWith("/extension-versions")) return 5;
+  if (pathname.startsWith("/test-data")) return 6;
   return 0;
  };
-
  const navigationItems = [
   { label: "Dashboard", href: "/", icon: <Home /> },
   { label: "Người dùng", href: "/users", icon: <People /> },
   { label: "Sản phẩm", href: "/products", icon: <Inventory /> },
   { label: "Đơn hàng", href: "/orders", icon: <ShoppingCart /> },
   { label: "Subscription", href: "/subscriptions", icon: <Assignment /> },
+  {
+   label: "Extension Versions",
+   href: "/extension-versions",
+   icon: <Extension />,
+  },
  ];
 
  return (

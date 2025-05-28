@@ -1,10 +1,42 @@
 // Background script for Chrome extension
+import { versionChecker } from "../shared/version-checker";
+
 console.log("aigiare.vn background script loaded");
 
 // Handle extension installation
 chrome.runtime.onInstalled.addListener((details) => {
  console.log("Extension installed:", details);
+
+ // Đặt lịch kiểm tra phiên bản định kỳ
+ chrome.alarms.create("version-check", { periodInMinutes: 30 });
 });
+
+// Handle extension startup
+chrome.runtime.onStartup.addListener(() => {
+ versionChecker.checkForUpdates();
+});
+
+// Handle alarms
+chrome.alarms.onAlarm.addListener((alarm) => {
+ if (alarm.name === "version-check") {
+  versionChecker.checkForUpdates();
+ }
+});
+
+// Handle notification button clicks
+chrome.notifications.onButtonClicked.addListener(
+ async (notificationId, buttonIndex) => {
+  if (notificationId === "update-required") {
+   if (buttonIndex === 0) {
+    // Tải xuống ngay
+    const stored = await chrome.storage.local.get(["downloadUrl"]);
+    if (stored.downloadUrl) {
+     chrome.tabs.create({ url: stored.downloadUrl });
+    }
+   }
+  }
+ }
+);
 
 // Handle messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
