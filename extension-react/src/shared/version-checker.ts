@@ -13,10 +13,16 @@ class VersionChecker {
  private currentVersion: string;
  private updateCheckInterval: number = 30 * 60 * 1000; // 30 phút
  private updateDeadline: number = 60 * 60 * 1000; // 1 giờ
- private apiBaseUrl: string = "https://aigiaren.vn/api";
+ private apiBaseUrl: string;
 
  constructor() {
   this.currentVersion = chrome.runtime.getManifest().version;
+
+  // Sử dụng environment variable với fallback
+  this.apiBaseUrl =
+   import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+
+  console.log("VersionChecker using API base URL:", this.apiBaseUrl);
  }
  async checkForUpdates(): Promise<void> {
   try {

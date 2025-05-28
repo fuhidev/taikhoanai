@@ -1,6 +1,7 @@
 # PowerShell script to build and package Chrome extension
 param(
-    [string]$Version = $null
+    [string]$Version = $null,
+    [string]$Mode = "production"
 )
 
 # Colors for output
@@ -44,13 +45,20 @@ function Update-ManifestVersion($NewVersion) {
 }
 
 function Build-Extension {
-    Write-ColorOutput "Building extension..." $Blue
+    Write-ColorOutput "Building extension in $Mode mode..." $Blue
     try {
-        npm run build
+        if ($Mode -eq "development") {
+            npm run build:dev
+        } elseif ($Mode -eq "production") {
+            npm run build:prod
+        } else {
+            npm run build
+        }
+        
         if ($LASTEXITCODE -ne 0) {
             throw "Build failed with exit code $LASTEXITCODE"
         }
-        Write-ColorOutput "Build completed successfully!" $Green
+        Write-ColorOutput "Build completed successfully in $Mode mode!" $Green
         return $true
     }
     catch {
@@ -87,7 +95,9 @@ function Rename-DistFolder($Version) {
 }
 
 function Create-ZipPackage($FolderPath, $Version) {
-    $zipFileName = "aigiare.vn-v$Version.zip"
+    # Add mode suffix to filename for development builds
+    $modePrefix = if ($Mode -eq "development") { "-dev" } else { "" }
+    $zipFileName = "aigiare.vn-v$Version$modePrefix.zip"
     
     try {
         # Remove existing zip if exists

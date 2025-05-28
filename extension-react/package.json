@@ -8,8 +8,7 @@
   "build": "vite build",
   "watch": "vite build --watch",
   "type-check": "tsc --noEmit",
-  "package": "powershell -ExecutionPolicy Bypass -File build-and-package.ps1",
-  "package:bat": "build-and-package.bat"
+  "package": "powershell -ExecutionPolicy Bypass -File build-and-package.ps1"
  },
  "dependencies": {
   "react": "^18.2.0",
