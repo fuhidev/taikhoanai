@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
+import { ApiService } from "../../shared/api";
+import { StorageService } from "../../shared/storage";
 import { ProductAccess, StoredUserData } from "../../shared/types";
 
 interface DashboardProps {
  userData: StoredUserData;
  onLogout: () => void;
+ onUserDataUpdate?: (userData: StoredUserData) => void; // Callback để cập nhật userData ở parent
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ userData, onLogout }) => {
+const Dashboard: React.FC<DashboardProps> = ({
+ userData,
+ onLogout,
+ onUserDataUpdate,
+}) => {
+ const [isRefreshing, setIsRefreshing] = useState(false);
+
  const formatDate = (date: Date) => {
   return new Date(date).toLocaleDateString("vi-VN", {
    year: "numeric",
@@ -24,9 +33,64 @@ const Dashboard: React.FC<DashboardProps> = ({ userData, onLogout }) => {
    ? "bg-red-100 text-red-800 border-red-200"
    : "bg-green-100 text-green-800 border-green-200";
  };
-
  const getProductStatusText = (product: ProductAccess) => {
   return isProductExpired(product) ? "Hết hạn" : "Còn hạn";
+ };
+
+ // Hàm tải lại danh sách sản phẩm
+ const refreshProductList = async () => {
+  setIsRefreshing(true);
+  try {
+   console.log("Refreshing product list...");
+
+   // Gọi API để lấy danh sách sản phẩm mới nhất
+   const productAccessResponse = await ApiService.getProductAccess(
+    userData.user.id
+   );
+
+   if (productAccessResponse.success && productAccessResponse.data) {
+    // Cập nhật userData với danh sách sản phẩm mới
+    const updatedUserData: StoredUserData = {
+     ...userData,
+     productAccess: productAccessResponse.data,
+    };
+
+    // Lưu vào storage
+    await StorageService.setUserData(updatedUserData);
+
+    // Gọi callback để cập nhật parent component
+    if (onUserDataUpdate) {
+     onUserDataUpdate(updatedUserData);
+    }
+
+    console.log("Product list refreshed successfully");
+   } else {
+    console.error(
+     "Failed to refresh product list:",
+     productAccessResponse.message
+    );
+   }
+  } catch (error) {
+   console.error("Error refreshing product list:", error);
+  } finally {
+   setIsRefreshing(false);
+  }
+ };
+
+ // Hàm mở website
+ const openWebsite = (websiteUrl: string) => {
+  try {
+   // Đảm bảo URL có protocol
+   let url = websiteUrl;
+   if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    url = "https://" + url;
+   }
+
+   // Mở tab mới với website
+   chrome.tabs.create({ url: url });
+  } catch (error) {
+   console.error("Error opening website:", error);
+  }
  };
 
  return (
@@ -54,7 +118,6 @@ const Dashboard: React.FC<DashboardProps> = ({ userData, onLogout }) => {
      Đăng xuất
     </button>
    </div>
-
    {/* User Info */}
    <div className="card mb-4">
     <div className="flex items-center mb-2">
@@ -81,14 +144,35 @@ const Dashboard: React.FC<DashboardProps> = ({ userData, onLogout }) => {
     <p className="text-xs text-gray-500">
      Đăng nhập: {new Date(userData.loginTime).toLocaleString("vi-VN")}
     </p>
-   </div>
-
+   </div>{" "}
    {/* Products */}
    <div className="card flex-1 flex flex-col">
     <div className="border-b border-gray-200 pb-3 mb-3">
-     <h3 className="font-semibold text-gray-900">
-      Sản phẩm của bạn ({userData.productAccess.length})
-     </h3>
+     <div className="flex items-center justify-between">
+      <h3 className="font-semibold text-gray-900">
+       Sản phẩm của bạn ({userData.productAccess.length})
+      </h3>
+      <button
+       onClick={refreshProductList}
+       disabled={isRefreshing}
+       className="px-3 py-1 text-sm bg-primary-600 text-white hover:bg-primary-700 disabled:bg-gray-400 rounded-lg transition-colors duration-200 flex items-center gap-1"
+      >
+       <svg
+        className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+       >
+        <path
+         strokeLinecap="round"
+         strokeLinejoin="round"
+         strokeWidth={2}
+         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+        />
+       </svg>
+       {isRefreshing ? "Đang tải..." : "Tải lại"}
+      </button>
+     </div>
     </div>
 
     <div className="flex-1 overflow-auto">
@@ -133,6 +217,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userData, onLogout }) => {
 
          <div className="text-sm text-gray-600 space-y-1">
           <div className="flex items-center gap-1">
+           {" "}
            <svg
             className="w-4 h-4"
             fill="none"
@@ -146,7 +231,13 @@ const Dashboard: React.FC<DashboardProps> = ({ userData, onLogout }) => {
              d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
             />
            </svg>
-           <span className="break-all">{product.website}</span>
+           <button
+            onClick={() => openWebsite(product.website)}
+            className="text-primary-600 hover:text-primary-800 hover:underline transition-colors duration-200 break-all text-left"
+            title="Click để mở website"
+           >
+            {product.website}
+           </button>
           </div>
           <div className="flex items-center gap-1">
            <svg

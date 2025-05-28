@@ -70,11 +70,16 @@ const App: React.FC = () => {
  const handleLoginSuccess = (data: StoredUserData) => {
   setUserData(data);
  };
-
  const handleLogout = async () => {
   await StorageService.clearUserData();
   setUserData(null);
  };
+
+ // Callback để cập nhật userData khi refresh product list
+ const handleUserDataUpdate = (newUserData: StoredUserData) => {
+  setUserData(newUserData);
+ };
+
  if (isLoading) {
   return <LoadingScreen />;
  }
@@ -128,11 +133,14 @@ const App: React.FC = () => {
    </div>
   );
  }
-
  return (
   <div className="w-full h-full bg-gray-50">
    {userData ? (
-    <Dashboard userData={userData} onLogout={handleLogout} />
+    <Dashboard
+     userData={userData}
+     onLogout={handleLogout}
+     onUserDataUpdate={handleUserDataUpdate}
+    />
    ) : (
     <LoginForm onLoginSuccess={handleLoginSuccess} />
    )}

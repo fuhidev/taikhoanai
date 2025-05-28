@@ -1,7 +1,7 @@
 {
  "manifest_version": 3,
  "name": "aigiare.vn",
- "version": "1.0.2",
+ "version": "1.0.3",
  "description": "Manage platform access and authentication for various services",
  "permissions": [
   "storage",
@@ -26,5 +26,11 @@
  "action": {
   "default_popup": "src/index.html",
   "default_title": "aigiare.vn"
+ },
+ "icons": {
+  "16": "icons/icon16.png",
+  "32": "icons/icon32.png",
+  "48": "icons/icon48.png",
+  "128": "icons/icon128.png"
  }
 }
