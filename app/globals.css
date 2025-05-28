@@ -6,16 +6,6 @@ body {
   Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
-:root {
- --primary-color: #e3ff3c;
- --primary-dark: #d4f020;
- --primary-light: #eaff6b;
- --secondary-color: #4640be;
- --secondary-dark: #3429a3;
- --secondary-light: #6b65d3;
- --background-color: #fafafa;
-}
-
 a {
  color: inherit;
  text-decoration: none;
