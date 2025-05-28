@@ -224,17 +224,17 @@ function showNotification(
     max-width: 300px;
     animation: slideIn 0.3s ease-out;
   `;
-
  // Set colors based on type
  switch (type) {
   case "success":
-   notification.style.backgroundColor = "rgba(76, 175, 80, 0.9)";
+   notification.style.backgroundColor = "rgba(227, 255, 60, 0.95)";
+   notification.style.color = "#000000";
    break;
   case "error":
    notification.style.backgroundColor = "rgba(244, 67, 54, 0.9)";
    break;
   case "warning":
-   notification.style.backgroundColor = "rgba(255, 152, 0, 0.9)";
+   notification.style.backgroundColor = "rgba(70, 64, 190, 0.9)";
    break;
  }
 
