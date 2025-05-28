@@ -2,6 +2,7 @@ export interface User {
  id: string;
  phoneNumber: string;
  password: string;
+ isAdmin?: boolean;
  createdAt: Date;
  updatedAt: Date;
 }
@@ -55,4 +56,15 @@ export interface ProductAccess {
  cookie: string;
  isActive: boolean;
  endDate: Date;
+}
+
+export interface AdminLoginRequest {
+ phoneNumber: string;
+ password: string;
+}
+
+export interface AdminLoginResponse {
+ success: boolean;
+ user?: User;
+ message?: string;
 }

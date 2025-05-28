@@ -54,7 +54,7 @@ export default function HomePage() {
  return (
   <Box>
    <Typography variant="h4" component="h1" gutterBottom>
-    Dashboard - Hệ thống quản lý AI Access
+    Dashboard - Hệ thống quản lý aigiare.vn
    </Typography>
 
    <Typography variant="body1" paragraph>

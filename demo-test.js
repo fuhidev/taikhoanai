@@ -1,7 +1,7 @@
-// Test script for AI Access Management System
+// Test script for aigiare.vn Management System
 // Chạy script này trong browser console để test functionality
 
-console.log("🎉 AI Access Management System - Demo Script");
+console.log("🎉 aigiare.vn Management System - Demo Script");
 
 // Test 1: Check if app is running
 console.log("✅ Web Application đang chạy tại:", window.location.origin);

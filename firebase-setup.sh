@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🔥 AI Access Management - Firebase Setup Guide"
+echo "🔥 aigiare.vn Management - Firebase Setup Guide"
 echo "=============================================="
 echo ""
 

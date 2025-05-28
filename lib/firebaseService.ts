@@ -1,4 +1,6 @@
 import {
+ AdminLoginRequest,
+ AdminLoginResponse,
  LoginRequest,
  LoginResponse,
  Order,
@@ -60,6 +62,7 @@ export const getUserByPhoneNumber = async (
   id: doc.id,
   phoneNumber: data.phoneNumber,
   password: data.password,
+  isAdmin: data.isAdmin || false,
   createdAt: data.createdAt.toDate(),
   updatedAt: data.updatedAt.toDate(),
  };
@@ -75,6 +78,7 @@ export const getAllUsers = async (): Promise<User[]> => {
    id: doc.id,
    phoneNumber: data.phoneNumber,
    password: data.password,
+   isAdmin: data.isAdmin || false,
    createdAt: data.createdAt.toDate(),
    updatedAt: data.updatedAt.toDate(),
   };
@@ -336,5 +340,51 @@ export const getUserProductAccess = async (
    isActive: true,
    endDate: sub.endDate,
   };
+ });
+};
+
+// Admin Authentication
+export const authenticateAdmin = async (
+ request: AdminLoginRequest
+): Promise<AdminLoginResponse> => {
+ try {
+  const user = await getUserByPhoneNumber(request.phoneNumber);
+
+  if (!user || user.password !== request.password) {
+   return {
+    success: false,
+    message: "Số điện thoại hoặc mật khẩu không chính xác",
+   };
+  }
+
+  // Kiểm tra quyền admin
+  if (!user.isAdmin) {
+   return {
+    success: false,
+    message: "Bạn không có quyền truy cập hệ thống quản lý",
+   };
+  }
+
+  return {
+   success: true,
+   user,
+  };
+ } catch (error) {
+  return {
+   success: false,
+   message: "Có lỗi xảy ra khi đăng nhập",
+  };
+ }
+};
+
+// Cập nhật user với isAdmin
+export const updateUserAdmin = async (
+ id: string,
+ isAdmin: boolean
+): Promise<void> => {
+ const docRef = doc(db, "users", id);
+ await updateDoc(docRef, {
+  isAdmin,
+  updatedAt: Timestamp.fromDate(new Date()),
  });
 };

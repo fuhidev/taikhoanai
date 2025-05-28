@@ -1,6 +1,10 @@
 "use client";
 
-import { createUser, getAllUsers } from "@/lib/firebaseService";
+import {
+ createUser,
+ getAllUsers,
+ updateUserAdmin,
+} from "@/lib/firebaseService";
 import { User } from "@/types";
 import { Add, Person } from "@mui/icons-material";
 import {
@@ -12,7 +16,9 @@ import {
  DialogActions,
  DialogContent,
  DialogTitle,
+ FormControlLabel,
  Paper,
+ Switch,
  Table,
  TableBody,
  TableCell,
@@ -29,6 +35,7 @@ import { useForm } from "react-hook-form";
 interface CreateUserForm {
  phoneNumber: string;
  password: string;
+ isAdmin?: boolean;
 }
 
 export default function UsersPage() {
@@ -62,16 +69,37 @@ export default function UsersPage() {
  useEffect(() => {
   loadUsers();
  }, []);
-
  const onSubmit = async (data: CreateUserForm) => {
   try {
-   await createUser(data.phoneNumber, data.password);
+   const userId = await createUser(data.phoneNumber, data.password);
+
+   // Nếu có set isAdmin, cập nhật thêm
+   if (data.isAdmin) {
+    await updateUserAdmin(userId, true);
+   }
+
    setAlert({ type: "success", message: "Tạo người dùng thành công" });
    setOpen(false);
    reset();
    loadUsers();
   } catch (error) {
    setAlert({ type: "error", message: "Có lỗi khi tạo người dùng" });
+  }
+ };
+
+ const handleToggleAdmin = async (
+  userId: string,
+  currentAdminStatus: boolean
+ ) => {
+  try {
+   await updateUserAdmin(userId, !currentAdminStatus);
+   setAlert({
+    type: "success",
+    message: `Đã ${!currentAdminStatus ? "cấp" : "thu hồi"} quyền admin`,
+   });
+   loadUsers();
+  } catch (error) {
+   setAlert({ type: "error", message: "Có lỗi khi cập nhật quyền admin" });
   }
  };
 
@@ -105,6 +133,7 @@ export default function UsersPage() {
 
    <TableContainer component={Paper}>
     <Table>
+     {" "}
      <TableHead>
       <TableRow>
        <TableCell>ID</TableCell>
@@ -112,18 +141,20 @@ export default function UsersPage() {
        <TableCell>Ngày tạo</TableCell>
        <TableCell>Ngày cập nhật</TableCell>
        <TableCell>Trạng thái</TableCell>
+       <TableCell>Quyền Admin</TableCell>
       </TableRow>
      </TableHead>
      <TableBody>
+      {" "}
       {loading ? (
        <TableRow>
-        <TableCell colSpan={5} align="center">
+        <TableCell colSpan={6} align="center">
          Đang tải...
         </TableCell>
        </TableRow>
       ) : users.length === 0 ? (
        <TableRow>
-        <TableCell colSpan={5} align="center">
+        <TableCell colSpan={6} align="center">
          Chưa có người dùng nào
         </TableCell>
        </TableRow>
@@ -136,6 +167,18 @@ export default function UsersPage() {
          <TableCell>{format(user.updatedAt, "dd/MM/yyyy HH:mm")}</TableCell>
          <TableCell>
           <Chip label="Hoạt động" color="success" size="small" />
+         </TableCell>
+         <TableCell>
+          <FormControlLabel
+           control={
+            <Switch
+             checked={user.isAdmin || false}
+             onChange={() => handleToggleAdmin(user.id, user.isAdmin || false)}
+             color="primary"
+            />
+           }
+           label={user.isAdmin ? "Admin" : "User"}
+          />
          </TableCell>
         </TableRow>
        ))
@@ -167,7 +210,7 @@ export default function UsersPage() {
        margin="normal"
        error={!!errors.phoneNumber}
        helperText={errors.phoneNumber?.message}
-      />
+      />{" "}
       <TextField
        {...register("password", {
         required: "Mật khẩu là bắt buộc",
@@ -182,6 +225,11 @@ export default function UsersPage() {
        margin="normal"
        error={!!errors.password}
        helperText={errors.password?.message}
+      />
+      <FormControlLabel
+       control={<Switch {...register("isAdmin")} color="primary" />}
+       label="Quyền quản trị viên"
+       sx={{ mt: 2 }}
       />
      </DialogContent>
      <DialogActions>
