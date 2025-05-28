@@ -84,7 +84,7 @@ export default function ExtensionVersionsPage() {
    } else {
     setAlert({ type: "error", message: "Có lỗi khi tải danh sách versions" });
    }
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tải danh sách versions" });
   } finally {
    setLoading(false);
@@ -125,7 +125,7 @@ export default function ExtensionVersionsPage() {
    } else {
     setAlert({ type: "error", message: result.error || "Có lỗi xảy ra" });
    }
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi lưu version" });
   }
  };
@@ -164,7 +164,7 @@ export default function ExtensionVersionsPage() {
    } else {
     setAlert({ type: "error", message: result.error });
    }
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi publish version" });
   }
  };
@@ -190,7 +190,7 @@ export default function ExtensionVersionsPage() {
    } else {
     setAlert({ type: "error", message: result.error });
    }
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi xóa version" });
   }
  };

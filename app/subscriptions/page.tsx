@@ -76,7 +76,7 @@ export default function SubscriptionsPage() {
    setSubscriptions(subscriptionsData);
    setUsers(usersData);
    setProducts(productsData);
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tải dữ liệu" });
   } finally {
    setLoading(false);
@@ -93,7 +93,7 @@ export default function SubscriptionsPage() {
    setOpen(false);
    reset();
    loadData();
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tạo subscription" });
   }
  };
@@ -107,7 +107,7 @@ export default function SubscriptionsPage() {
    setRevokeDialogOpen(false);
    setSelectedSubscription(null);
    loadData();
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi thu hồi subscription" });
   }
  };

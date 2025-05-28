@@ -122,7 +122,7 @@ export default function OrdersPage() {
    setUsers(usersData);
    setProducts(productsData);
    setFilteredOrders(ordersData); // Khởi tạo danh sách đã lọc
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tải dữ liệu" });
   } finally {
    setLoading(false);
@@ -185,7 +185,7 @@ export default function OrdersPage() {
    setOpen(false);
    reset();
    loadData();
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tạo đơn hàng" });
   }
  };
@@ -197,7 +197,7 @@ export default function OrdersPage() {
    setCreateUserOpen(false);
    resetUser();
    loadData(); // Reload data để lấy user mới tạo
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tạo khách hàng" });
   }
  };
@@ -228,10 +228,9 @@ export default function OrdersPage() {
      );
     }
    }
-
    setAlert({ type: "success", message: "Cập nhật trạng thái thành công" });
    loadData();
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi cập nhật trạng thái" });
   }
  };
@@ -254,7 +253,7 @@ export default function OrdersPage() {
     await deleteOrder(order.id);
     setAlert({ type: "success", message: "Xóa đơn hàng thành công" });
     loadData();
-   } catch (error) {
+   } catch {
     setAlert({ type: "error", message: "Có lỗi khi xóa đơn hàng" });
    }
   }

@@ -62,7 +62,7 @@ export default function ProductsPage() {
    setLoading(true);
    const productsData = await getAllProducts();
    setProducts(productsData);
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tải danh sách sản phẩm" });
   } finally {
    setLoading(false);
@@ -100,7 +100,7 @@ export default function ProductsPage() {
    reset();
    setEditingProduct(null);
    loadProducts();
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi lưu sản phẩm" });
   }
  };
@@ -111,7 +111,7 @@ export default function ProductsPage() {
     await deleteProduct(product.id);
     setAlert({ type: "success", message: "Xóa sản phẩm thành công" });
     loadProducts();
-   } catch (error) {
+   } catch {
     setAlert({ type: "error", message: "Có lỗi khi xóa sản phẩm" });
    }
   }

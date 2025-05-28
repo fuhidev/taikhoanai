@@ -133,6 +133,7 @@ export const updateProduct = async (
  updates: Partial<Product>
 ): Promise<void> => {
  const docRef = doc(db, "products", id);
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
  const updateData: any = {
   ...updates,
   updatedAt: Timestamp.fromDate(new Date()),
@@ -312,7 +313,7 @@ export const authenticateUser = async (
    user,
    subscriptions: activeSubscriptions,
   };
- } catch (error) {
+ } catch {
   return {
    success: false,
    message: "Có lỗi xảy ra khi đăng nhập",
@@ -365,11 +366,8 @@ export const authenticateAdmin = async (
    };
   }
 
-  return {
-   success: true,
-   user,
-  };
- } catch (error) {
+  return { success: true, user };
+ } catch {
   return {
    success: false,
    message: "Có lỗi xảy ra khi đăng nhập",

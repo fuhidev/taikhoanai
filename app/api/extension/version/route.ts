@@ -1,9 +1,9 @@
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // GET: Lấy version hiện tại (cho extension check)
-export async function GET(request: NextRequest) {
+export async function GET() {
  try {
   const versionsRef = collection(db, "extensionVersions");
   const q = query(versionsRef, where("isCurrent", "==", true));

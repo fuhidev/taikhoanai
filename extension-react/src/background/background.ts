@@ -8,8 +8,11 @@ console.log("aigiare.vn background script loaded");
 chrome.runtime.onInstalled.addListener((details) => {
  console.log("Extension installed:", details);
 
- // Đặt lịch kiểm tra phiên bản định kỳ
- chrome.alarms.create("version-check", { periodInMinutes: 30 });
+ // Đặt lịch kiểm tra phiên bản định kỳ (mỗi 15 phút cho force update)
+ chrome.alarms.create("version-check", { periodInMinutes: 15 });
+
+ // Kiểm tra ngay lập tức
+ versionChecker.checkForUpdates();
 });
 
 // Handle extension startup
@@ -27,7 +30,29 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // Handle notification button clicks
 chrome.notifications.onButtonClicked.addListener(
  async (notificationId, buttonIndex) => {
-  if (notificationId === "update-required") {
+  if (notificationId === "force-update-required") {
+   const stored = await chrome.storage.local.get(["updateInfo"]);
+   if (stored.updateInfo) {
+    if (buttonIndex === 0) {
+     // Tải xuống ngay
+     chrome.tabs.create({ url: stored.updateInfo.downloadUrl });
+    } else if (buttonIndex === 1) {
+     // Xem chi tiết
+     chrome.tabs.create({
+      url: `data:text/html,<html><body><h2>Thông tin cập nhật v${stored.updateInfo.version}</h2><pre>${stored.updateInfo.releaseNotes}</pre></body></html>`,
+     });
+    }
+   }
+  } else if (notificationId === "update-available") {
+   const stored = await chrome.storage.local.get(["updateInfo"]);
+   if (stored.updateInfo) {
+    if (buttonIndex === 0) {
+     // Cập nhật
+     chrome.tabs.create({ url: stored.updateInfo.downloadUrl });
+    }
+    // ButtonIndex === 1 là "Để sau" - không làm gì
+   }
+  } else if (notificationId === "update-required") {
    if (buttonIndex === 0) {
     // Tải xuống ngay
     const stored = await chrome.storage.local.get(["downloadUrl"]);
@@ -44,6 +69,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
  console.log("Message received in background:", message);
 
  switch (message.type) {
+  case "CHECK_EXTENSION_STATUS":
+   handleCheckExtensionStatus(sendResponse);
+   return true;
   case "INJECT_COOKIES":
    handleCookieInjection(message.data, sender.tab?.id);
    break;
@@ -60,6 +88,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
    console.log("Unknown message type:", message.type);
  }
 });
+
+async function handleCheckExtensionStatus(
+ sendResponse: (response: any) => void
+) {
+ try {
+  const result = await chrome.storage.local.get([
+   "extensionDisabled",
+   "disableReason",
+   "updateInfo",
+  ]);
+
+  sendResponse({
+   success: true,
+   disabled: result.extensionDisabled || false,
+   reason: result.disableReason,
+   updateInfo: result.updateInfo,
+  });
+ } catch (error) {
+  sendResponse({
+   success: false,
+   error: error instanceof Error ? error.message : String(error),
+  });
+ }
+}
 
 async function handleCookieInjection(
  data: { website: string; cookies: string },

@@ -51,7 +51,8 @@ const Navigation = () => {
      },
     }}
    >
-    {navigationItems.map((item, index) => (
+    {" "}
+    {navigationItems.map((item) => (
      <Tab
       key={item.href}
       label={isMobile ? undefined : item.label}

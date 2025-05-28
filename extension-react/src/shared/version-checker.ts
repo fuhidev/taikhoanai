@@ -1,6 +1,14 @@
 import { StorageService } from "./storage";
 import { ProductAccess, StoredUserData } from "./types";
 
+export interface VersionInfo {
+ version: string;
+ downloadUrl: string;
+ releaseNotes: string;
+ required: boolean; // forceUpdate từ API
+ publishedAt: string;
+}
+
 class VersionChecker {
  private currentVersion: string;
  private updateCheckInterval: number = 30 * 60 * 1000; // 30 phút
@@ -10,20 +18,50 @@ class VersionChecker {
  constructor() {
   this.currentVersion = chrome.runtime.getManifest().version;
  }
-
  async checkForUpdates(): Promise<void> {
   try {
-   const response = await fetch(`${this.apiBaseUrl}/extension/version`);
-   const data = await response.json();
+   console.log("Checking for updates...");
 
-   if (this.isNewerVersion(data.version)) {
-    await this.handleUpdateRequired(data);
+   const response = await fetch(`${this.apiBaseUrl}/extension/version`);
+
+   if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+   }
+
+   const versionInfo: VersionInfo = await response.json();
+
+   console.log("Current version:", this.currentVersion);
+   console.log("Latest version:", versionInfo.version);
+   console.log("Force update required:", versionInfo.required);
+
+   // So sánh version
+   if (this.isNewerVersion(versionInfo.version)) {
+    // Lưu thông tin update
+    await chrome.storage.local.set({
+     updateAvailable: true,
+     updateInfo: versionInfo,
+    });
+
+    if (versionInfo.required) {
+     // Force update - vô hiệu hóa ngay lập tức
+     await this.handleForceUpdate(versionInfo);
+    } else {
+     // Optional update - hiển thị thông báo tùy chọn
+     await this.handleOptionalUpdate(versionInfo);
+    }
+   } else {
+    console.log("Extension is up to date");
+    // Xóa thông tin update cũ
+    await chrome.storage.local.remove([
+     "updateAvailable",
+     "updateInfo",
+     "extensionDisabled",
+    ]);
    }
   } catch (error) {
    console.error("Error checking for updates:", error);
   }
  }
-
  private isNewerVersion(remoteVersion: string): boolean {
   const current = this.currentVersion.split(".").map(Number);
   const remote = remoteVersion.split(".").map(Number);
@@ -36,6 +74,90 @@ class VersionChecker {
    if (remotePart < currentPart) return false;
   }
   return false;
+ }
+
+ private async handleForceUpdate(versionInfo: VersionInfo): Promise<void> {
+  console.log("Force update required, disabling extension features");
+
+  // Vô hiệu hóa extension ngay lập tức
+  await this.disableExtensionFeatures();
+
+  // Hiển thị thông báo bắt buộc
+  this.showForceUpdateNotification(versionInfo);
+ }
+
+ private async handleOptionalUpdate(versionInfo: VersionInfo): Promise<void> {
+  console.log("Optional update available");
+
+  // Hiển thị thông báo tùy chọn
+  this.showOptionalUpdateNotification(versionInfo);
+
+  // Bắt đầu countdown cho update tùy chọn (nếu muốn)
+  await this.handleUpdateRequired(versionInfo);
+ }
+
+ async disableExtensionFeatures(): Promise<void> {
+  // Đánh dấu extension bị vô hiệu hóa
+  await chrome.storage.local.set({
+   extensionDisabled: true,
+   disableReason: "force_update_required",
+  });
+
+  // Thông báo tất cả content scripts
+  const tabs = await chrome.tabs.query({});
+  for (const tab of tabs) {
+   if (tab.id) {
+    chrome.tabs
+     .sendMessage(tab.id, {
+      type: "EXTENSION_DISABLED",
+      reason: "force_update_required",
+     })
+     .catch(() => {
+      // Ignore errors for tabs without content scripts
+     });
+   }
+  }
+ }
+
+ async enableExtensionFeatures(): Promise<void> {
+  await chrome.storage.local.remove(["extensionDisabled", "disableReason"]);
+
+  // Thông báo tất cả content scripts
+  const tabs = await chrome.tabs.query({});
+  for (const tab of tabs) {
+   if (tab.id) {
+    chrome.tabs
+     .sendMessage(tab.id, {
+      type: "EXTENSION_ENABLED",
+     })
+     .catch(() => {
+      // Ignore errors for tabs without content scripts
+     });
+   }
+  }
+ }
+
+ showForceUpdateNotification(versionInfo: VersionInfo): void {
+  chrome.notifications.create("force-update-required", {
+   type: "basic",
+   iconUrl: "icons/icon48.png",
+   title: "Cập nhật bắt buộc!",
+   message: `Phiên bản ${versionInfo.version} yêu cầu cập nhật ngay lập tức để tiếp tục sử dụng.`,
+   buttons: [{ title: "Tải xuống ngay" }, { title: "Xem chi tiết" }],
+   priority: 2,
+   requireInteraction: true, // Không tự động ẩn
+  });
+ }
+
+ showOptionalUpdateNotification(versionInfo: VersionInfo): void {
+  chrome.notifications.create("update-available", {
+   type: "basic",
+   iconUrl: "icons/icon48.png",
+   title: "Cập nhật có sẵn",
+   message: `Phiên bản ${versionInfo.version} đã có sẵn. Bạn có muốn cập nhật?`,
+   buttons: [{ title: "Cập nhật" }, { title: "Để sau" }],
+   priority: 1,
+  });
  }
 
  private async handleUpdateRequired(updateInfo: any): Promise<void> {

@@ -59,7 +59,7 @@ export default function UsersPage() {
    setLoading(true);
    const usersData = await getAllUsers();
    setUsers(usersData);
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tải danh sách người dùng" });
   } finally {
    setLoading(false);
@@ -82,7 +82,7 @@ export default function UsersPage() {
    setOpen(false);
    reset();
    loadUsers();
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tạo người dùng" });
   }
  };
@@ -98,7 +98,7 @@ export default function UsersPage() {
     message: `Đã ${!currentAdminStatus ? "cấp" : "thu hồi"} quyền admin`,
    });
    loadUsers();
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi cập nhật quyền admin" });
   }
  };

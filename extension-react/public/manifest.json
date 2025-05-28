@@ -1,0 +1,30 @@
+{
+ "manifest_version": 3,
+ "name": "aigiare.vn",
+ "version": "1.0.1",
+ "description": "Manage platform access and authentication for various services",
+ "permissions": [
+  "storage",
+  "activeTab",
+  "cookies",
+  "tabs",
+  "notifications",
+  "alarms"
+ ],
+ "host_permissions": ["https://*/*", "http://localhost:3000/*"],
+ "background": {
+  "service_worker": "background.js",
+  "type": "module"
+ },
+ "content_scripts": [
+  {
+   "matches": ["<all_urls>"],
+   "js": ["content.js"],
+   "run_at": "document_start"
+  }
+ ],
+ "action": {
+  "default_popup": "src/index.html",
+  "default_title": "aigiare.vn"
+ }
+}

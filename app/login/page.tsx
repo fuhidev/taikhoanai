@@ -44,7 +44,7 @@ export default function LoginPage() {
    } else {
     setError(result.message || "Đăng nhập thất bại");
    }
-  } catch (error) {
+  } catch {
    setError("Có lỗi xảy ra khi đăng nhập");
   } finally {
    setLoading(false);
