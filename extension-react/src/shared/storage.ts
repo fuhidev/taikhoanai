@@ -70,6 +70,40 @@ export class StorageService {
   console.log("User data cleared and logout notifications sent");
  }
 
+ // New method to notify all tabs about access changes
+ static async notifyAccessRevoked(revokedDomains: string[]): Promise<void> {
+  console.log(
+   "Notifying tabs about revoked access for domains:",
+   revokedDomains
+  );
+
+  try {
+   const tabs = await chrome.tabs.query({});
+
+   for (const tab of tabs) {
+    if (tab.id && tab.url) {
+     try {
+      const tabUrl = new URL(tab.url);
+      if (revokedDomains.includes(tabUrl.hostname)) {
+       console.log("Notifying tab about access revocation:", tabUrl.hostname);
+       await chrome.tabs.sendMessage(tab.id, {
+        type: "ACCESS_REVOKED",
+        data: { domain: tabUrl.hostname },
+       });
+      }
+     } catch (tabError) {
+      console.log("Could not notify tab:", tab.id, tabError);
+     }
+    }
+   }
+  } catch (error) {
+   console.warn(
+    "Could not notify content scripts of access revocation:",
+    error
+   );
+  }
+ }
+
  static async isLoginValid(userData: StoredUserData): Promise<boolean> {
   const loginAge = Date.now() - userData.loginTime;
   const maxAge = 24 * 60 * 60 * 1000; // 24 hours

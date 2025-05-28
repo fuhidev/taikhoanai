@@ -48,6 +48,7 @@ export interface StoredUserData {
  subscriptions: UserSubscription[];
  productAccess: ProductAccess[];
  loginTime: number;
+ lastRefresh?: number;
 }
 
 export interface LoginRequest {

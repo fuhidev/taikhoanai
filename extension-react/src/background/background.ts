@@ -81,8 +81,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   case "CLEAR_COOKIES":
    handleClearCookies(message.data, sender.tab?.id);
    break;
+  case "CLEAR_ALL_COOKIES":
+   handleClearAllCookies(message.data, sender.tab?.id, sendResponse);
+   return true;
   case "REFRESH_USER_DATA":
    handleRefreshUserData(sendResponse);
+   return true; // Keep the message channel open for async response
+  case "CHECK_SUBSCRIPTION_STATUS":
+   handleCheckSubscriptionStatus(sendResponse);
    return true; // Keep the message channel open for async response
   default:
    console.log("Unknown message type:", message.type);
@@ -321,6 +327,136 @@ async function handleRefreshUserData(sendResponse: (response: any) => void) {
   }
  } catch (error) {
   console.error("Error refreshing user data:", error);
+  sendResponse({
+   success: false,
+   error: error instanceof Error ? error.message : String(error),
+  });
+ }
+}
+
+async function handleClearAllCookies(
+ data: { domain: string },
+ tabId?: number,
+ sendResponse?: (response: any) => void
+) {
+ try {
+  console.log("Clearing all cookies for domain:", data.domain);
+
+  // Get all cookies for the domain and its subdomains
+  const allCookies = await chrome.cookies.getAll({});
+  const cookiesToRemove = allCookies.filter(
+   (cookie) =>
+    cookie.domain === data.domain ||
+    cookie.domain === `.${data.domain}` ||
+    cookie.domain.endsWith(`.${data.domain}`)
+  );
+
+  console.log("Found cookies to remove:", cookiesToRemove.length);
+
+  // Remove each cookie
+  for (const cookie of cookiesToRemove) {
+   const url = `http${cookie.secure ? "s" : ""}://${
+    cookie.domain.startsWith(".") ? cookie.domain.substring(1) : cookie.domain
+   }${cookie.path}`;
+   try {
+    await chrome.cookies.remove({
+     url: url,
+     name: cookie.name,
+    });
+    console.log("Removed cookie:", cookie.name, "from", cookie.domain);
+   } catch (error) {
+    console.error("Error removing cookie:", cookie.name, error);
+   }
+  }
+
+  console.log("Finished clearing all cookies for:", data.domain);
+
+  if (sendResponse) {
+   sendResponse({ success: true, cleared: cookiesToRemove.length });
+  }
+
+  // Notify content script if available
+  if (tabId) {
+   chrome.tabs
+    .sendMessage(tabId, {
+     type: "COOKIES_CLEARED",
+     success: true,
+     domain: data.domain,
+     cleared: cookiesToRemove.length,
+    })
+    .catch(() => {
+     // Ignore errors - tab might be closed
+    });
+  }
+ } catch (error) {
+  console.error("Error clearing all cookies:", error);
+
+  if (sendResponse) {
+   sendResponse({
+    success: false,
+    error: error instanceof Error ? error.message : String(error),
+   });
+  }
+
+  if (tabId) {
+   chrome.tabs
+    .sendMessage(tabId, {
+     type: "COOKIES_CLEARED",
+     success: false,
+     error: error instanceof Error ? error.message : String(error),
+    })
+    .catch(() => {
+     // Ignore errors - tab might be closed
+    });
+  }
+ }
+}
+
+async function handleCheckSubscriptionStatus(
+ sendResponse: (response: any) => void
+) {
+ try {
+  console.log("Checking subscription status from server...");
+
+  // Get current user data
+  const result = await chrome.storage.local.get("userData");
+  const userData = result.userData;
+
+  if (!userData || !userData.user) {
+   sendResponse({ success: false, error: "No user data found" });
+   return;
+  }
+
+  // Refresh product access from server to get latest subscription status
+  const productAccessResponse = await ApiService.getProductAccess(
+   userData.user.id
+  );
+
+  if (productAccessResponse.success && productAccessResponse.data) {
+   // Update user data with fresh product access
+   const updatedUserData = {
+    ...userData,
+    productAccess: productAccessResponse.data,
+    lastRefresh: Date.now(),
+   };
+
+   // Save updated data
+   await chrome.storage.local.set({ userData: updatedUserData });
+
+   console.log("Subscription status checked successfully");
+   sendResponse({ success: true, userData: updatedUserData });
+  } else {
+   console.error(
+    "Failed to check subscription status:",
+    productAccessResponse.message
+   );
+   sendResponse({
+    success: false,
+    error: productAccessResponse.message || "Failed to check subscription",
+   });
+  }
+ } catch (error) {
+  console.error("Error checking subscription status:", error);
   sendResponse({
    success: false,
    error: error instanceof Error ? error.message : String(error),

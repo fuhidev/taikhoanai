@@ -4,7 +4,9 @@ console.log("aigiare.vn content script loaded on:", window.location.href);
 // Flags to prevent infinite refresh loop
 const COOKIE_INJECTED_FLAG = "aigiare_cookies_injected";
 const LAST_ACCESS_CHECK = "aigiare_last_access_check";
+const LAST_HEARTBEAT = "aigiare_last_heartbeat";
 const ACCESS_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const HEARTBEAT_INTERVAL = 1 * 60 * 1000; // 1 minute
 
 // Only run on supported domains (check against user's product access)
 async function shouldRunOnThisDomain(): Promise<boolean> {
@@ -146,6 +148,17 @@ function injectCookies(access: any) {
   console.log("Website:", access.website);
   console.log("Cookies:", access.cookie);
 
+  // Double-check access is still valid before injecting
+  const endDate = new Date(access.endDate);
+  const now = new Date();
+
+  if (endDate <= now) {
+   console.log("Access expired during injection, aborting");
+   clearCookiesAndSession();
+   showAccessExpiredNotification();
+   return;
+  }
+
   // Set flag to prevent re-injection
   sessionStorage.setItem(COOKIE_INJECTED_FLAG, "true");
 
@@ -264,7 +277,39 @@ function clearInjectionFlags() {
  sessionStorage.removeItem(COOKIE_INJECTED_FLAG);
  sessionStorage.removeItem(COOKIE_INJECTED_FLAG + "_refreshed");
  sessionStorage.removeItem(LAST_ACCESS_CHECK);
+ sessionStorage.removeItem(LAST_HEARTBEAT);
  console.log("Injection flags cleared");
+}
+
+// Function to perform heartbeat check (lighter than full access check)
+async function performHeartbeat() {
+ try {
+  const lastHeartbeat = sessionStorage.getItem(LAST_HEARTBEAT);
+  const needsHeartbeat =
+   !lastHeartbeat || Date.now() - parseInt(lastHeartbeat) > HEARTBEAT_INTERVAL;
+
+  if (!needsHeartbeat) return;
+
+  console.log("Performing heartbeat check...");
+  sessionStorage.setItem(LAST_HEARTBEAT, Date.now().toString());
+
+  // Quick check to see if user data still exists
+  const response: any = await new Promise((resolve) => {
+   chrome.runtime.sendMessage({ type: "GET_USER_DATA" }, resolve);
+  });
+
+  if (!response.success || !response.userData) {
+   console.log("Heartbeat failed - user not logged in");
+   clearCookiesAndSession();
+   showNotification("Phiên đăng nhập đã hết hạn", "warning");
+   return false;
+  }
+
+  return true;
+ } catch (error) {
+  console.error("Heartbeat error:", error);
+  return false;
+ }
 }
 
 // Function to refresh user access status (check for revoked access, expired subscriptions)
@@ -339,7 +384,7 @@ async function clearAllCookiesForDomain() {
   });
 
   if (response.success) {
-   console.log("Cookies cleared successfully");
+   console.log("Cookies cleared successfully, count:", response.cleared);
   } else {
    console.error("Failed to clear cookies:", response.error);
   }
@@ -407,21 +452,44 @@ async function checkSubscriptionStatus() {
  }
 }
 
-// Set up periodic access check (every 10 minutes)
+// Set up more frequent access check (every 2 minutes) to detect revoked access quickly
 setInterval(() => {
  if (sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
   console.log("Running periodic access check...");
   refreshAccessStatus();
  }
-}, 10 * 60 * 1000); // 10 minutes
+}, 2 * 60 * 1000); // 2 minutes
 
-// Set up periodic subscription check (every 30 minutes)
+// Set up periodic subscription check (every 5 minutes)
 setInterval(() => {
  if (sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
   console.log("Running periodic subscription check...");
   checkSubscriptionStatus();
  }
-}, 30 * 60 * 1000); // 30 minutes
+}, 5 * 60 * 1000); // 5 minutes
+
+// Set up heartbeat check (every 1 minute) - lighter check
+setInterval(() => {
+ if (sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
+  performHeartbeat();
+ }
+}, HEARTBEAT_INTERVAL);
+
+// Check access when page becomes visible/focused (user switches back to tab)
+document.addEventListener("visibilitychange", () => {
+ if (!document.hidden && sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
+  console.log("Page visible again, checking access status...");
+  refreshAccessStatus();
+ }
+});
+
+// Check access when window gains focus
+window.addEventListener("focus", () => {
+ if (sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
+  console.log("Window focused, checking access status...");
+  refreshAccessStatus();
+ }
+});
 
 // Listen for messages from background script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -430,18 +498,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   case "COOKIES_INJECTED":
    if (message.success) {
     console.log("Cookies injected successfully");
-    showNotification("Đã tự động đăng nhập!", "success");
-    // Only refresh if this is the first time injecting cookies
-    if (!sessionStorage.getItem(COOKIE_INJECTED_FLAG + "_refreshed")) {
-     sessionStorage.setItem(COOKIE_INJECTED_FLAG + "_refreshed", "true");
-     // Refresh page to apply cookies after a short delay
-     setTimeout(() => {
-      console.log("Refreshing page to apply cookies");
-      window.location.reload();
-     }, 2000);
-    } else {
-     console.log("Page already refreshed, skipping refresh");
-    }
+
+    // Validate access is still valid after injection
+    setTimeout(async () => {
+     const stillValid = await refreshAccessStatus();
+     if (stillValid) {
+      showNotification("Đã tự động đăng nhập!", "success");
+      // Only refresh if this is the first time injecting cookies
+      if (!sessionStorage.getItem(COOKIE_INJECTED_FLAG + "_refreshed")) {
+       sessionStorage.setItem(COOKIE_INJECTED_FLAG + "_refreshed", "true");
+       // Refresh page to apply cookies after a short delay
+       setTimeout(() => {
+        console.log("Refreshing page to apply cookies");
+        window.location.reload();
+       }, 2000);
+      } else {
+       console.log("Page already refreshed, skipping refresh");
+      }
+     } else {
+      console.log("Access no longer valid after injection");
+     }
+    }, 1000); // Check after 1 second
    } else {
     console.error("Failed to inject cookies:", message.error);
     showNotification(

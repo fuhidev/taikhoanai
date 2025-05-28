@@ -36,12 +36,22 @@ const Dashboard: React.FC<DashboardProps> = ({
  const getProductStatusText = (product: ProductAccess) => {
   return isProductExpired(product) ? "Hết hạn" : "Còn hạn";
  };
-
  // Hàm tải lại danh sách sản phẩm
  const refreshProductList = async () => {
   setIsRefreshing(true);
   try {
-   console.log("Refreshing product list...");
+   console.log("Refreshing product list from server...");
+   // Store previous product access for comparison
+   const previousAccess = userData.productAccess || [];
+   const previousDomains = previousAccess
+    .map((access: any) => {
+     try {
+      return new URL(access.website).hostname;
+     } catch {
+      return null;
+     }
+    })
+    .filter((domain): domain is string => domain !== null);
 
    // Gọi API để lấy danh sách sản phẩm mới nhất
    const productAccessResponse = await ApiService.getProductAccess(
@@ -49,10 +59,32 @@ const Dashboard: React.FC<DashboardProps> = ({
    );
 
    if (productAccessResponse.success && productAccessResponse.data) {
+    // Check for revoked access
+    const newDomains = productAccessResponse.data
+     .map((access: any) => {
+      try {
+       return new URL(access.website).hostname;
+      } catch {
+       return null;
+      }
+     })
+     .filter((domain): domain is string => domain !== null);
+
+    const revokedDomains = previousDomains.filter(
+     (domain) => !newDomains.includes(domain)
+    );
+
+    if (revokedDomains.length > 0) {
+     console.log("Detected revoked access for domains:", revokedDomains);
+     // Notify tabs about access revocation
+     await StorageService.notifyAccessRevoked(revokedDomains);
+    }
+
     // Cập nhật userData với danh sách sản phẩm mới
     const updatedUserData: StoredUserData = {
      ...userData,
      productAccess: productAccessResponse.data,
+     lastRefresh: Date.now(),
     };
 
     // Lưu vào storage
