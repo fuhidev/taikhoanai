@@ -1,4 +1,5 @@
 // Background script for Chrome extension
+import { ApiService } from "../shared/api";
 import { versionChecker } from "../shared/version-checker";
 
 console.log("aigiare.vn background script loaded");
@@ -229,10 +230,7 @@ async function handleRefreshUserData(sendResponse: (response: any) => void) {
    sendResponse({ success: false, error: "No user data found" });
    return;
   }
-
   // Import API service
-  const { ApiService } = await import("../shared/api");
-
   try {
    // Refresh product access from server
    const productAccessResponse = await ApiService.getProductAccess(

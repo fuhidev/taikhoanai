@@ -4,8 +4,6 @@
  "description": "Hệ thống quản lý bán tài khoản truy cập nền tảng AI",
  "scripts": {
   "dev": "next dev",
-  "debug": "NODE_OPTIONS='--inspect' next dev",
-  "debug-win": "set NODE_OPTIONS=--inspect && next dev",
   "build": "next build",
   "start": "next start",
   "lint": "next lint",
