@@ -2,6 +2,7 @@ export interface User {
  id: string;
  phoneNumber: string;
  password: string;
+ fullName?: string;
  isAdmin?: boolean;
  createdAt: Date;
  updatedAt: Date;
@@ -67,4 +68,28 @@ export interface AdminLoginResponse {
  success: boolean;
  user?: User;
  message?: string;
+}
+
+export interface DeviceInfo {
+ deviceId: string;
+ deviceName: string;
+ browser: string;
+ os: string;
+ ip?: string;
+ userAgent: string;
+}
+
+export interface UserSession {
+ id: string;
+ userId: string;
+ userInfo?: {
+  phoneNumber: string;
+  fullName?: string;
+ };
+ deviceInfo: DeviceInfo;
+ loginTime: number;
+ lastActive: number;
+ isActive: boolean;
+ revokedAt?: number;
+ revokedBy?: string; // admin user id
 }

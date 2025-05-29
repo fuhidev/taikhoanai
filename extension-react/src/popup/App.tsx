@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ApiService } from "../shared/api";
 import { StorageService } from "../shared/storage";
 import { StoredUserData } from "../shared/types";
 import Dashboard from "./components/Dashboard";
@@ -71,6 +72,16 @@ const App: React.FC = () => {
   setUserData(data);
  };
  const handleLogout = async () => {
+  try {
+   // Gọi API logout nếu có sessionId
+   if (userData?.sessionId) {
+    await ApiService.logout(userData.sessionId);
+   }
+  } catch (error) {
+   console.error("Logout API error:", error);
+   // Vẫn tiếp tục clear local data dù API lỗi
+  }
+
   await StorageService.clearUserData();
   setUserData(null);
  };

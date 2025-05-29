@@ -6,7 +6,8 @@
  "scripts": {
   "dev": "vite",
   "build": "vite build",
-  "watch": "vite build --watch",
+  "build:dev": "vite build --mode development",
+  "watch": "vite build --mode development --watch",
   "type-check": "tsc --noEmit",
   "package": "powershell -ExecutionPolicy Bypass -File build-and-package.ps1"
  },

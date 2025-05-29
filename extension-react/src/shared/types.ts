@@ -43,12 +43,38 @@ export interface UserSubscription {
  autoRenew: boolean;
 }
 
+export interface DeviceInfo {
+ deviceId: string;
+ deviceName: string;
+ browser: string;
+ os: string;
+ ip?: string;
+ userAgent: string;
+}
+
+export interface UserSession {
+ id: string;
+ userId: string;
+ userInfo?: {
+  phoneNumber: string;
+  fullName?: string;
+ };
+ deviceInfo: DeviceInfo;
+ loginTime: number;
+ lastActive: number;
+ isActive: boolean;
+ revokedAt?: number;
+ revokedBy?: string; // admin user id
+}
+
 export interface StoredUserData {
  user: User;
  subscriptions: UserSubscription[];
  productAccess: ProductAccess[];
  loginTime: number;
  lastRefresh?: number;
+ sessionId: string; // Thêm session ID
+ deviceId: string; // Thêm device ID
 }
 
 export interface LoginRequest {
@@ -61,6 +87,13 @@ export interface LoginResponse {
  message?: string;
  user?: User;
  subscriptions?: UserSubscription[];
+ sessionId?: string; // Thêm session ID
+ deviceConflict?: boolean; // Thêm flag xung đột thiết bị
+ activeDevice?: {
+  deviceName: string;
+  loginTime: number;
+  lastActive: number;
+ };
 }
 
 export interface ProductAccessResponse {

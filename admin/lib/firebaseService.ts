@@ -26,11 +26,14 @@ import { db } from "./firebase";
 // Users
 export const createUser = async (
  phoneNumber: string,
- password: string
+ password: string,
+ fullName?: string
 ): Promise<string> => {
  const user: Omit<User, "id"> = {
   phoneNumber,
   password,
+  fullName,
+  isAdmin: false,
   createdAt: new Date(),
   updatedAt: new Date(),
  };
@@ -62,10 +65,38 @@ export const getUserByPhoneNumber = async (
   id: doc.id,
   phoneNumber: data.phoneNumber,
   password: data.password,
+  fullName: data.fullName || "",
   isAdmin: data.isAdmin || false,
   createdAt: data.createdAt.toDate(),
   updatedAt: data.updatedAt.toDate(),
  };
+};
+
+export const getUserById = async (userId: string): Promise<User | null> => {
+ try {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDocs(
+   query(collection(db, "users"), where("__name__", "==", userId))
+  );
+
+  if (userSnap.empty) {
+   return null;
+  }
+
+  const userData = userSnap.docs[0].data();
+  return {
+   id: userSnap.docs[0].id,
+   phoneNumber: userData.phoneNumber,
+   password: userData.password,
+   fullName: userData.fullName || userData.name || "",
+   isAdmin: userData.isAdmin || false,
+   createdAt: userData.createdAt.toDate(),
+   updatedAt: userData.updatedAt.toDate(),
+  };
+ } catch (error) {
+  console.error("Error getting user by ID:", error);
+  return null;
+ }
 };
 
 export const getAllUsers = async (): Promise<User[]> => {
@@ -78,11 +109,27 @@ export const getAllUsers = async (): Promise<User[]> => {
    id: doc.id,
    phoneNumber: data.phoneNumber,
    password: data.password,
+   fullName: data.fullName || "",
    isAdmin: data.isAdmin || false,
    createdAt: data.createdAt.toDate(),
    updatedAt: data.updatedAt.toDate(),
   };
  });
+};
+
+export const updateUser = async (
+ id: string,
+ updates: Partial<
+  Pick<User, "phoneNumber" | "password" | "fullName" | "isAdmin">
+ >
+): Promise<void> => {
+ const docRef = doc(db, "users", id);
+ const updateData: any = {
+  ...updates,
+  updatedAt: Timestamp.fromDate(new Date()),
+ };
+
+ await updateDoc(docRef, updateData);
 };
 
 // Products
@@ -385,4 +432,275 @@ export const updateUserAdmin = async (
   isAdmin,
   updatedAt: Timestamp.fromDate(new Date()),
  });
+};
+
+// ============ SESSION MANAGEMENT FUNCTIONS ============
+
+import { DeviceInfo, UserSession } from "../types";
+
+// Generate unique ID for sessions
+const generateId = (): string => {
+ return (
+  Math.random().toString(36).substring(2, 15) +
+  Math.random().toString(36).substring(2, 15)
+ );
+};
+
+// Session Management Functions
+export const createUserSession = async (
+ userId: string,
+ deviceInfo: DeviceInfo
+): Promise<string> => {
+ try {
+  const sessionId = generateId();
+  const now = Date.now();
+  // Lấy thông tin user
+  const userDoc = await getUserById(userId);
+  const userInfo = userDoc
+   ? {
+      phoneNumber: userDoc.phoneNumber || "N/A",
+      fullName: userDoc.fullName || "",
+     }
+   : undefined;
+
+  const session: UserSession = {
+   id: sessionId,
+   userId,
+   userInfo,
+   deviceInfo,
+   loginTime: now,
+   lastActive: now,
+   isActive: true,
+  };
+
+  await addDoc(collection(db, "userSessions"), {
+   ...session,
+   loginTime: Timestamp.fromMillis(session.loginTime),
+   lastActive: Timestamp.fromMillis(session.lastActive),
+  });
+
+  console.log(
+   `Created session ${sessionId} for user ${userId} on device ${deviceInfo.deviceName}`
+  );
+  return sessionId;
+ } catch (error) {
+  console.error("Error creating user session:", error);
+  throw error;
+ }
+};
+
+export const getUserActiveSessions = async (
+ userId: string
+): Promise<UserSession[]> => {
+ try {
+  const q = query(
+   collection(db, "userSessions"),
+   where("userId", "==", userId),
+   where("isActive", "==", true)
+  );
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((doc) => {
+   const data = doc.data();
+   return {
+    id: doc.id,
+    ...data,
+    loginTime: data.loginTime?.toMillis() || 0,
+    lastActive: data.lastActive?.toMillis() || 0,
+    revokedAt: data.revokedAt?.toMillis(),
+   } as UserSession;
+  });
+ } catch (error) {
+  console.error("Error getting user sessions:", error);
+  return [];
+ }
+};
+
+export const validateUserSession = async (
+ sessionId: string,
+ deviceId: string
+): Promise<{ valid: boolean; message?: string }> => {
+ try {
+  const sessionRef = doc(db, "userSessions", sessionId);
+  const sessionDoc = await getDocs(
+   query(collection(db, "userSessions"), where("id", "==", sessionId))
+  );
+
+  if (sessionDoc.empty) {
+   return { valid: false, message: "Session không tồn tại" };
+  }
+
+  const sessionData = sessionDoc.docs[0].data();
+
+  if (!sessionData.isActive) {
+   return { valid: false, message: "Session đã bị vô hiệu hóa" };
+  }
+
+  if (sessionData.deviceInfo.deviceId !== deviceId) {
+   return { valid: false, message: "Device không khớp" };
+  }
+
+  // Update last active time
+  await updateDoc(sessionDoc.docs[0].ref, {
+   lastActive: Timestamp.fromMillis(Date.now()),
+  });
+
+  return { valid: true };
+ } catch (error) {
+  console.error("Error validating session:", error);
+  return { valid: false, message: "Lỗi server" };
+ }
+};
+
+export const revokeSession = async (
+ sessionId: string,
+ revokedBy: string
+): Promise<void> => {
+ try {
+  const sessionQuery = query(
+   collection(db, "userSessions"),
+   where("id", "==", sessionId)
+  );
+  const sessionDocs = await getDocs(sessionQuery);
+
+  if (!sessionDocs.empty) {
+   await updateDoc(sessionDocs.docs[0].ref, {
+    isActive: false,
+    revokedAt: Timestamp.fromMillis(Date.now()),
+    revokedBy,
+   });
+
+   console.log(`Session ${sessionId} revoked by ${revokedBy}`);
+  }
+ } catch (error) {
+  console.error("Error revoking session:", error);
+  throw error;
+ }
+};
+
+export const revokeUserSessions = async (
+ userId: string,
+ revokedBy: string
+): Promise<void> => {
+ try {
+  const activeSessions = await getUserActiveSessions(userId);
+
+  const updatePromises = activeSessions.map((session) => {
+   const sessionQuery = query(
+    collection(db, "userSessions"),
+    where("id", "==", session.id)
+   );
+   return getDocs(sessionQuery).then((docs) => {
+    if (!docs.empty) {
+     return updateDoc(docs.docs[0].ref, {
+      isActive: false,
+      revokedAt: Timestamp.fromMillis(Date.now()),
+      revokedBy,
+     });
+    }
+   });
+  });
+
+  await Promise.all(updatePromises);
+  console.log(
+   `Revoked ${activeSessions.length} sessions for user ${userId} by ${revokedBy}`
+  );
+ } catch (error) {
+  console.error("Error revoking user sessions:", error);
+  throw error;
+ }
+};
+
+export const getAllActiveSessions = async (): Promise<UserSession[]> => {
+ try {
+  const q = query(
+   collection(db, "userSessions"),
+   where("isActive", "==", true),
+   orderBy("lastActive", "desc")
+  );
+  const snapshot = await getDocs(q);
+
+  const sessions = snapshot.docs.map((doc) => {
+   const data = doc.data();
+   return {
+    id: doc.id,
+    ...data,
+    loginTime: data.loginTime?.toMillis() || 0,
+    lastActive: data.lastActive?.toMillis() || 0,
+    revokedAt: data.revokedAt?.toMillis(),
+   } as UserSession;
+  });
+
+  // Lấy thông tin user cho các session chưa có userInfo
+  const sessionsWithUserInfo = await Promise.all(
+   sessions.map(async (session) => {
+    if (!session.userInfo && session.userId) {
+     try {
+      const userDoc = await getUserById(session.userId);
+      if (userDoc) {
+       session.userInfo = {
+        phoneNumber: userDoc.phoneNumber || "N/A",
+        fullName: userDoc.fullName || "",
+       };
+      }
+     } catch (error) {
+      console.error(`Error fetching user info for ${session.userId}:`, error);
+     }
+    }
+    return session;
+   })
+  );
+
+  return sessionsWithUserInfo;
+ } catch (error) {
+  console.error("Error getting all active sessions:", error);
+  return [];
+ }
+};
+
+export const getAllSessions = async (
+ limit: number = 100
+): Promise<UserSession[]> => {
+ try {
+  const q = query(
+   collection(db, "userSessions"),
+   orderBy("lastActive", "desc")
+  );
+  const snapshot = await getDocs(q);
+
+  const sessions = snapshot.docs.slice(0, limit).map((doc) => {
+   const data = doc.data();
+   return {
+    id: doc.id,
+    ...data,
+    loginTime: data.loginTime?.toMillis() || 0,
+    lastActive: data.lastActive?.toMillis() || 0,
+    revokedAt: data.revokedAt?.toMillis(),
+   } as UserSession;
+  });
+  // Lấy thông tin user cho các session chưa có userInfo
+  const sessionsWithUserInfo = await Promise.all(
+   sessions.map(async (session) => {
+    if (!session.userInfo && session.userId) {
+     try {
+      const userDoc = await getUserById(session.userId);
+      if (userDoc) {
+       session.userInfo = {
+        phoneNumber: userDoc.phoneNumber || "N/A",
+        fullName: userDoc.fullName || "",
+       };
+      }
+     } catch (error) {
+      console.error(`Error fetching user info for ${session.userId}:`, error);
+     }
+    }
+    return session;
+   })
+  );
+
+  return sessionsWithUserInfo;
+ } catch (error) {
+  console.error("Error getting all sessions:", error);
+  return [];
+ }
 };

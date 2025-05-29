@@ -1,5 +1,6 @@
 // Background script for Chrome extension
 import { ApiService } from "../shared/api";
+import { StorageService } from "../shared/storage";
 import { versionChecker } from "../shared/version-checker";
 
 // aigiare.vn background script loaded
@@ -10,6 +11,9 @@ chrome.runtime.onInstalled.addListener((details) => {
 
  // Đặt lịch kiểm tra phiên bản định kỳ (mỗi 15 phút cho force update)
  chrome.alarms.create("version-check", { periodInMinutes: 15 });
+
+ // Đặt lịch kiểm tra session định kỳ (mỗi 5 phút)
+ chrome.alarms.create("session-check", { periodInMinutes: 5 });
 
  // Kiểm tra ngay lập tức
  versionChecker.checkForUpdates();
@@ -24,6 +28,8 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.alarms.onAlarm.addListener((alarm) => {
  if (alarm.name === "version-check") {
   versionChecker.checkForUpdates();
+ } else if (alarm.name === "session-check") {
+  validateCurrentSession();
  }
 });
 
@@ -461,5 +467,41 @@ async function handleCheckSubscriptionStatus(
    success: false,
    error: error instanceof Error ? error.message : String(error),
   });
+ }
+}
+
+// Session validation function
+async function validateCurrentSession() {
+ try {
+  const userData = await StorageService.getUserData();
+
+  if (userData && userData.sessionId && userData.deviceId) {
+   const validation = await ApiService.validateSession(
+    userData.sessionId,
+    userData.deviceId
+   );
+
+   if (!validation.success || !validation.valid) {
+    console.log("Session invalid, logging out user");
+    await StorageService.clearUserData();
+
+    // Notify all tabs about session expiry
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+     if (tab.id) {
+      chrome.tabs
+       .sendMessage(tab.id, {
+        type: "SESSION_EXPIRED",
+        reason: validation.message || "Session không hợp lệ",
+       })
+       .catch(() => {
+        // Ignore errors for tabs without content scripts
+       });
+     }
+    }
+   }
+  }
+ } catch (error) {
+  console.error("Session validation error:", error);
  }
 }

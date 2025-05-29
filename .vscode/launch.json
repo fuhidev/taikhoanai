@@ -5,13 +5,15 @@
    "name": "Next.js: debug server-side",
    "type": "node-terminal",
    "request": "launch",
-   "command": "npm run dev"
+   "command": "npm run dev",
+   "cwd": "${workspaceFolder}/admin"
   },
   {
    "name": "Next.js: debug client-side",
    "type": "chrome",
    "request": "launch",
-   "url": "http://localhost:3000"
+   "url": "http://localhost:3000",
+   "webRoot": "${workspaceFolder}/admin"
   },
   {
    "name": "Next.js: debug client-side (Firefox)",
@@ -19,10 +21,11 @@
    "request": "launch",
    "url": "http://localhost:3000",
    "reAttach": true,
+   "webRoot": "${workspaceFolder}/admin",
    "pathMappings": [
     {
      "url": "webpack://_N_E",
-     "path": "${workspaceFolder}"
+     "path": "${workspaceFolder}/admin"
     }
    ]
   },
@@ -30,15 +33,16 @@
    "name": "Next.js: debug full stack",
    "type": "node",
    "request": "launch",
-   "program": "${workspaceFolder}/node_modules/next/dist/bin/next",
+   "program": "${workspaceFolder}/admin/node_modules/next/dist/bin/next",
    "runtimeArgs": ["--inspect"],
    "skipFiles": ["<node_internals>/**"],
+   "cwd": "${workspaceFolder}/admin",
    "serverReadyAction": {
     "action": "debugWithEdge",
     "killOnServerStop": true,
     "pattern": "- Local:.+(https?://.+)",
     "uriFormat": "%s",
-    "webRoot": "${workspaceFolder}"
+    "webRoot": "${workspaceFolder}/admin"
    }
   }
  ]

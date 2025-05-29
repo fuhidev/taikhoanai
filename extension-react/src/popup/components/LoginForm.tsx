@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ApiService } from "../../shared/api";
+import { DeviceUtils } from "../../shared/device-utils";
 import { StorageService } from "../../shared/storage";
 import { StoredUserData } from "../../shared/types";
 
@@ -13,7 +14,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
  const [showPassword, setShowPassword] = useState(false);
  const [isLoading, setIsLoading] = useState(false);
  const [error, setError] = useState<string | null>(null);
-
+ const [deviceConflictError, setDeviceConflictError] = useState<{
+  show: boolean;
+  message: string;
+  activeDevice?: any;
+ }>({ show: false, message: "" });
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
@@ -21,9 +26,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
    setError("Vui lòng nhập đầy đủ thông tin");
    return;
   }
-
   setIsLoading(true);
   setError(null);
+  setDeviceConflictError({ show: false, message: "" });
 
   try {
    console.log("Attempting login...");
@@ -33,7 +38,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
    });
    console.log("Login response:", response);
 
-   if (response.success && response.user) {
+   if (response.success && response.user && response.sessionId) {
+    const deviceId = await DeviceUtils.getStoredDeviceId();
+
     console.log("Login successful, getting product access...");
 
     // Create user data object
@@ -42,6 +49,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
      subscriptions: response.subscriptions || [],
      productAccess: [],
      loginTime: Date.now(),
+     sessionId: response.sessionId,
+     deviceId: deviceId,
     };
 
     try {
@@ -67,7 +76,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     onLoginSuccess(userData);
    } else {
     console.log("Login failed:", response.message);
-    setError(response.message || "Đăng nhập thất bại");
+
+    // Kiểm tra nếu là lỗi device conflict
+    if (response.deviceConflict) {
+     setDeviceConflictError({
+      show: true,
+      message: response.message || "Tài khoản đã đăng nhập trên thiết bị khác",
+      activeDevice: response.activeDevice,
+     });
+    } else {
+     setError(response.message || "Đăng nhập thất bại");
+    }
    }
   } catch (error) {
    console.error("Login error:", error);
@@ -89,12 +108,66 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
    <div className="text-center mb-6">
     <h1 className="text-2xl font-bold text-primary-600 mb-2">aigiare.vn</h1>
     <p className="text-gray-600 text-sm">Đăng nhập để quản lý tài khoản AI</p>
-   </div>
-
+   </div>{" "}
    {/* Login Form */}
    <div className="card flex-1">
     <form onSubmit={handleSubmit} className="space-y-4">
-     {error && (
+     {" "}
+     {/* Device Conflict Error */}
+     {deviceConflictError.show && (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+       <div className="flex items-start">
+        <svg
+         className="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0"
+         fill="none"
+         stroke="currentColor"
+         viewBox="0 0 24 24"
+        >
+         <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+         />
+        </svg>
+        <div className="flex-1">
+         <p className="text-sm font-medium text-red-800 mb-1">
+          Không thể đăng nhập
+         </p>
+         <p className="text-sm text-red-700 mb-2">
+          {deviceConflictError.message}
+         </p>
+
+         {deviceConflictError.activeDevice && (
+          <div className="bg-red-100 p-2 rounded border text-xs text-red-700 mb-2">
+           <p>
+            <strong>Thiết bị đang hoạt động:</strong>{" "}
+            {deviceConflictError.activeDevice.deviceName}
+           </p>
+           <p>
+            <strong>Đăng nhập lúc:</strong>{" "}
+            {new Date(
+             deviceConflictError.activeDevice.loginTime
+            ).toLocaleString("vi-VN")}
+           </p>
+           <p>
+            <strong>Hoạt động cuối:</strong>{" "}
+            {new Date(
+             deviceConflictError.activeDevice.lastActive
+            ).toLocaleString("vi-VN")}
+           </p>
+          </div>
+         )}
+
+         <p className="text-xs text-red-600">
+          💡 <strong>Giải pháp:</strong> Đăng xuất khỏi thiết bị khác hoặc liên
+          hệ admin để thu hồi phiên đăng nhập.
+         </p>
+        </div>
+       </div>
+      </div>
+     )}{" "}
+     {error && !deviceConflictError.show && (
       <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
        {error}
       </div>
