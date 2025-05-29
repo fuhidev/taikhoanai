@@ -123,7 +123,7 @@ export const updateUser = async (
  >
 ): Promise<void> => {
  const docRef = doc(db, "users", id);
- const updateData: Partial<User> & { updatedAt: Timestamp } = {
+ const updateData = {
   ...updates,
   updatedAt: Timestamp.fromDate(new Date()),
  };
@@ -179,10 +179,8 @@ export const updateProduct = async (
  updates: Partial<Product>
 ): Promise<void> => {
  const docRef = doc(db, "products", id);
- const updateData: Partial<Product> & {
-  updatedAt: Timestamp;
-  createdAt?: Timestamp;
- } = {
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ const updateData: any = {
   ...updates,
   updatedAt: Timestamp.fromDate(new Date()),
  };
