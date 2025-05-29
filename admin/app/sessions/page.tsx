@@ -19,12 +19,11 @@ import {
  TableRow,
  Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { UserSession } from "../../types";
 
 export default function SessionsPage() {
  const [sessions, setSessions] = useState<UserSession[]>([]);
- const [loading, setLoading] = useState(true);
  const [showAll, setShowAll] = useState(false);
  const [revokeDialog, setRevokeDialog] = useState<{
   open: boolean;
@@ -34,14 +33,7 @@ export default function SessionsPage() {
   session: null,
  });
 
- useEffect(() => {
-  fetchSessions();
-
-  // Auto refresh every 30 seconds
-  const interval = setInterval(fetchSessions, 30000);
-  return () => clearInterval(interval);
- }, [showAll]);
- const fetchSessions = async () => {
+ const fetchSessions = useCallback(async () => {
   try {
    const response = await fetch(`/api/admin/sessions?all=${showAll}`);
    const data = await response.json();
@@ -51,11 +43,16 @@ export default function SessionsPage() {
    }
   } catch (error) {
    console.error("Error fetching sessions:", error);
-  } finally {
-   setLoading(false);
   }
- };
+ }, [showAll]);
 
+ useEffect(() => {
+  fetchSessions();
+
+  // Auto refresh every 30 seconds
+  const interval = setInterval(fetchSessions, 30000);
+  return () => clearInterval(interval);
+ }, [fetchSessions]);
  const handleRevokeSession = async (sessionId: string) => {
   try {
    const response = await fetch("/api/admin/revoke-session", {

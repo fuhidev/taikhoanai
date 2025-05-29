@@ -74,7 +74,6 @@ export const getUserByPhoneNumber = async (
 
 export const getUserById = async (userId: string): Promise<User | null> => {
  try {
-  const userRef = doc(db, "users", userId);
   const userSnap = await getDocs(
    query(collection(db, "users"), where("__name__", "==", userId))
   );
@@ -124,7 +123,7 @@ export const updateUser = async (
  >
 ): Promise<void> => {
  const docRef = doc(db, "users", id);
- const updateData: any = {
+ const updateData: Partial<User> & { updatedAt: Timestamp } = {
   ...updates,
   updatedAt: Timestamp.fromDate(new Date()),
  };
@@ -180,8 +179,10 @@ export const updateProduct = async (
  updates: Partial<Product>
 ): Promise<void> => {
  const docRef = doc(db, "products", id);
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const updateData: any = {
+ const updateData: Partial<Product> & {
+  updatedAt: Timestamp;
+  createdAt?: Timestamp;
+ } = {
   ...updates,
   updatedAt: Timestamp.fromDate(new Date()),
  };
@@ -521,7 +522,6 @@ export const validateUserSession = async (
  deviceId: string
 ): Promise<{ valid: boolean; message?: string }> => {
  try {
-  const sessionRef = doc(db, "userSessions", sessionId);
   const sessionDoc = await getDocs(
    query(collection(db, "userSessions"), where("id", "==", sessionId))
   );

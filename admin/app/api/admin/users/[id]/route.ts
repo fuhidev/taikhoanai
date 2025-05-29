@@ -14,7 +14,7 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
- request: NextRequest,
+ _request: NextRequest,
  { params }: { params: { id: string } }
 ) {
  try {
@@ -46,7 +46,12 @@ export async function PUT(
 
   // Cập nhật thông tin user trong Firestore
   const userRef = doc(db, "users", userId);
-  const updateData: any = {
+  const updateData: {
+   phoneNumber: string;
+   updatedAt: ReturnType<typeof serverTimestamp>;
+   fullName?: string;
+   isAdmin?: boolean;
+  } = {
    phoneNumber,
    updatedAt: serverTimestamp(),
   };
