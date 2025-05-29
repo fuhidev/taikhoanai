@@ -7,9 +7,16 @@ import {
  updateProduct,
 } from "@/lib/firebaseService";
 import { Product } from "@/types";
-import { Add, Delete, Edit, Inventory } from "@mui/icons-material";
+import {
+ Add,
+ Delete,
+ Edit,
+ Image as ImageIcon,
+ Inventory,
+} from "@mui/icons-material";
 import {
  Alert,
+ Avatar,
  Box,
  Button,
  Chip,
@@ -37,6 +44,9 @@ interface ProductForm {
  duration: number;
  cookie: string;
  website: string;
+ image: string;
+ price: number;
+ originalPrice?: number;
 }
 
 export default function ProductsPage() {
@@ -80,6 +90,9 @@ export default function ProductsPage() {
    setValue("duration", product.duration);
    setValue("cookie", product.cookie);
    setValue("website", product.website);
+   setValue("image", product.image || "");
+   setValue("price", product.price || 0);
+   setValue("originalPrice", product.originalPrice || 0);
   } else {
    setEditingProduct(null);
    reset();
@@ -89,11 +102,24 @@ export default function ProductsPage() {
 
  const onSubmit = async (data: ProductForm) => {
   try {
+   const productData = {
+    ...data,
+    originalPrice: data.originalPrice || undefined,
+   };
+
    if (editingProduct) {
-    await updateProduct(editingProduct.id, data);
+    await updateProduct(editingProduct.id, productData);
     setAlert({ type: "success", message: "Cập nhật sản phẩm thành công" });
    } else {
-    await createProduct(data.name, data.duration, data.cookie, data.website);
+    await createProduct(
+     data.name,
+     data.duration,
+     data.cookie,
+     data.website,
+     data.image,
+     data.price,
+     data.originalPrice
+    );
     setAlert({ type: "success", message: "Tạo sản phẩm thành công" });
    }
    setOpen(false);
@@ -115,6 +141,13 @@ export default function ProductsPage() {
     setAlert({ type: "error", message: "Có lỗi khi xóa sản phẩm" });
    }
   }
+ };
+
+ const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+   style: "currency",
+   currency: "VND",
+  }).format(price);
  };
 
  return (
@@ -149,7 +182,9 @@ export default function ProductsPage() {
     <Table>
      <TableHead>
       <TableRow>
+       <TableCell>Hình ảnh</TableCell>
        <TableCell>Tên sản phẩm</TableCell>
+       <TableCell>Giá</TableCell>
        <TableCell>Thời hạn (ngày)</TableCell>
        <TableCell>Website</TableCell>
        <TableCell>Cookie</TableCell>
@@ -160,13 +195,13 @@ export default function ProductsPage() {
      <TableBody>
       {loading ? (
        <TableRow>
-        <TableCell colSpan={6} align="center">
+        <TableCell colSpan={8} align="center">
          Đang tải...
         </TableCell>
        </TableRow>
       ) : products.length === 0 ? (
        <TableRow>
-        <TableCell colSpan={6} align="center">
+        <TableCell colSpan={8} align="center">
          Chưa có sản phẩm nào
         </TableCell>
        </TableRow>
@@ -174,8 +209,33 @@ export default function ProductsPage() {
        products.map((product) => (
         <TableRow key={product.id}>
          <TableCell>
+          <Avatar
+           src={product.image}
+           sx={{ width: 60, height: 60 }}
+           variant="rounded"
+          >
+           <ImageIcon />
+          </Avatar>
+         </TableCell>
+         <TableCell>
           <Box sx={{ display: "flex", alignItems: "center" }}>
            <Chip label={product.name} color="primary" sx={{ mr: 1 }} />
+          </Box>
+         </TableCell>
+         <TableCell>
+          <Box>
+           <Typography variant="body1" fontWeight="bold" color="primary">
+            {formatPrice(product.price || 0)}
+           </Typography>
+           {product.originalPrice &&
+            product.originalPrice > (product.price || 0) && (
+             <Typography
+              variant="body2"
+              sx={{ textDecoration: "line-through", color: "text.secondary" }}
+             >
+              {formatPrice(product.originalPrice)}
+             </Typography>
+            )}
           </Box>
          </TableCell>
          <TableCell>{product.duration} ngày</TableCell>
@@ -235,6 +295,46 @@ export default function ProductsPage() {
        error={!!errors.name}
        helperText={errors.name?.message}
       />
+
+      <Box sx={{ display: "flex", gap: 2 }}>
+       <TextField
+        {...register("price", {
+         required: "Giá sản phẩm là bắt buộc",
+         min: { value: 0, message: "Giá phải lớn hơn hoặc bằng 0" },
+        })}
+        label="Giá sản phẩm (VND)"
+        type="number"
+        fullWidth
+        margin="normal"
+        error={!!errors.price}
+        helperText={errors.price?.message}
+       />
+
+       <TextField
+        {...register("originalPrice", {
+         min: { value: 0, message: "Giá gốc phải lớn hơn hoặc bằng 0" },
+        })}
+        label="Giá gốc (VND) - Tùy chọn"
+        type="number"
+        fullWidth
+        margin="normal"
+        error={!!errors.originalPrice}
+        helperText={
+         errors.originalPrice?.message || "Để trống nếu không có giá gốc"
+        }
+       />
+      </Box>
+
+      <TextField
+       {...register("image")}
+       label="URL hình ảnh"
+       fullWidth
+       margin="normal"
+       error={!!errors.image}
+       helperText={errors.image?.message || "URL hình ảnh sản phẩm (tùy chọn)"}
+       placeholder="https://example.com/image.jpg"
+      />
+
       <TextField
        {...register("duration", {
         required: "Thời hạn sử dụng là bắt buộc",
@@ -247,6 +347,7 @@ export default function ProductsPage() {
        error={!!errors.duration}
        helperText={errors.duration?.message}
       />
+
       <TextField
        {...register("website", {
         required: "Website là bắt buộc",
@@ -262,6 +363,7 @@ export default function ProductsPage() {
        helperText={errors.website?.message}
        placeholder="https://chat.openai.com"
       />
+
       <TextField
        {...register("cookie", { required: "Cookie là bắt buộc" })}
        label="Cookie"
