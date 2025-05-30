@@ -36,8 +36,7 @@ export const Header: React.FC = () => {
        className="w-8 h-8"
       />
       <span className="text-xl font-bold text-primary">aigiare.vn</span>
-     </Link>
-
+     </Link>{" "}
      {/* Desktop Navigation */}
      <nav className="hidden md:flex items-center space-x-6">
       <Link
@@ -53,6 +52,12 @@ export const Header: React.FC = () => {
        Sản phẩm
       </Link>
       <Link
+       href="/extension"
+       className="text-foreground hover:text-primary transition-colors"
+      >
+       Extension
+      </Link>
+      <Link
        href="/about"
        className="text-foreground hover:text-primary transition-colors"
       >
@@ -65,7 +70,6 @@ export const Header: React.FC = () => {
        Liên hệ
       </Link>
      </nav>
-
      {/* Desktop CTA Buttons */}
      <div className="hidden md:flex items-center space-x-4">
       <Link href="/products">
@@ -77,7 +81,6 @@ export const Header: React.FC = () => {
        Liên hệ ngay
       </Button>
      </div>
-
      {/* Mobile menu button */}
      <button
       className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
@@ -125,13 +128,20 @@ export const Header: React.FC = () => {
         onClick={() => setIsMenuOpen(false)}
        >
         Trang chủ
-       </Link>
+       </Link>{" "}
        <Link
         href="/products"
         className="block px-4 py-2 text-foreground hover:text-primary hover:bg-accent rounded-lg transition-colors"
         onClick={() => setIsMenuOpen(false)}
        >
         Sản phẩm
+       </Link>
+       <Link
+        href="/extension"
+        className="block px-4 py-2 text-foreground hover:text-primary hover:bg-accent rounded-lg transition-colors"
+        onClick={() => setIsMenuOpen(false)}
+       >
+        Extension
        </Link>
        <Link
         href="/about"
@@ -147,7 +157,6 @@ export const Header: React.FC = () => {
        >
         Liên hệ
        </Link>
-
        {/* Mobile CTA Buttons */}
        <div className="px-4 pt-4 space-y-2">
         <Link

@@ -94,7 +94,7 @@ export default function RootLayout({
        <p>&copy; 2024 aigiare.vn. Tất cả quyền được bảo lưu.</p>
        <p className="mt-2 text-sm">
         Tài khoản AI chất lượng cao - Giá cả hợp lý - Hỗ trợ 24/7
-       </p>
+       </p>{" "}
        <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm">
         <a href="/privacy" className="hover:text-primary transition-colors">
          Chính sách bảo mật
@@ -102,6 +102,10 @@ export default function RootLayout({
         <span className="text-muted-foreground/50">•</span>
         <a href="/terms" className="hover:text-primary transition-colors">
          Điều khoản sử dụng
+        </a>
+        <span className="text-muted-foreground/50">•</span>
+        <a href="/extension" className="hover:text-primary transition-colors">
+         Extension
         </a>
         <span className="text-muted-foreground/50">•</span>
         <a
