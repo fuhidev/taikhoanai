@@ -1,10 +1,11 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
- title: "Chính Sách Bảo Mật | Siêu Thị MMO",
+ title: "Chính Sách Bảo Mật | aigiare.vn",
  description:
-  "Chính sách bảo mật thông tin khách hàng của Siêu Thị MMO - Cam kết bảo vệ dữ liệu cá nhân của bạn.",
- keywords: "chính sách bảo mật, quyền riêng tư, bảo vệ dữ liệu, siêu thị mmo",
+  "Chính sách bảo mật thông tin khách hàng của aigiare.vn - Cam kết bảo vệ dữ liệu cá nhân của bạn khi sử dụng dịch vụ AI accounts.",
+ keywords:
+  "chính sách bảo mật, quyền riêng tư, bảo vệ dữ liệu, aigiare, ai accounts",
 };
 
 export default function PrivacyPage() {
@@ -29,11 +30,12 @@ export default function PrivacyPage() {
       <section className="mb-8">
        <h2 className="text-2xl font-bold text-foreground mb-4">
         Cam Kết Của Chúng Tôi
-       </h2>
+       </h2>{" "}
        <p className="text-muted-foreground leading-relaxed mb-4">
-        Siêu Thị MMO cam kết bảo vệ quyền riêng tư và thông tin cá nhân của
-        khách hàng. Chính sách này mô tả cách chúng tôi thu thập, sử dụng, lưu
-        trữ và bảo vệ thông tin của bạn khi sử dụng dịch vụ của chúng tôi.
+        aigiare.vn cam kết bảo vệ quyền riêng tư và thông tin cá nhân của khách
+        hàng. Chính sách này mô tả cách chúng tôi thu thập, sử dụng, lưu trữ và
+        bảo vệ thông tin của bạn khi sử dụng dịch vụ AI accounts và các sản phẩm
+        liên quan của chúng tôi.
        </p>
        <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
         <p className="text-foreground font-medium">
@@ -321,9 +323,9 @@ export default function PrivacyPage() {
           <ul className="text-muted-foreground space-y-1">
            <li>
             <strong>Zalo:</strong> 094 348 79 68
-           </li>
+           </li>{" "}
            <li>
-            <strong>Facebook:</strong> Siêu Thị MMO Fanpage
+            <strong>Facebook:</strong> aigiare.vn Fanpage
            </li>
           </ul>
          </div>

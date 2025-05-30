@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
  title: "Tài khoản AI Giá rẻ - aigiare.vn",
- description: "Tài khoản AI Giá rẻ - aigiare.vn",
+ description:
+  "Cung cấp các dịch vụ AI chất lượng cao với giá cả phải chăng. Hệ thống quản lý chuyên nghiệp.",
  viewport: "width=device-width, initial-scale=1",
  robots: {
   index: false,
@@ -31,12 +32,16 @@ export const metadata: Metadata = {
    noimageindex: true,
   },
  },
+ openGraph: {
+  images: ["/meta-img.jpg"],
+ },
  twitter: {
   card: "summary_large_image",
   site: "https://aigiare.vn/",
   title: "Tài khoản AI Giá rẻ - aigiare.vn",
   description:
    "Cung cấp các dịch vụ AI chất lượng cao với giá cả phải chăng. Hệ thống quản lý chuyên nghiệp.",
+  images: ["/meta-img.jpg"],
  },
  icons: {
   icon: [

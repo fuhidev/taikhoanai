@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
- title: "Điều Khoản Sử Dụng | Siêu Thị MMO",
+ title: "Điều Khoản Sử Dụng | aigiare.vn",
  description:
-  "Điều khoản sử dụng dịch vụ của Siêu Thị MMO - Tìm hiểu về quyền và nghĩa vụ khi sử dụng sản phẩm của chúng tôi.",
- keywords: "điều khoản sử dụng, quy định, siêu thị mmo",
+  "Điều khoản sử dụng dịch vụ của aigiare.vn - Tìm hiểu về quyền và nghĩa vụ khi sử dụng dịch vụ AI accounts của chúng tôi.",
+ keywords: "điều khoản sử dụng, quy định, aigiare, ai accounts",
 };
 
 export default function TermsPage() {
@@ -29,12 +29,12 @@ export default function TermsPage() {
       <section className="mb-8">
        <h2 className="text-2xl font-bold text-foreground mb-4">
         1. Chấp Nhận Điều Khoản
-       </h2>
+       </h2>{" "}
        <p className="text-muted-foreground leading-relaxed mb-4">
-        Bằng việc truy cập và sử dụng website Siêu Thị MMO, bạn đồng ý tuân thủ
-        và bị ràng buộc bởi các điều khoản và điều kiện sử dụng được nêu dưới
-        đây. Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này,
-        vui lòng không sử dụng dịch vụ của chúng tôi.
+        Bằng việc truy cập và sử dụng website aigiare.vn, bạn đồng ý tuân thủ và
+        bị ràng buộc bởi các điều khoản và điều kiện sử dụng được nêu dưới đây.
+        Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này, vui
+        lòng không sử dụng dịch vụ của chúng tôi.
        </p>
       </section>
 
@@ -42,16 +42,16 @@ export default function TermsPage() {
       <section className="mb-8">
        <h2 className="text-2xl font-bold text-foreground mb-4">
         2. Mô Tả Dịch Vụ
-       </h2>
+       </h2>{" "}
        <p className="text-muted-foreground leading-relaxed mb-4">
-        Siêu Thị MMO cung cấp các sản phẩm và dịch vụ MMO (Make Money Online)
-        bao gồm nhưng không giới hạn:
+        aigiare.vn cung cấp các sản phẩm và dịch vụ AI accounts (tài khoản trí
+        tuệ nhân tạo) bao gồm nhưng không giới hạn:
        </p>
        <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
-        <li>Tài khoản và profile các nền tảng MMO</li>
-        <li>Tools và phần mềm hỗ trợ kiếm tiền online</li>
-        <li>Khóa học và hướng dẫn MMO</li>
-        <li>Dịch vụ tư vấn và hỗ trợ kỹ thuật</li>
+        <li>Tài khoản ChatGPT và các AI chat platforms</li>
+        <li>Tài khoản AI tools cho content creation và productivity</li>
+        <li>Tài khoản AI image generators và design tools</li>
+        <li>Dịch vụ hỗ trợ kỹ thuật và hướng dẫn sử dụng AI</li>
        </ul>
       </section>
 
@@ -108,15 +108,19 @@ export default function TermsPage() {
       <section className="mb-8">
        <h2 className="text-2xl font-bold text-foreground mb-4">
         5. Hạn Chế Trách Nhiệm
-       </h2>
+       </h2>{" "}
        <p className="text-muted-foreground leading-relaxed mb-4">
-        Siêu Thị MMO không chịu trách nhiệm về:
+        aigiare.vn không chịu trách nhiệm về:
        </p>
        <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
-        <li>Thiệt hại gián tiếp phát sinh từ việc sử dụng sản phẩm</li>
-        <li>Các thay đổi chính sách từ phía nền tảng thứ ba</li>
-        <li>Mất mát dữ liệu do lỗi người dùng</li>
-        <li>Vi phạm pháp luật của người dùng khi sử dụng sản phẩm</li>
+        <li>Thiệt hại gián tiếp phát sinh từ việc sử dụng tài khoản AI</li>
+        <li>
+         Các thay đổi chính sách từ phía nền tảng AI (OpenAI, Google, etc.)
+        </li>
+        <li>
+         Mất mát dữ liệu do lỗi người dùng hoặc vi phạm terms của nền tảng AI
+        </li>
+        <li>Vi phạm pháp luật của người dùng khi sử dụng tài khoản AI</li>
        </ul>
       </section>
 
@@ -124,11 +128,11 @@ export default function TermsPage() {
       <section className="mb-8">
        <h2 className="text-2xl font-bold text-foreground mb-4">
         6. Sở Hữu Trí Tuệ
-       </h2>
+       </h2>{" "}
        <p className="text-muted-foreground leading-relaxed">
         Tất cả nội dung, thiết kế, logo, và tài liệu trên website thuộc quyền sở
-        hữu của Siêu Thị MMO. Nghiêm cấm sao chép, phân phối hoặc sử dụng cho
-        mục đích thương mại mà không có sự cho phép bằng văn bản.
+        hữu của aigiare.vn. Nghiêm cấm sao chép, phân phối hoặc sử dụng cho mục
+        đích thương mại mà không có sự cho phép bằng văn bản.
        </p>
       </section>
 
@@ -159,9 +163,9 @@ export default function TermsPage() {
          <li>
           <strong>Zalo:</strong>{" "}
           {process.env.NEXT_PUBLIC_ZALO_PHONE || "0123456789"}
-         </li>
+         </li>{" "}
          <li>
-          <strong>Facebook:</strong> Siêu Thị MMO Fanpage
+          <strong>Facebook:</strong> aigiare.vn Fanpage
          </li>
          <li>
           <strong>Thời gian hỗ trợ:</strong> 8:00 - 22:00 hàng ngày
