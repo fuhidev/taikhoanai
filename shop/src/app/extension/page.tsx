@@ -459,7 +459,7 @@ export default function ExtensionPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
          <Button
           variant="outline"
-          onClick={() => window.open("https://zalo.me/094 348 79 68", "_blank")}
+          onClick={() => window.open("https://zalo.me/0943487968", "_blank")}
          >
           📞 Chat Zalo
          </Button>
