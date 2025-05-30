@@ -2,7 +2,7 @@
 import { Button } from "./ui/Button";
 export const ContactInfo = () => {
  const zaloPhone = "094 348 79 68";
- const fanpageUrl = "https://www.facebook.com/profile.php?id=61576891497376";
+ const fanpageUrl = "https://www.facebook.com/1001thuocphimhay/";
  const handleZaloContact = () => {
   window.open(`https://zalo.me/${zaloPhone}`, "_blank");
  };

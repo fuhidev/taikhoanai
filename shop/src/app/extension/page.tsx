@@ -466,10 +466,7 @@ export default function ExtensionPage() {
          <Button
           variant="outline"
           onClick={() =>
-           window.open(
-            "https://www.facebook.com/profile.php?id=61576891497376",
-            "_blank"
-           )
+           window.open("https://www.facebook.com/1001thuocphimhay/", "_blank")
           }
          >
           💬 Facebook

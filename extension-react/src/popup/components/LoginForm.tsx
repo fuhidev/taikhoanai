@@ -310,7 +310,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
         <button
          onClick={() =>
           chrome.tabs.create({
-           url: "https://www.facebook.com/profile.php?id=61576891497376",
+           url: "https://www.facebook.com/1001thuocphimhay/",
           })
          }
          className="flex items-center bg-blue-600 text-white rounded-lg px-3 py-2 hover:bg-blue-700 transition-colors"
