@@ -18,19 +18,18 @@ export const metadata: Metadata = {
  title: "Tài khoản AI Giá rẻ - aigiare.vn",
  description:
   "Cung cấp các dịch vụ AI chất lượng cao với giá cả phải chăng. Hệ thống quản lý chuyên nghiệp.",
- viewport: "width=device-width, initial-scale=1",
  robots: {
-  index: false,
-  follow: false,
-  noarchive: true,
-  nosnippet: true,
-  noimageindex: true,
+  index: true,
+  follow: true,
+  noarchive: false,
+  nosnippet: false,
+  noimageindex: false,
   googleBot: {
-   index: false,
-   follow: false,
-   noarchive: true,
-   nosnippet: true,
-   noimageindex: true,
+   index: true,
+   follow: true,
+   noarchive: false,
+   nosnippet: false,
+   noimageindex: false,
   },
  },
  openGraph: {
@@ -54,6 +53,11 @@ export const metadata: Metadata = {
   ],
   apple: "/apple-touch-icon.png",
  },
+};
+
+export const viewport = {
+ width: "device-width",
+ initialScale: 1,
 };
 
 export default function RootLayout({

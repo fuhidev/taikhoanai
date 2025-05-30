@@ -1,33 +1,25 @@
 "use client";
 
-import { Player } from "@lottiefiles/react-lottie-player";
+import dynamic from "next/dynamic";
+import { ComponentProps } from "react";
 
-interface LottiePlayerProps {
+const Player = dynamic(
+ () => import("@lottiefiles/react-lottie-player").then((mod) => mod.Player),
+ {
+  ssr: false,
+  loading: () => (
+   <div className="w-full h-full bg-muted animate-pulse rounded" />
+  ),
+ }
+);
+
+interface LottiePlayerProps extends ComponentProps<typeof Player> {
  src: string;
- autoplay?: boolean;
- loop?: boolean;
- className?: string;
- speed?: number;
 }
 
-export const LottiePlayer = ({
- src,
- autoplay = true,
- loop = true,
- className = "",
- speed = 1,
-}: LottiePlayerProps) => {
- return (
-  <Player
-   autoplay={autoplay}
-   loop={loop}
-   src={src}
-   speed={speed}
-   className={className}
-  />
- );
-};
-
+export function LottiePlayer({ src, ...props }: LottiePlayerProps) {
+ return <Player src={src} {...props} />;
+}
 // AI-themed Lottie animations with fallback URLs
 export const AIBrainAnimation = ({ className }: { className?: string }) => {
  return (

@@ -1,10 +1,8 @@
 "use client";
 
-import { AIParticles } from "@/components/animations/AIParticles";
 import { HeroAnimations } from "@/components/animations/HeroAnimations";
 import {
  AIBrainAnimation,
- LoadingAIAnimation,
  RobotAnimation,
 } from "@/components/animations/LottiePlayer";
 import { ScrollAnimations } from "@/components/animations/ScrollAnimations";
@@ -125,7 +123,7 @@ export default function HomePage() {
    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80">
     <div className="text-center">
      <div className="w-32 h-32 mb-6">
-      <LoadingAIAnimation className="w-full h-full" />
+      {/* <LoadingAIAnimation className="w-full h-full" /> */}
      </div>
      <p className="text-white text-lg font-medium">Đang tải dữ liệu AI...</p>
      <div className="mt-4 flex justify-center">
@@ -150,7 +148,7 @@ export default function HomePage() {
    <div className="min-h-screen">
     {/* Hero Section */}
     <section className="relative bg-gradient-to-br from-primary via-primary to-primary/80 text-white overflow-hidden">
-     <AIParticles />
+     {/* <AIParticles /> */}
      <RobotAnimation className="absolute left-0 scale-75 hidden 2xl:block" />
      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
       <HeroAnimations>
