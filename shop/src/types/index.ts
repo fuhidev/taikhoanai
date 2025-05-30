@@ -1,5 +1,5 @@
 export interface Product {
- originalPrice: any;
+ originalPrice?: number;
  id: string;
  name: string;
  duration: number; // số ngày
