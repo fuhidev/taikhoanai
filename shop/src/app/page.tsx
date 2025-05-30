@@ -3,6 +3,7 @@
 import { HeroAnimations } from "@/components/animations/HeroAnimations";
 import {
  AIBrainAnimation,
+ LoadingAIAnimation,
  RobotAnimation,
 } from "@/components/animations/LottiePlayer";
 import { ContactInfo } from "@/components/ContactInfo";
@@ -122,7 +123,7 @@ export default function HomePage() {
    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80">
     <div className="text-center">
      <div className="w-32 h-32 mb-6">
-      {/* <LoadingAIAnimation className="w-full h-full" /> */}
+      <LoadingAIAnimation className="w-full h-full" />
      </div>
      <p className="text-white text-lg font-medium">Đang tải dữ liệu AI...</p>
      <div className="mt-4 flex justify-center">

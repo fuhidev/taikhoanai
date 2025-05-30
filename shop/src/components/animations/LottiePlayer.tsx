@@ -18,7 +18,7 @@ interface LottiePlayerProps extends ComponentProps<typeof Player> {
 }
 
 export function LottiePlayer({ src, ...props }: LottiePlayerProps) {
- return <Player src={src} {...props} />;
+ return <Player src={src} {...props} autoplay loop />;
 }
 // AI-themed Lottie animations with fallback URLs
 export const AIBrainAnimation = ({ className }: { className?: string }) => {
