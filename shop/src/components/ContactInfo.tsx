@@ -4,7 +4,7 @@ export const ContactInfo = () => {
  const zaloPhone = "094 348 79 68";
  const fanpageUrl = "https://www.facebook.com/1001thuocphimhay/";
  const handleZaloContact = () => {
-  window.open(`https://zalo.me/${zaloPhone}`, "_blank");
+  window.open(`https://zalo.me/${zaloPhone.replaceAll(" ", "")}`, "_blank");
  };
  const handleFanpageContact = () => {
   window.open(fanpageUrl, "_blank");
