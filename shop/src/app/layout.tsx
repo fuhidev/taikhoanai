@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { MouseTracker } from "@/components/animations/MouseTracker";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -68,7 +69,6 @@ export default function RootLayout({
      name="bingbot"
      content="noindex, nofollow, noarchive, nosnippet, noimageindex"
     />
-
     {/* Structured Data */}
     <script
      type="application/ld+json"
@@ -88,18 +88,20 @@ export default function RootLayout({
        },
       }),
      }}
-    />
+    />{" "}
    </head>
    <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <MouseTracker />
     <Header />
-    <main>{children}</main>{" "}
+    <main>{children}</main>
     <footer className="bg-card border-t border-border">
      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center text-muted-foreground">
+       {" "}
        <p>&copy; 2024 aigiare.vn. Tất cả quyền được bảo lưu.</p>
        <p className="mt-2 text-sm">
         Tài khoản AI chất lượng cao - Giá cả hợp lý - Hỗ trợ 24/7
-       </p>{" "}
+       </p>
        <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm">
         <a href="/privacy" className="hover:text-primary transition-colors">
          Chính sách bảo mật
