@@ -87,7 +87,7 @@ export default function RootLayout({
    </head>
    <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
     <Header />
-    <main>{children}</main>
+    <main>{children}</main>{" "}
     <footer className="bg-card border-t border-border">
      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center text-muted-foreground">
@@ -95,6 +95,26 @@ export default function RootLayout({
        <p className="mt-2 text-sm">
         Tài khoản AI chất lượng cao - Giá cả hợp lý - Hỗ trợ 24/7
        </p>
+       <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm">
+        <a href="/privacy" className="hover:text-primary transition-colors">
+         Chính sách bảo mật
+        </a>
+        <span className="text-muted-foreground/50">•</span>
+        <a href="/terms" className="hover:text-primary transition-colors">
+         Điều khoản sử dụng
+        </a>
+        <span className="text-muted-foreground/50">•</span>
+        <a
+         href="/extension-privacy"
+         className="hover:text-primary transition-colors"
+        >
+         Chính sách Extension
+        </a>
+        <span className="text-muted-foreground/50">•</span>
+        <a href="/contact" className="hover:text-primary transition-colors">
+         Liên hệ
+        </a>
+       </div>
       </div>
      </div>
     </footer>
