@@ -16,6 +16,9 @@ export interface Product {
  website: string;
  createdAt: Date;
  updatedAt: Date;
+ image: string;
+ price: number;
+ originalPrice?: number;
 }
 
 export interface UserSubscription {

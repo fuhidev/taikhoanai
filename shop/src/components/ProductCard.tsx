@@ -76,11 +76,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
        <span className="text-xl font-bold text-primary">
         {formatPrice(product.price)}
        </span>
-       {/* {product.originalPrice && (
-        <span className="text-sm text-muted-foreground line-through">
+       {product.originalPrice && (
+        <span className="text-sm text-muted-foreground line-through animate-pulse">
          {formatPrice(product.originalPrice)}
         </span>
-       )} */}
+       )}
       </div>
 
       {/* <div className="text-xs text-muted-foreground">

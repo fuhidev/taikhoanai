@@ -137,14 +137,13 @@ export default function ProductDetailPage() {
      <div className="grid lg:grid-cols-2 gap-12">
       {/* Product Image */}
       <div className="space-y-4">
-       <div className="aspect-square bg-accent rounded-2xl overflow-hidden">
+       <div className="aspect-square bg-accent rounded-2xl overflow-hidden relative">
         {product.image ? (
          <Image
           src={product.image}
           alt={product.name}
           fill
           className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
          />
         ) : (
          <div className="w-full h-full flex items-center justify-center">

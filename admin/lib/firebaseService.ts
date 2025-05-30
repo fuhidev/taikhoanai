@@ -132,17 +132,13 @@ export const updateUser = async (
 };
 
 // Products
-export const createProduct = async (
- name: string,
- duration: number,
- cookie: string,
- website: string
-): Promise<string> => {
- const product: Omit<Product, "id"> = {
-  name,
-  duration,
-  cookie,
-  website,
+export const createProduct = async ({
+ product: updatedProduct,
+}: {
+ product: Omit<Product, "id" | "updatedAt" | "createdAt">;
+}): Promise<string> => {
+ const product = {
+  ...updatedProduct,
   createdAt: new Date(),
   updatedAt: new Date(),
  };
@@ -164,13 +160,10 @@ export const getAllProducts = async (): Promise<Product[]> => {
   const data = doc.data();
   return {
    id: doc.id,
-   name: data.name,
-   duration: data.duration,
-   cookie: data.cookie,
-   website: data.website,
-   createdAt: data.createdAt.toDate(),
-   updatedAt: data.updatedAt.toDate(),
-  };
+   ...data,
+   createdAt: data.createdAt.toDate() as Date,
+   updatedAt: data.updatedAt.toDate() as Date,
+  } as Product;
  });
 };
 

@@ -39,16 +39,7 @@ import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-interface ProductForm {
- name: string;
- duration: number;
- cookie: string;
- website: string;
- image: string;
- price: number;
- originalPrice?: number;
-}
-
+type ProductForm = Omit<Product, "id">;
 export default function ProductsPage() {
  const [products, setProducts] = useState<Product[]>([]);
  const [loading, setLoading] = useState(true);
@@ -111,15 +102,7 @@ export default function ProductsPage() {
     await updateProduct(editingProduct.id, productData);
     setAlert({ type: "success", message: "Cập nhật sản phẩm thành công" });
    } else {
-    await createProduct(
-     data.name,
-     data.duration,
-     data.cookie,
-     data.website,
-     data.image,
-     data.price,
-     data.originalPrice
-    );
+    await createProduct({ product: data });
     setAlert({ type: "success", message: "Tạo sản phẩm thành công" });
    }
    setOpen(false);
