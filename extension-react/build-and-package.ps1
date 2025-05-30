@@ -1,6 +1,7 @@
 # PowerShell script to build and package Chrome extension
 param(
-    [string]$Version = $null
+    [string]$Version = $null,
+    [switch]$NoAutoIncrement = $false
 )
 
 # Colors for output
@@ -126,6 +127,37 @@ function Cleanup-TempFolder($FolderPath) {
     }
 }
 
+function Increment-Version($CurrentVersion) {
+    try {
+        # Parse version (assuming semantic versioning: major.minor.patch)
+        $versionParts = $CurrentVersion.Split('.')
+        
+        if ($versionParts.Length -eq 3) {
+            # Increment patch version
+            $major = [int]$versionParts[0]
+            $minor = [int]$versionParts[1]
+            $patch = [int]$versionParts[2] + 1
+            $newVersion = "$major.$minor.$patch"
+        } elseif ($versionParts.Length -eq 2) {
+            # If only major.minor, add patch version
+            $major = [int]$versionParts[0]
+            $minor = [int]$versionParts[1] + 1
+            $newVersion = "$major.$minor.0"
+        } else {
+            # If single number, increment it
+            $version = [int]$CurrentVersion + 1
+            $newVersion = $version.ToString()
+        }
+        
+        Write-ColorOutput "Auto-incremented version: $CurrentVersion -> $newVersion" $Green
+        return $newVersion
+    }
+    catch {
+        Write-ColorOutput "Error incrementing version: $_" $Red
+        return $null
+    }
+}
+
 # Main execution
 Write-ColorOutput "=== Chrome Extension Build & Package Script ===" $Blue
 
@@ -136,15 +168,30 @@ if (-not $currentVersion) {
     exit 1
 }
 
-# Use provided version or current version
-$targetVersion = if ($Version) { $Version } else { $currentVersion }
+# Determine target version
+if ($Version) {
+    # Use provided version
+    $targetVersion = $Version
+    Write-ColorOutput "Using provided version: $targetVersion" $Blue
+} elseif (-not $NoAutoIncrement) {
+    # Auto-increment version
+    $targetVersion = Increment-Version $currentVersion
+    if (-not $targetVersion) {
+        Write-ColorOutput "Failed to increment version" $Red
+        exit 1
+    }
+} else {
+    # Use current version (no increment)
+    $targetVersion = $currentVersion
+    Write-ColorOutput "Using current version (no auto-increment): $targetVersion" $Blue
+}
 
 Write-ColorOutput "Current version: $currentVersion" $Blue
 Write-ColorOutput "Target version: $targetVersion" $Blue
 
 # Update version if different
-if ($Version -and $Version -ne $currentVersion) {
-    if (-not (Update-ManifestVersion $Version)) {
+if ($targetVersion -ne $currentVersion) {
+    if (-not (Update-ManifestVersion $targetVersion)) {
         exit 1
     }
 }
