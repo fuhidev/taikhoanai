@@ -43,18 +43,6 @@ export const HeroAnimations = ({ children }: HeroAnimationsProps) => {
      "-=0.3"
     )
     // Add glowing effect to AI text
-    .to(
-     ".ai-text",
-     {
-      textShadow:
-       "0 0 20px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.4)",
-      duration: 2,
-      repeat: -1,
-      yoyo: true,
-      ease: "power2.inOut",
-     },
-     "-=0.5"
-    )
     // Animate description
     .to(
      ".hero-description",

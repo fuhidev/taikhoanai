@@ -39,10 +39,10 @@ export const AIBrainAnimation = ({ className }: { className?: string }) => {
  );
 };
 
-export const DataFlowAnimation = ({ className }: { className?: string }) => {
+export const RobotAnimation = ({ className }: { className?: string }) => {
  return (
   <LottiePlayer
-   src="https://lottie.host/embedding/data-flow-animation.json"
+   src="/lotties/robothello.json"
    className={className}
    speed={1.2}
   />

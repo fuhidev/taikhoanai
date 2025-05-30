@@ -2,19 +2,25 @@
 
 import { AIParticles } from "@/components/animations/AIParticles";
 import { HeroAnimations } from "@/components/animations/HeroAnimations";
-import { LoadingAIAnimation } from "@/components/animations/LottiePlayer";
+import {
+ AIBrainAnimation,
+ LoadingAIAnimation,
+ RobotAnimation,
+} from "@/components/animations/LottiePlayer";
 import { ScrollAnimations } from "@/components/animations/ScrollAnimations";
 import { ContactInfo } from "@/components/ContactInfo";
 import { ProductList } from "@/components/ProductList";
 import { Button } from "@/components/ui/Button";
 import { getProducts } from "@/lib/firebaseService";
 import { Product } from "@/types";
+import { gsap } from "gsap";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function HomePage() {
  const [products, setProducts] = useState<Product[]>([]);
  const [loading, setLoading] = useState(true);
+ const brainAnimationRef = useRef<HTMLDivElement>(null);
 
  useEffect(() => {
   const fetchProducts = async () => {
@@ -30,6 +36,90 @@ export default function HomePage() {
 
   fetchProducts();
  }, []);
+
+ useEffect(() => {
+  if (brainAnimationRef.current) {
+   // Create timeline for complex animations
+   const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.5 });
+
+   // Initial state - center position
+   gsap.set(brainAnimationRef.current, {
+    scale: 0.8,
+    opacity: 0.7,
+    x: 0,
+    y: 0,
+    rotation: 0,
+   });
+
+   // Floating animation with wider movement range
+   tl
+    .to(brainAnimationRef.current, {
+     x: 100,
+     y: -50,
+     scale: 1.2,
+     opacity: 1,
+     rotation: 15,
+     duration: 2,
+     ease: "power2.out",
+    })
+    .to(brainAnimationRef.current, {
+     x: -120,
+     y: 60,
+     scale: 0.9,
+     opacity: 0.8,
+     rotation: -10,
+     duration: 1.5,
+     ease: "power1.inOut",
+    })
+    .to(brainAnimationRef.current, {
+     x: 80,
+     y: -30,
+     scale: 1.1,
+     opacity: 0.9,
+     rotation: 25,
+     duration: 2.5,
+     ease: "elastic.out(1, 0.3)",
+    })
+    .to(brainAnimationRef.current, {
+     x: -80,
+     y: 40,
+     scale: 0.85,
+     opacity: 0.6,
+     rotation: -5,
+     duration: 1.8,
+     ease: "back.inOut(1.7)",
+    })
+    .to(brainAnimationRef.current, {
+     x: 0,
+     y: 0,
+     scale: 1,
+     opacity: 1,
+     rotation: 0,
+     duration: 2,
+     ease: "bounce.out",
+    });
+
+   // Additional pulsing effect
+   gsap.to(brainAnimationRef.current, {
+    scale: "+=0.1",
+    duration: 1.5,
+    ease: "sine.inOut",
+    yoyo: true,
+    repeat: -1,
+   });
+
+   // Opacity breathing effect
+   gsap.to(brainAnimationRef.current, {
+    opacity: "+=0.2",
+    duration: 2,
+    ease: "power2.inOut",
+    yoyo: true,
+    repeat: -1,
+    delay: 0.5,
+   });
+  }
+ }, [loading]);
+
  if (loading) {
   return (
    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80">
@@ -61,14 +151,23 @@ export default function HomePage() {
     {/* Hero Section */}
     <section className="relative bg-gradient-to-br from-primary via-primary to-primary/80 text-white overflow-hidden">
      <AIParticles />
+     <RobotAnimation className="absolute left-0 scale-75 hidden 2xl:block" />
      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
       <HeroAnimations>
        <div className="text-center max-w-4xl mx-auto">
+        {/* AI Brain Animation */}
+        <div
+         ref={brainAnimationRef}
+         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
+        >
+         <div className="w-24 h-24 md:w-32 md:h-32">
+          <AIBrainAnimation className="w-full h-full" />
+         </div>
+        </div>
+
         <h1 className="hero-title text-4xl md:text-6xl font-bold mb-6 leading-tight">
          Chào mừng đến với
-         <span className="hero-subtitle block text-secondary ai-text">
-          AIGiáRẻ.vn
-         </span>
+         <span className="hero-subtitle block text-secondary">AIGiáRẻ.vn</span>
         </h1>
         <p className="hero-description text-xl md:text-2xl mb-8 text-white/90 leading-relaxed">
          Khám phá bộ sưu tập sản phẩm chất lượng cao với giá tốt nhất. Chúng tôi
