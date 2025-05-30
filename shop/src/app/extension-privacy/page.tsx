@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
  title: "Chính Sách Quyền Riêng Tư Extension | aigiare.vn",
@@ -34,7 +35,6 @@ export default function ExtensionPrivacyPage() {
        Cập nhật lần cuối: 30 tháng 5, 2025
       </p>
      </div>
-
      {/* Introduction */}
      <section className="mb-8">
       <p className="text-muted-foreground leading-relaxed mb-4">
@@ -45,7 +45,6 @@ export default function ExtensionPrivacyPage() {
        chúng tôi.
       </p>
      </section>
-
      {/* Section 1 */}
      <section className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-4">
@@ -87,7 +86,6 @@ export default function ExtensionPrivacyPage() {
        </div>
       </div>
      </section>
-
      {/* Section 2 */}
      <section className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-4">
@@ -108,7 +106,6 @@ export default function ExtensionPrivacyPage() {
        tiếp thị hay chia sẻ với bên thứ ba dưới bất kỳ hình thức nào.
       </p>
      </section>
-
      {/* Section 3 */}
      <section className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-4">
@@ -122,7 +119,6 @@ export default function ExtensionPrivacyPage() {
        </p>
       </div>
      </section>
-
      {/* Section 4 */}
      <section className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-4">
@@ -162,7 +158,6 @@ export default function ExtensionPrivacyPage() {
        </div>
       </div>
      </section>
-
      {/* Section 5 */}
      <section className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-4">
@@ -176,21 +171,19 @@ export default function ExtensionPrivacyPage() {
        đặt của extension hoặc xóa extension khỏi trình duyệt của bạn.
       </p>
      </section>
-
      {/* Section 6 */}
      <section className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-4">
        6. Thay đổi Chính sách Quyền riêng tư này
-      </h2>
+      </h2>{" "}
       <p className="text-muted-foreground leading-relaxed">
        Chúng tôi có thể cập nhật Chính sách Quyền riêng tư này theo thời gian để
        phản ánh những thay đổi trong thực tiễn của chúng tôi hoặc do yêu cầu
        pháp lý. Khi chúng tôi thực hiện các thay đổi quan trọng, chúng tôi sẽ
-       cập nhật ngày "Cập nhật lần cuối" ở đầu trang. Chúng tôi khuyến khích bạn
-       xem xét Chính sách Quyền riêng tư này định kỳ.
+       cập nhật ngày &quot;Cập nhật lần cuối&quot; ở đầu trang. Chúng tôi khuyến
+       khích bạn xem xét Chính sách Quyền riêng tư này định kỳ.
       </p>
      </section>
-
      {/* Section 7 */}
      <section className="mb-8">
       <h2 className="text-2xl font-bold text-foreground mb-4">
@@ -220,16 +213,15 @@ export default function ExtensionPrivacyPage() {
         </p>
        </div>
       </div>
-     </section>
-
+     </section>{" "}
      {/* Back to Home */}
      <div className="text-center pt-8 border-t border-gray-200">
-      <a
+      <Link
        href="/"
        className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
       >
        ← Quay về trang chủ
-      </a>
+      </Link>
      </div>
     </div>
    </div>

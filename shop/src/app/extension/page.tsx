@@ -280,10 +280,10 @@ export default function ExtensionPage() {
            <div className="flex-1">
             <h3 className="text-xl font-semibold mb-3">
              Tải và giải nén extension
-            </h3>
+            </h3>{" "}
             <p className="text-muted-foreground mb-4">
-             Nhấn nút "Tải Extension về máy" ở trên để tải file zip về máy tính
-             của bạn.
+             Nhấn nút &quot;Tải Extension về máy&quot; ở trên để tải file zip về
+             máy tính của bạn.
             </p>
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
              <p className="text-yellow-800 text-sm">
@@ -319,9 +319,10 @@ export default function ExtensionPage() {
             3
            </div>
            <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-3">Bật Developer mode</h3>
+            <h3 className="text-xl font-semibold mb-3">Bật Developer mode</h3>{" "}
             <p className="text-muted-foreground mb-4">
-             Ở góc trên bên phải trang Extensions, bật công tắc "Developer mode"
+             Ở góc trên bên phải trang Extensions, bật công tắc &quot;Developer
+             mode&quot;
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
              <p className="text-blue-800 text-sm">
@@ -340,14 +341,15 @@ export default function ExtensionPage() {
            <div className="flex-1">
             <h3 className="text-xl font-semibold mb-3">
              Load unpacked extension
-            </h3>
+            </h3>{" "}
             <p className="text-muted-foreground mb-4">
-             Nhấn nút "Load unpacked" và chọn thư mục đã giải nén extension
+             Nhấn nút &quot;Load unpacked&quot; và chọn thư mục đã giải nén
+             extension
             </p>
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
              <p className="text-green-800 text-sm">
-              ✅ Extension sẽ xuất hiện trong danh sách với tên "aigiare.vn
-              Extension"
+              ✅ Extension sẽ xuất hiện trong danh sách với tên &quot;aigiare.vn
+              Extension&quot;
              </p>
             </div>
            </div>
