@@ -80,6 +80,7 @@ export default function ProductsPage() {
    setValue("name", product.name);
    setValue("duration", product.duration);
    setValue("cookie", product.cookie);
+   setValue("localStorage", product.localStorage || "");
    setValue("website", product.website);
    setValue("image", product.image || "");
    setValue("price", product.price || 0);
@@ -348,15 +349,29 @@ export default function ProductsPage() {
       />
 
       <TextField
-       {...register("cookie", { required: "Cookie là bắt buộc" })}
+       {...register("cookie")}
        label="Cookie"
        fullWidth
        multiline
        rows={4}
        margin="normal"
        error={!!errors.cookie}
-       helperText={errors.cookie?.message}
+       helperText={errors.cookie?.message || "Cookie cho website (tùy chọn)"}
        placeholder="session_id=...; auth_token=..."
+      />
+
+      <TextField
+       {...register("localStorage")}
+       label="LocalStorage"
+       fullWidth
+       multiline
+       rows={4}
+       margin="normal"
+       error={!!errors.localStorage}
+       helperText={
+        errors.localStorage?.message || "LocalStorage data dạng JSON (tùy chọn)"
+       }
+       placeholder='{"token": "...", "user_id": "..."}'
       />
      </DialogContent>
      <DialogActions>

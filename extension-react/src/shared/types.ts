@@ -28,6 +28,7 @@ export interface ProductAccess {
  productName: string;
  website: string;
  cookies: string;
+ localStorage?: string; // Thêm localStorage field
  startDate: Date;
  endDate: Date;
  isActive: boolean;

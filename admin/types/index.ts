@@ -12,7 +12,8 @@ export interface Product {
  id: string;
  name: string;
  duration: number; // số ngày
- cookie: string;
+ cookie?: string;
+ localStorage?: string;
  website: string;
  createdAt: Date;
  updatedAt: Date;
