@@ -132,9 +132,6 @@ async function handleCookieInjection(
  if (!tabId) return;
 
  try {
-  console.log("Starting cookie injection for:", data.website);
-  console.log("Cookies to inject:", data.cookies);
-
   const url = new URL(data.website);
   let cookiesToSet = [];
 
@@ -148,7 +145,6 @@ async function handleCookieInjection(
    cookiesToSet = parseCookieString(cookieString);
   }
 
-  console.log("Parsed cookies:", cookiesToSet);
   // Set cookies for the website
   for (const cookie of cookiesToSet) {
    try {
@@ -167,15 +163,9 @@ async function handleCookieInjection(
      cookieData.expirationDate = cookie.expirationDate;
     }
 
-    console.log("Setting cookie:", cookieData);
     await chrome.cookies.set(cookieData);
-    console.log("Cookie set successfully:", cookie.name);
-   } catch (cookieError) {
-    console.error("Error setting individual cookie:", cookie.name, cookieError);
-   }
+   } catch (cookieError) {}
   }
-
-  console.log("All cookies processed for:", data.website);
 
   // Notify content script
   chrome.tabs.sendMessage(tabId, {
@@ -183,8 +173,6 @@ async function handleCookieInjection(
    success: true,
   });
  } catch (error) {
-  console.error("Error injecting cookies:", error);
-
   if (tabId) {
    chrome.tabs.sendMessage(tabId, {
     type: "COOKIES_INJECTED",
@@ -218,7 +206,6 @@ async function handleGetUserData(sendResponse: (response: any) => void) {
   const result = await chrome.storage.local.get("userData");
   sendResponse({ success: true, userData: result.userData });
  } catch (error) {
-  console.error("Error getting user data:", error);
   sendResponse({
    success: false,
    error: error instanceof Error ? error.message : String(error),
@@ -228,12 +215,8 @@ async function handleGetUserData(sendResponse: (response: any) => void) {
 
 async function handleClearCookies(data: { domain: string }, tabId?: number) {
  try {
-  console.log("Clearing cookies for domain:", data.domain);
-
   // Get all cookies for the domain
   const cookies = await chrome.cookies.getAll({ domain: data.domain });
-
-  console.log("Found cookies to clear:", cookies.length);
 
   // Remove each cookie
   for (const cookie of cookies) {
@@ -245,13 +228,8 @@ async function handleClearCookies(data: { domain: string }, tabId?: number) {
      url: url,
      name: cookie.name,
     });
-    console.log("Removed cookie:", cookie.name);
-   } catch (error) {
-    console.error("Error removing cookie:", cookie.name, error);
-   }
+   } catch (error) {}
   }
-
-  console.log("Finished clearing cookies for:", data.domain);
 
   // Notify content script if available
   if (tabId) {
@@ -266,8 +244,6 @@ async function handleClearCookies(data: { domain: string }, tabId?: number) {
     });
   }
  } catch (error) {
-  console.error("Error clearing cookies:", error);
-
   if (tabId) {
    chrome.tabs
     .sendMessage(tabId, {
@@ -284,8 +260,6 @@ async function handleClearCookies(data: { domain: string }, tabId?: number) {
 
 async function handleRefreshUserData(sendResponse: (response: any) => void) {
  try {
-  console.log("Refreshing user data from server...");
-
   // Get current user data
   const result = await chrome.storage.local.get("userData");
   const userData = result.userData;
@@ -312,27 +286,20 @@ async function handleRefreshUserData(sendResponse: (response: any) => void) {
     // Save updated data
     await chrome.storage.local.set({ userData: updatedUserData });
 
-    console.log("User data refreshed successfully");
     sendResponse({ success: true, userData: updatedUserData });
    } else {
-    console.error(
-     "Failed to refresh product access:",
-     productAccessResponse.message
-    );
     sendResponse({
      success: false,
      error: productAccessResponse.message || "Failed to refresh data",
     });
    }
   } catch (apiError) {
-   console.error("API error during refresh:", apiError);
    sendResponse({
     success: false,
     error: "Network error while refreshing data",
    });
   }
  } catch (error) {
-  console.error("Error refreshing user data:", error);
   sendResponse({
    success: false,
    error: error instanceof Error ? error.message : String(error),
@@ -346,8 +313,6 @@ async function handleClearAllCookies(
  sendResponse?: (response: any) => void
 ) {
  try {
-  console.log("Clearing all cookies for domain:", data.domain);
-
   // Get all cookies for the domain and its subdomains
   const allCookies = await chrome.cookies.getAll({});
   const cookiesToRemove = allCookies.filter(
@@ -356,8 +321,6 @@ async function handleClearAllCookies(
     cookie.domain === `.${data.domain}` ||
     cookie.domain.endsWith(`.${data.domain}`)
   );
-
-  console.log("Found cookies to remove:", cookiesToRemove.length);
 
   // Remove each cookie
   for (const cookie of cookiesToRemove) {
@@ -369,13 +332,8 @@ async function handleClearAllCookies(
      url: url,
      name: cookie.name,
     });
-    console.log("Removed cookie:", cookie.name, "from", cookie.domain);
-   } catch (error) {
-    console.error("Error removing cookie:", cookie.name, error);
-   }
+   } catch (error) {}
   }
-
-  console.log("Finished clearing all cookies for:", data.domain);
 
   if (sendResponse) {
    sendResponse({ success: true, cleared: cookiesToRemove.length });
@@ -395,8 +353,6 @@ async function handleClearAllCookies(
     });
   }
  } catch (error) {
-  console.error("Error clearing all cookies:", error);
-
   if (sendResponse) {
    sendResponse({
     success: false,
@@ -422,8 +378,6 @@ async function handleCheckSubscriptionStatus(
  sendResponse: (response: any) => void
 ) {
  try {
-  console.log("Checking subscription status from server...");
-
   // Get current user data
   const result = await chrome.storage.local.get("userData");
   const userData = result.userData;
@@ -449,20 +403,14 @@ async function handleCheckSubscriptionStatus(
    // Save updated data
    await chrome.storage.local.set({ userData: updatedUserData });
 
-   console.log("Subscription status checked successfully");
    sendResponse({ success: true, userData: updatedUserData });
   } else {
-   console.error(
-    "Failed to check subscription status:",
-    productAccessResponse.message
-   );
    sendResponse({
     success: false,
     error: productAccessResponse.message || "Failed to check subscription",
    });
   }
  } catch (error) {
-  console.error("Error checking subscription status:", error);
   sendResponse({
    success: false,
    error: error instanceof Error ? error.message : String(error),
@@ -482,7 +430,6 @@ async function validateCurrentSession() {
    );
 
    if (!validation.success || !validation.valid) {
-    console.log("Session invalid, logging out user");
     await StorageService.clearUserData();
 
     // Notify all tabs about session expiry
@@ -501,7 +448,5 @@ async function validateCurrentSession() {
     }
    }
   }
- } catch (error) {
-  console.error("Session validation error:", error);
- }
+ } catch (error) {}
 }

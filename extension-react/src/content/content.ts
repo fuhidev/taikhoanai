@@ -188,12 +188,8 @@ function injectLocalStorage(localStorageData: string) {
    const value =
     typeof data[key] === "string" ? data[key] : JSON.stringify(data[key]);
    localStorage.setItem(key, value);
-   console.log(`Set localStorage: ${key} = ${value}`);
   });
-
-  console.log("LocalStorage injection completed");
  } catch (error) {
-  console.error("Error injecting localStorage:", error);
   showNotification("Lỗi khi inject localStorage: " + error, "error");
  }
 }
@@ -235,13 +231,8 @@ function clearInjectedLocalStorage() {
   // Remove non-extension keys
   keysToRemove.forEach((key) => {
    localStorage.removeItem(key);
-   console.log(`Removed localStorage: ${key}`);
   });
-
-  console.log(`Cleared ${keysToRemove.length} localStorage items`);
- } catch (error) {
-  console.error("Error clearing localStorage:", error);
- }
+ } catch (error) {}
 }
 
 function showAccessExpiredNotification() {
@@ -562,14 +553,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         window.location.reload();
        }, 2000);
       } else {
-       console.log("Page already refreshed, skipping refresh");
       }
      } else {
-      console.log("Access no longer valid after injection");
      }
     }, 1000); // Check after 1 second
    } else {
-    console.error("Failed to inject cookies:", message.error);
     showNotification(
      "Lỗi khi đăng nhập tự động: " + (message.error || "Unknown error"),
      "error"
@@ -577,27 +565,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
    }
    break;
   case "USER_LOGGED_OUT":
-   console.log("User logged out, clearing injection flags and cookies");
    clearInjectionFlags();
    clearAllCookiesForDomain();
    clearInjectedLocalStorage();
    showNotification("Đã đăng xuất khỏi hệ thống", "warning");
    break;
   case "ACCESS_REVOKED":
-   console.log("Access revoked by admin");
    handleAccessRevoked("Quyền truy cập đã bị thu hồi bởi quản trị viên");
    break;
   case "SUBSCRIPTION_EXPIRED":
-   console.log("Subscription expired");
    handleAccessRevoked("Gói đăng ký đã hết hạn");
    break;
   case "CLEAR_COOKIES":
-   console.log("Clearing cookies for domain:", message.data?.domain);
    clearAllCookiesForDomain();
    clearInjectedLocalStorage();
    break;
   default:
-   console.log("Unknown message type:", message.type);
  }
 
  // Always send response to prevent errors

@@ -58,7 +58,7 @@ export interface ProductAccess {
  productId: string;
  productName: string;
  website: string;
- cookie: string;
+ cookies: string;
  isActive: boolean;
  endDate: Date;
 }

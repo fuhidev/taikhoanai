@@ -376,7 +376,7 @@ export const getUserProductAccess = async (
    productId: sub.productId,
    productName: product?.name || "Unknown Product",
    website: product?.website || "",
-   cookie: product?.cookie || "",
+   cookies: product?.cookie || "",
    localStorage: product?.localStorage || "",
    isActive: true,
    endDate: sub.endDate,
