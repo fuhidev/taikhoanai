@@ -25,7 +25,7 @@ export async function GET() {
    downloadUrl: currentVersion.downloadUrl,
    releaseNotes: currentVersion.releaseNotes,
    required: currentVersion.forceUpdate,
-   publishedAt: currentVersion.publishedAt,
+   publishedAt: currentVersion.publishedAt?.toDate(),
   });
  } catch (error) {
   console.error("Error getting current version:", error);
