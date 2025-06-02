@@ -10,7 +10,7 @@ chrome.runtime.onInstalled.addListener((details) => {
  // Extension installed: ${details}
 
  // Đặt lịch kiểm tra phiên bản định kỳ (mỗi 15 phút cho force update)
- chrome.alarms.create("version-check", { periodInMinutes: 15 });
+ //  chrome.alarms.create("version-check", { periodInMinutes: 15 });
 
  // Đặt lịch kiểm tra session định kỳ (mỗi 5 phút)
  chrome.alarms.create("session-check", { periodInMinutes: 5 });
