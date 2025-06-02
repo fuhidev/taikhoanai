@@ -62,7 +62,7 @@ function Build-Extension {
 
 function Rename-DistFolder($Version) {
     $distPath = "dist"
-    $newFolderName = "aigiare.vn-v$Version"
+    $newFolderName = "aigiare.vn"
     $newPath = $newFolderName
     
     try {
