@@ -287,33 +287,6 @@ const Dashboard: React.FC<DashboardProps> = ({
            </svg>
            <span>Hết hạn: {formatDate(product.endDate)}</span>
           </div>
-          {/* Show data type indicators */}
-          <div className="flex items-center gap-2 mt-2">
-           {product.cookies && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-             <svg
-              className="w-3 h-3 mr-1"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-             >
-              <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 2h8v8H6V6z" />
-             </svg>
-             Cookies
-            </span>
-           )}
-           {product.localStorage && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-             <svg
-              className="w-3 h-3 mr-1"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-             >
-              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-             </svg>
-             LocalStorage
-            </span>
-           )}
-          </div>
          </div>
         </div>
        ))}{" "}

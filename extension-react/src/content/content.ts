@@ -135,10 +135,9 @@ async function checkUserAccess() {
 
 function injectCookies(access: any) {
  try {
-  // Injecting cookies and localStorage for access: access
+  // Injecting cookies for access: access
   // Website: access.website
-  // Cookies: access.cookies
-  // LocalStorage: access.localStorage
+  // Cookies: access.cookie
 
   // Double-check access is still valid before injecting
   const endDate = new Date(access.endDate);
@@ -154,55 +153,23 @@ function injectCookies(access: any) {
   // Set flag to prevent re-injection
   sessionStorage.setItem(COOKIE_INJECTED_FLAG, "true");
 
-  // Request background script to inject cookies if available
-  if (access.cookies && access.cookies.trim()) {
-   chrome.runtime.sendMessage({
-    type: "INJECT_COOKIES",
-    data: {
-     website: access.website,
-     cookies: access.cookies,
-    },
-   });
-  }
-
-  // Inject localStorage if available
-  if (access.localStorage && access.localStorage.trim()) {
-   injectLocalStorage(access.localStorage);
-  }
-
-  // Cookie and localStorage injection request sent
- } catch (error) {
-  // Error requesting injection: error
- }
-}
-
-function injectLocalStorage(localStorageData: string) {
- try {
-  // Injecting localStorage data: localStorageData
-
-  // Parse localStorage data
-  const data = JSON.parse(localStorageData);
-
-  // Set each key-value pair in localStorage
-  Object.keys(data).forEach((key) => {
-   const value =
-    typeof data[key] === "string" ? data[key] : JSON.stringify(data[key]);
-   localStorage.setItem(key, value);
-   console.log(`Set localStorage: ${key} = ${value}`);
+  // Request background script to inject cookies
+  chrome.runtime.sendMessage({
+   type: "INJECT_COOKIES",
+   data: {
+    website: access.website,
+    cookies: access.cookie,
+   },
   });
 
-  console.log("LocalStorage injection completed");
+  // Cookie injection request sent to background script
  } catch (error) {
-  console.error("Error injecting localStorage:", error);
-  showNotification("Lỗi khi inject localStorage: " + error, "error");
+  // Error requesting cookie injection: error
  }
 }
 
 function clearCookiesAndSession() {
- // Clearing cookies, localStorage and session data
-
- // Clear localStorage data (keep only extension-related data)
- clearInjectedLocalStorage();
+ // Clearing cookies and session data
 
  // Clear session storage flags
  sessionStorage.removeItem(COOKIE_INJECTED_FLAG);
@@ -216,32 +183,6 @@ function clearCookiesAndSession() {
    domain: window.location.hostname,
   },
  });
-}
-
-function clearInjectedLocalStorage() {
- try {
-  // Get list of keys to preserve (extension-related)
-  const preserveKeys = ["aigiare_", "extension_", "chrome_"];
-
-  // Get all localStorage keys
-  const keysToRemove: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-   const key = localStorage.key(i);
-   if (key && !preserveKeys.some((prefix) => key.startsWith(prefix))) {
-    keysToRemove.push(key);
-   }
-  }
-
-  // Remove non-extension keys
-  keysToRemove.forEach((key) => {
-   localStorage.removeItem(key);
-   console.log(`Removed localStorage: ${key}`);
-  });
-
-  console.log(`Cleared ${keysToRemove.length} localStorage items`);
- } catch (error) {
-  console.error("Error clearing localStorage:", error);
- }
 }
 
 function showAccessExpiredNotification() {
@@ -556,9 +497,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // Only refresh if this is the first time injecting cookies
       if (!sessionStorage.getItem(COOKIE_INJECTED_FLAG + "_refreshed")) {
        sessionStorage.setItem(COOKIE_INJECTED_FLAG + "_refreshed", "true");
-       // Refresh page to apply cookies and localStorage after a short delay
+       // Refresh page to apply cookies after a short delay
        setTimeout(() => {
-        // Refreshing page to apply cookies and localStorage
+        // Refreshing page to apply cookies
         window.location.reload();
        }, 2000);
       } else {
@@ -580,7 +521,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
    console.log("User logged out, clearing injection flags and cookies");
    clearInjectionFlags();
    clearAllCookiesForDomain();
-   clearInjectedLocalStorage();
    showNotification("Đã đăng xuất khỏi hệ thống", "warning");
    break;
   case "ACCESS_REVOKED":
@@ -594,7 +534,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   case "CLEAR_COOKIES":
    console.log("Clearing cookies for domain:", message.data?.domain);
    clearAllCookiesForDomain();
-   clearInjectedLocalStorage();
    break;
   default:
    console.log("Unknown message type:", message.type);

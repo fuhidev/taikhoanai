@@ -1,7 +1,7 @@
 {
     "manifest_version":  3,
     "name":  "aigiare.vn",
-    "version":  "1.0.7",
+    "version":  "1.0.8",
     "description":  "Manage platform access and authentication for various services",
     "permissions":  [
                         "storage",
