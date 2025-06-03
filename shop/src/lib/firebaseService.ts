@@ -6,12 +6,17 @@ import {
  getDocs,
  orderBy,
  query,
+ where,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
 export const getProducts = async (): Promise<Product[]> => {
  try {
-  const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+  const q = query(
+   collection(db, "products"),
+   orderBy("createdAt", "desc"),
+   where("image", ">", "")
+  );
   const querySnapshot = await getDocs(q);
 
   const products: Product[] = [];
