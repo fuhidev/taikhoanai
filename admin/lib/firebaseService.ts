@@ -482,10 +482,9 @@ export const createUserSession = async (
   throw error;
  }
 };
-
 export const getUserActiveSessions = async (
  userId: string
-): Promise<UserSession[]> => {
+): Promise<UserSession | null> => {
  try {
   const q = query(
    collection(db, "userSessions"),
@@ -494,19 +493,22 @@ export const getUserActiveSessions = async (
   );
   const snapshot = await getDocs(q);
 
-  return snapshot.docs.map((doc) => {
-   const data = doc.data();
-   return {
-    id: doc.id,
-    ...data,
-    loginTime: data.loginTime?.toMillis() || 0,
-    lastActive: data.lastActive?.toMillis() || 0,
-    revokedAt: data.revokedAt?.toMillis(),
-   } as UserSession;
-  });
+  if (snapshot.empty) {
+   return null;
+  }
+
+  const doc = snapshot.docs[0];
+  const data = doc.data();
+  return {
+   id: doc.id,
+   ...data,
+   loginTime: data.loginTime?.toMillis() || 0,
+   lastActive: data.lastActive?.toMillis() || 0,
+   revokedAt: data.revokedAt?.toMillis(),
+  } as UserSession;
  } catch (error) {
   console.error("Error getting user sessions:", error);
-  return [];
+  return null;
  }
 };
 
@@ -567,39 +569,6 @@ export const revokeSession = async (
   }
  } catch (error) {
   console.error("Error revoking session:", error);
-  throw error;
- }
-};
-
-export const revokeUserSessions = async (
- userId: string,
- revokedBy: string
-): Promise<void> => {
- try {
-  const activeSessions = await getUserActiveSessions(userId);
-
-  const updatePromises = activeSessions.map((session) => {
-   const sessionQuery = query(
-    collection(db, "userSessions"),
-    where("id", "==", session.id)
-   );
-   return getDocs(sessionQuery).then((docs) => {
-    if (!docs.empty) {
-     return updateDoc(docs.docs[0].ref, {
-      isActive: false,
-      revokedAt: Timestamp.fromMillis(Date.now()),
-      revokedBy,
-     });
-    }
-   });
-  });
-
-  await Promise.all(updatePromises);
-  console.log(
-   `Revoked ${activeSessions.length} sessions for user ${userId} by ${revokedBy}`
-  );
- } catch (error) {
-  console.error("Error revoking user sessions:", error);
   throw error;
  }
 };

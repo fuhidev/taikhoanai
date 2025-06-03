@@ -1,7 +1,7 @@
 import {
  authenticateUser,
  createUserSession,
- getUserActiveSessions,
+ getUserActiveSessions as getUserActiveSession,
 } from "@/lib/firebaseService";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -27,19 +27,19 @@ export async function POST(request: NextRequest) {
   // Nếu có deviceInfo và deviceId, xử lý session management
   if (deviceInfo && deviceId) {
    // Kiểm tra đã có ai đăng nhập chưa?
-   const activeSessions = await getUserActiveSessions(user.id);
+   const activeSession = await getUserActiveSession(user.id);
 
-   if (activeSessions.length > 0) {
+   if (activeSession && activeSession.deviceInfo.deviceId !== deviceId) {
+    // nếu device đang login khác với device cũ trên hệ thống
     // Đã có thiết bị khác đăng nhập → CHẶN
-    const activeDevice = activeSessions[0];
     return NextResponse.json({
      success: false,
-     message: `Tài khoản đã đăng nhập trên thiết bị: ${activeDevice.deviceInfo.deviceName}. Chỉ được phép đăng nhập trên một thiết bị.`,
+     message: `Tài khoản đã đăng nhập trên thiết bị: ${activeSession.deviceInfo.deviceName}. Chỉ được phép đăng nhập trên một thiết bị.`,
      deviceConflict: true,
      activeDevice: {
-      deviceName: activeDevice.deviceInfo.deviceName,
-      loginTime: activeDevice.loginTime,
-      lastActive: activeDevice.lastActive,
+      deviceName: activeSession.deviceInfo.deviceName,
+      loginTime: activeSession.loginTime,
+      lastActive: activeSession.lastActive,
      },
     });
    }
