@@ -1,12 +1,13 @@
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 // GET: Lấy version hiện tại (cho extension check)
 export async function GET() {
  try {
   const versionsRef = collection(db, "extensionVersions");
-  const q = query(versionsRef, where("isCurrent", "==", true));
+  const q = query(versionsRef, orderBy("publishedAt", "desc"), limit(1));
+
   const snapshot = await getDocs(q);
 
   if (snapshot.empty) {
