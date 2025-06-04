@@ -1,6 +1,7 @@
 import {
  AdminLoginRequest,
  AdminLoginResponse,
+ Advertisement,
  LoginRequest,
  LoginResponse,
  Order,
@@ -787,6 +788,110 @@ export const deletePage = async (id: string): Promise<void> => {
   await deleteDoc(doc(db, "pages", id));
  } catch (error) {
   console.error("Error deleting page:", error);
+  throw error;
+ }
+};
+
+// Advertisements
+export const createAdvertisement = async (
+ name: string,
+ imageUrl: string,
+ priority: number = 0
+): Promise<string> => {
+ const advertisement: Omit<Advertisement, "id"> = {
+  name,
+  imageUrl,
+  isActive: true,
+  priority,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+ };
+
+ const docRef = await addDoc(collection(db, "advertisements"), {
+  ...advertisement,
+  createdAt: Timestamp.fromDate(advertisement.createdAt),
+  updatedAt: Timestamp.fromDate(advertisement.updatedAt),
+ });
+
+ return docRef.id;
+};
+
+export const getAdvertisements = async (): Promise<Advertisement[]> => {
+ try {
+  const q = query(
+   collection(db, "advertisements"),
+   orderBy("priority", "desc"),
+   orderBy("createdAt", "desc")
+  );
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => {
+   const data = doc.data();
+   return {
+    id: doc.id,
+    name: data.name,
+    imageUrl: data.imageUrl,
+    isActive: data.isActive,
+    priority: data.priority || 0,
+    createdAt: data.createdAt.toDate(),
+    updatedAt: data.updatedAt.toDate(),
+   };
+  });
+ } catch (error) {
+  console.error("Error getting advertisements:", error);
+  throw error;
+ }
+};
+
+export const getActiveAdvertisements = async (): Promise<Advertisement[]> => {
+ try {
+  const q = query(
+   collection(db, "advertisements"),
+   where("isActive", "==", true),
+   orderBy("priority", "desc"),
+   orderBy("createdAt", "desc")
+  );
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => {
+   const data = doc.data();
+   return {
+    id: doc.id,
+    name: data.name,
+    imageUrl: data.imageUrl,
+    isActive: data.isActive,
+    priority: data.priority || 0,
+    createdAt: data.createdAt.toDate(),
+    updatedAt: data.updatedAt.toDate(),
+   };
+  });
+ } catch (error) {
+  console.error("Error getting active advertisements:", error);
+  throw error;
+ }
+};
+
+export const updateAdvertisement = async (
+ id: string,
+ updates: Partial<Omit<Advertisement, "id" | "createdAt">>
+): Promise<void> => {
+ try {
+  const updateData = {
+   ...updates,
+   updatedAt: Timestamp.fromDate(new Date()),
+  };
+  await updateDoc(doc(db, "advertisements", id), updateData);
+ } catch (error) {
+  console.error("Error updating advertisement:", error);
+  throw error;
+ }
+};
+
+export const deleteAdvertisement = async (id: string): Promise<void> => {
+ try {
+  await deleteDoc(doc(db, "advertisements", id));
+ } catch (error) {
+  console.error("Error deleting advertisement:", error);
   throw error;
  }
 };

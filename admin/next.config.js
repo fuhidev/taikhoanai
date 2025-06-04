@@ -20,5 +20,16 @@ const nextConfig = {
   NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
  },
 };
-
+nextConfig.images = {
+ remotePatterns: [
+  {
+   protocol: "https",
+   hostname: "**",
+  },
+  {
+   protocol: "http",
+   hostname: "**",
+  },
+ ],
+};
 module.exports = nextConfig;

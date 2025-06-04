@@ -107,3 +107,13 @@ export interface UserSession {
  revokedAt?: number;
  revokedBy?: string; // admin user id
 }
+
+export interface Advertisement {
+ id: string;
+ name: string;
+ imageUrl: string;
+ isActive: boolean;
+ priority: number;
+ createdAt: Date;
+ updatedAt: Date;
+}

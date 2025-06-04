@@ -2,6 +2,7 @@
 
 import {
  Assignment,
+ Campaign,
  Description,
  Extension,
  Home,
@@ -27,7 +28,8 @@ const Navigation = () => {
   if (pathname.startsWith("/extension-versions")) return 5;
   if (pathname.startsWith("/pages")) return 6;
   if (pathname.startsWith("/sessions")) return 7;
-  if (pathname.startsWith("/test-data")) return 8;
+  if (pathname.startsWith("/advertisements")) return 8;
+  if (pathname.startsWith("/test-data")) return 9;
   return 0;
  };
  const navigationItems = [
@@ -43,6 +45,7 @@ const Navigation = () => {
   },
   { label: "Pages", href: "/pages", icon: <Description /> },
   { label: "Sessions", href: "/sessions", icon: <Security /> },
+  { label: "Quảng cáo", href: "/advertisements", icon: <Campaign /> },
  ];
 
  return (

@@ -1,5 +1,6 @@
 "use client";
 
+import AdPopup from "@/components/AdPopup";
 import { HeroAnimations } from "@/components/animations/HeroAnimations";
 import {
  AIBrainAnimation,
@@ -9,6 +10,7 @@ import {
 import { ContactInfo } from "@/components/ContactInfo";
 import { ProductList } from "@/components/ProductList";
 import { Button } from "@/components/ui/Button";
+import { useAdvertisements } from "@/hooks/useAdvertisements";
 import { getProducts } from "@/lib/firebaseService";
 import { Product } from "@/types";
 import { gsap } from "gsap";
@@ -19,6 +21,8 @@ export default function HomePage() {
  const [products, setProducts] = useState<Product[]>([]);
  const [loading, setLoading] = useState(true);
  const brainAnimationRef = useRef<HTMLDivElement>(null);
+ // Advertisement hook
+ const { currentAd, showPopup, dismissAd } = useAdvertisements();
 
  useEffect(() => {
   const fetchProducts = async () => {
@@ -335,12 +339,20 @@ export default function HomePage() {
        </p>
       </div>
      </div>
-    </div>
+    </div>{" "}
    </section>
    {/* Contact Section */}
    <section id="contact" className="py-16 bg-accent animate-on-scroll">
     <ContactInfo />
    </section>
+   {/* Advertisement Popup */}
+   {currentAd && (
+    <AdPopup
+     advertisement={currentAd}
+     isVisible={showPopup}
+     onClose={() => dismissAd(currentAd.id)}
+    />
+   )}
   </div>
  );
 }
