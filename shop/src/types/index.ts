@@ -12,6 +12,16 @@ export interface Product {
  description?: string;
 }
 
+export interface Page {
+ id: string;
+ slug: string;
+ title: string;
+ content: string;
+ isPublished: boolean;
+ createdAt: Date;
+ updatedAt: Date;
+}
+
 export interface ContactInfo {
  zalo: string;
  facebook: string;

@@ -1,4 +1,4 @@
-import { Product } from "@/types";
+import { Page, Product } from "@/types";
 import {
  collection,
  doc,
@@ -55,6 +55,35 @@ export const getProductById = async (id: string): Promise<Product | null> => {
   }
  } catch (error) {
   console.error("Error fetching product:", error);
+  return null;
+ }
+};
+
+export const getPageBySlug = async (slug: string): Promise<Page | null> => {
+ try {
+  const q = query(
+   collection(db, "pages"),
+   where("slug", "==", slug),
+   where("isPublished", "==", true)
+  );
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+   return null;
+  }
+
+  const data = querySnapshot.docs[0].data();
+  return {
+   id: querySnapshot.docs[0].id,
+   slug: data.slug,
+   title: data.title,
+   content: data.content,
+   isPublished: data.isPublished,
+   createdAt: data.createdAt.toDate(),
+   updatedAt: data.updatedAt.toDate(),
+  } as Page;
+ } catch (error) {
+  console.error("Error fetching page by slug:", error);
   return null;
  }
 };

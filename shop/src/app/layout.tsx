@@ -123,6 +123,13 @@ export default function RootLayout({
          Chính sách Extension
         </a>
         <span className="text-muted-foreground/50">•</span>
+        <a
+         href="/page/affiliate"
+         className="hover:text-primary transition-colors"
+        >
+         Afiliate
+        </a>
+        <span className="text-muted-foreground/50">•</span>
         <a href="/contact" className="hover:text-primary transition-colors">
          Liên hệ
         </a>

@@ -121,7 +121,7 @@ export default function HomePage() {
  if (loading) {
   return (
    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80">
-    <div className="text-center">
+    <div className="flex flex-col items-center">
      <div className="w-32 h-32 mb-6">
       <LoadingAIAnimation className="w-full h-full" />
      </div>

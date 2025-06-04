@@ -64,6 +64,12 @@ export const Header: React.FC = () => {
        Giới thiệu
       </Link>
       <Link
+       href="/page/affiliate"
+       className="text-foreground hover:text-primary transition-colors"
+      >
+       Affiliate
+      </Link>
+      <Link
        href="/contact"
        className="text-foreground hover:text-primary transition-colors"
       >

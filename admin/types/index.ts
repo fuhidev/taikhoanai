@@ -8,6 +8,16 @@ export interface User {
  updatedAt: Date;
 }
 
+export interface Page {
+ id: string;
+ slug: string;
+ title: string;
+ content: string;
+ isPublished: boolean;
+ createdAt: Date;
+ updatedAt: Date;
+}
+
 export interface Product {
  id: string;
  name: string;

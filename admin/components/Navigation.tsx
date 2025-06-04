@@ -2,6 +2,7 @@
 
 import {
  Assignment,
+ Description,
  Extension,
  Home,
  Inventory,
@@ -24,8 +25,9 @@ const Navigation = () => {
   if (pathname.startsWith("/orders")) return 3;
   if (pathname.startsWith("/subscriptions")) return 4;
   if (pathname.startsWith("/extension-versions")) return 5;
-  if (pathname.startsWith("/sessions")) return 6;
-  if (pathname.startsWith("/test-data")) return 7;
+  if (pathname.startsWith("/pages")) return 6;
+  if (pathname.startsWith("/sessions")) return 7;
+  if (pathname.startsWith("/test-data")) return 8;
   return 0;
  };
  const navigationItems = [
@@ -39,6 +41,7 @@ const Navigation = () => {
    href: "/extension-versions",
    icon: <Extension />,
   },
+  { label: "Pages", href: "/pages", icon: <Description /> },
   { label: "Sessions", href: "/sessions", icon: <Security /> },
  ];
 
