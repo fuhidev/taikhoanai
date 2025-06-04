@@ -91,32 +91,30 @@ export default function CustomPage() {
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw, rehypeSanitize]}
           components={{
-           h1: ({ node, ...props }) => (
+           h1: ({ ...props }) => (
             <h1 className="text-3xl font-bold mt-8 mb-4" {...props} />
            ),
-           h2: ({ node, ...props }) => (
+           h2: ({ ...props }) => (
             <h2 className="text-2xl font-bold mt-6 mb-3" {...props} />
            ),
-           h3: ({ node, ...props }) => (
+           h3: ({ ...props }) => (
             <h3 className="text-xl font-bold mt-5 mb-2" {...props} />
            ),
-           p: ({ node, ...props }) => (
-            <p className="mb-4 text-gray-700" {...props} />
-           ),
-           ul: ({ node, ...props }) => (
+           p: ({ ...props }) => <p className="mb-4 text-gray-700" {...props} />,
+           ul: ({ ...props }) => (
             <ul className="list-disc ml-6 mb-4" {...props} />
            ),
-           ol: ({ node, ...props }) => (
+           ol: ({ ...props }) => (
             <ol className="list-decimal ml-6 mb-4" {...props} />
            ),
-           li: ({ node, ...props }) => <li className="my-1" {...props} />,
-           blockquote: ({ node, ...props }) => (
+           li: ({ ...props }) => <li className="my-1" {...props} />,
+           blockquote: ({ ...props }) => (
             <blockquote
              className="border-l-4 border-primary pl-4 py-2 my-4 bg-gray-50 rounded-r"
              {...props}
             />
            ),
-           a: ({ node, href, ...props }) => (
+           a: ({ href, ...props }) => (
             <a
              href={href}
              className="text-primary hover:underline"
@@ -125,25 +123,26 @@ export default function CustomPage() {
              {...props}
             />
            ),
-           img: ({ node, ...props }) => (
+           img: ({ ...props }) => (
+            // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
             <img
              className="rounded-lg shadow-md my-4 max-w-full h-auto"
              {...props}
             />
            ),
-           table: ({ node, ...props }) => (
+           table: ({ ...props }) => (
             <table className="border-collapse w-full my-4" {...props} />
            ),
-           th: ({ node, ...props }) => (
+           th: ({ ...props }) => (
             <th className="border border-gray-300 bg-gray-100 p-2" {...props} />
            ),
-           td: ({ node, ...props }) => (
+           td: ({ ...props }) => (
             <td className="border border-gray-300 p-2" {...props} />
            ),
-           hr: ({ node, ...props }) => (
+           hr: ({ ...props }) => (
             <hr className="my-8 border-t border-gray-200" {...props} />
            ),
-           strong: ({ node, ...props }) => (
+           strong: ({ ...props }) => (
             <strong className="font-bold" {...props} />
            ),
           }}

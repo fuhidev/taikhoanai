@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { MouseTracker } from "@/components/animations/MouseTracker";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -104,35 +105,37 @@ export default function RootLayout({
         Tài khoản AI chất lượng cao - Giá cả hợp lý - Hỗ trợ 24/7
        </p>
        <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm">
-        <a href="/privacy" className="hover:text-primary transition-colors">
+        <Link href="/privacy" className="hover:text-primary transition-colors">
          Chính sách bảo mật
-        </a>
+        </Link>
         <span className="text-muted-foreground/50">•</span>
-        <a href="/terms" className="hover:text-primary transition-colors">
+        <Link href="/terms" className="hover:text-primary transition-colors">
          Điều khoản sử dụng
-        </a>
+        </Link>
         <span className="text-muted-foreground/50">•</span>
-        <a href="/extension" className="hover:text-primary transition-colors">
+        <Link
+         href="/extension"
+         className="hover:text-primary transition-colors"
+        >
          Extension
-        </a>
+        </Link>
         <span className="text-muted-foreground/50">•</span>
-        <a
+        <Link
          href="/extension-privacy"
          className="hover:text-primary transition-colors"
         >
          Chính sách Extension
-        </a>
-        <span className="text-muted-foreground/50">•</span>
-        <a
+        </Link>
+        <Link
          href="/page/affiliate"
          className="hover:text-primary transition-colors"
         >
          Afiliate
-        </a>
+        </Link>
         <span className="text-muted-foreground/50">•</span>
-        <a href="/contact" className="hover:text-primary transition-colors">
+        <Link href="/contact" className="hover:text-primary transition-colors">
          Liên hệ
-        </a>
+        </Link>
        </div>
       </div>
      </div>
