@@ -2,34 +2,34 @@
 
 import { Page } from "@/types";
 import {
- Add,
- Delete,
- Description,
- Edit,
- Publish,
- Unpublished,
+  Add,
+  Delete,
+  Description,
+  Edit,
+  Publish,
+  Unpublished,
 } from "@mui/icons-material";
 import {
- Alert,
- Box,
- Button,
- Checkbox,
- Chip,
- Dialog,
- DialogActions,
- DialogContent,
- DialogTitle,
- FormControlLabel,
- IconButton,
- Paper,
- Table,
- TableBody,
- TableCell,
- TableContainer,
- TableHead,
- TableRow,
- TextField,
- Typography,
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
@@ -93,7 +93,7 @@ export default function PagesAdminPage() {
    } else {
     setAlert({ type: "error", message: "Có lỗi khi tải danh sách trang" });
    }
-  } catch (error) {
+  } catch {
    setAlert({ type: "error", message: "Có lỗi khi tải danh sách trang" });
   } finally {
    setLoading(false);
@@ -143,7 +143,7 @@ export default function PagesAdminPage() {
      message: result.error || "Có lỗi khi lưu trang",
     });
    }
-  } catch (error) {
+  } catch  {
    setAlert({ type: "error", message: "Có lỗi khi lưu trang" });
   }
  };
