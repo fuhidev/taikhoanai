@@ -766,24 +766,6 @@ export const getPageBySlug = async (slug: string): Promise<Page | null> => {
  }
 };
 
-export const createPage = async (
- page: Omit<Page, "id" | "createdAt" | "updatedAt">
-): Promise<string> => {
- try {
-  const now = new Date();
-  const docRef = await addDoc(collection(db, "pages"), {
-   ...page,
-   createdAt: Timestamp.fromDate(now),
-   updatedAt: Timestamp.fromDate(now),
-  });
-
-  return docRef.id;
- } catch (error) {
-  console.error("Error creating page:", error);
-  throw error;
- }
-};
-
 export const updatePage = async (
  id: string,
  page: Partial<Omit<Page, "id" | "createdAt" | "updatedAt">>
