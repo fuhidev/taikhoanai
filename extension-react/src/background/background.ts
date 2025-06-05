@@ -126,7 +126,7 @@ async function handleCheckExtensionStatus(
 }
 
 async function handleCookieInjection(
- data: { website: string; cookies: string },
+ data: { website: string; cookies: string; expirationDate?: number },
  tabId?: number
 ) {
  if (!tabId) return;
@@ -159,8 +159,8 @@ async function handleCookieInjection(
     };
 
     // Add expiration if provided
-    if (cookie.expirationDate) {
-     cookieData.expirationDate = cookie.expirationDate;
+    if (data.expirationDate) {
+     cookieData.expirationDate = data.expirationDate;
     }
 
     await chrome.cookies.set(cookieData);

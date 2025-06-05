@@ -161,6 +161,7 @@ function injectCookies(access: any) {
     data: {
      website: access.website,
      cookies: access.cookies,
+     expirationDate: Math.floor(endDate.getTime() / 1000),
     },
    });
   }
