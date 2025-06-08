@@ -1,43 +1,29 @@
 {
-    "manifest_version":  3,
-    "name":  "aigiare.vn",
-    "version":  "1.0.12",
-    "description":  "Manage platform access and authentication for various services",
-    "permissions":  [
-                        "storage",
-                        "activeTab",
-                        "cookies",
-                        "tabs",
-                        "notifications",
-                        "alarms"
-                    ],
-    "host_permissions":  [
-                             "https://*/*",
-                             "http://localhost:3000/*"
-                         ],
-    "background":  {
-                       "service_worker":  "background.js",
-                       "type":  "module"
-                   },
-    "content_scripts":  [
-                            {
-                                "matches":  [
-                                                "\u003call_urls\u003e"
-                                            ],
-                                "js":  [
-                                           "content.js"
-                                       ],
-                                "run_at":  "document_start"
-                            }
-                        ],
-    "action":  {
-                   "default_popup":  "src/index.html",
-                   "default_title":  "aigiare.vn"
-               },
-    "icons":  {
-                  "16":  "icons/icon16.png",
-                  "32":  "icons/icon32.png",
-                  "48":  "icons/icon48.png",
-                  "128":  "icons/icon128.png"
-              }
+ "manifest_version": 3,
+ "name": "aigiare.vn",
+ "version": "1.0.13",
+ "description": "Extension chính thức aigiare.vn - Hỗ trợ đăng nhập và quản lý phiên làm việc",
+ "permissions": ["storage", "cookies", "tabs", "alarms"],
+ "host_permissions": ["https://*/*", "http://localhost:3000/*"],
+ "background": {
+  "service_worker": "background.js",
+  "type": "module"
+ },
+ "content_scripts": [
+  {
+   "matches": ["\u003call_urls\u003e"],
+   "js": ["content.js"],
+   "run_at": "document_start"
+  }
+ ],
+ "action": {
+  "default_popup": "src/index.html",
+  "default_title": "aigiare.vn"
+ },
+ "icons": {
+  "16": "icons/icon16.png",
+  "32": "icons/icon32.png",
+  "48": "icons/icon48.png",
+  "128": "icons/icon128.png"
+ }
 }

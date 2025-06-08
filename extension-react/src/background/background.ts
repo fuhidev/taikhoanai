@@ -1,7 +1,6 @@
 // Background script for Chrome extension
 import { ApiService } from "../shared/api";
 import { StorageService } from "../shared/storage";
-import { versionChecker } from "../shared/version-checker";
 
 // aigiare.vn background script loaded
 
@@ -9,66 +8,18 @@ import { versionChecker } from "../shared/version-checker";
 chrome.runtime.onInstalled.addListener((details) => {
  // Extension installed: ${details}
 
- // Đặt lịch kiểm tra phiên bản định kỳ (mỗi 15 phút cho force update)
- //  chrome.alarms.create("version-check", { periodInMinutes: 15 });
-
  // Đặt lịch kiểm tra session định kỳ (mỗi 5 phút)
  chrome.alarms.create("session-check", { periodInMinutes: 5 });
-
- // Kiểm tra ngay lập tức
- versionChecker.checkForUpdates();
-});
-
-// Handle extension startup
-chrome.runtime.onStartup.addListener(() => {
- versionChecker.checkForUpdates();
 });
 
 // Handle alarms
 chrome.alarms.onAlarm.addListener((alarm) => {
- if (alarm.name === "version-check") {
-  versionChecker.checkForUpdates();
- } else if (alarm.name === "session-check") {
+ if (alarm.name === "session-check") {
   validateCurrentSession();
  }
 });
 
 // Handle notification button clicks
-chrome.notifications.onButtonClicked.addListener(
- async (notificationId, buttonIndex) => {
-  if (notificationId === "force-update-required") {
-   const stored = await chrome.storage.local.get(["updateInfo"]);
-   if (stored.updateInfo) {
-    if (buttonIndex === 0) {
-     // Tải xuống ngay
-     chrome.tabs.create({ url: stored.updateInfo.downloadUrl });
-    } else if (buttonIndex === 1) {
-     // Xem chi tiết
-     chrome.tabs.create({
-      url: `data:text/html,<html><body><h2>Thông tin cập nhật v${stored.updateInfo.version}</h2><pre>${stored.updateInfo.releaseNotes}</pre></body></html>`,
-     });
-    }
-   }
-  } else if (notificationId === "update-available") {
-   const stored = await chrome.storage.local.get(["updateInfo"]);
-   if (stored.updateInfo) {
-    if (buttonIndex === 0) {
-     // Cập nhật
-     chrome.tabs.create({ url: stored.updateInfo.downloadUrl });
-    }
-    // ButtonIndex === 1 là "Để sau" - không làm gì
-   }
-  } else if (notificationId === "update-required") {
-   if (buttonIndex === 0) {
-    // Tải xuống ngay
-    const stored = await chrome.storage.local.get(["downloadUrl"]);
-    if (stored.downloadUrl) {
-     chrome.tabs.create({ url: stored.downloadUrl });
-    }
-   }
-  }
- }
-);
 
 // Handle messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
