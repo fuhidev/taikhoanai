@@ -1,49 +1,15 @@
 "use client";
 
+import { ContactInfo } from "@/components/ContactInfo";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
-import { useEffect, useState } from "react";
-
-interface ExtensionVersion {
- version: string;
- downloadUrl: string;
- releaseNotes: string;
- required: boolean;
- publishedAt: string;
-}
 
 export default function ExtensionPage() {
- const [extensionData, setExtensionData] = useState<ExtensionVersion | null>(
-  null
- );
- const [loading, setLoading] = useState(true);
- const [error, setError] = useState<string | null>(null);
-
- useEffect(() => {
-  const fetchExtensionData = async () => {
-   try {
-    const response = await fetch(
-     "https://portal.aigiare.vn/api/extension/version"
-    );
-    if (!response.ok) {
-     throw new Error("Không thể tải thông tin extension");
-    }
-    const data = await response.json();
-    setExtensionData(data);
-   } catch (err) {
-    setError(err instanceof Error ? err.message : "Có lỗi xảy ra");
-   } finally {
-    setLoading(false);
-   }
-  };
-
-  fetchExtensionData();
- }, []);
-
- const handleDownload = () => {
-  if (extensionData?.downloadUrl) {
-   window.open(extensionData.downloadUrl, "_blank");
-  }
+ const handleInstallExtension = () => {
+  window.open(
+   "https://chromewebstore.google.com/detail/aigiarevn/gkjgjkaofdmbnhhpknfkckfbnpmijanp",
+   "_blank"
+  );
  };
 
  return (
@@ -52,6 +18,21 @@ export default function ExtensionPage() {
    <div className="bg-primary text-white py-16">
     <div className="container mx-auto px-4">
      <div className="max-w-4xl mx-auto text-center">
+      <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+       <svg
+        className="w-12 h-12 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+       >
+        <path
+         strokeLinecap="round"
+         strokeLinejoin="round"
+         strokeWidth={2}
+         d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+        />
+       </svg>
+      </div>
       <h1 className="text-4xl md:text-5xl font-bold mb-6">
        aigiare.vn Extension
       </h1>
@@ -122,64 +103,66 @@ export default function ExtensionPage() {
    {/* Main Content */}
    <div className="container mx-auto px-4 py-16">
     <div className="max-w-6xl mx-auto">
-     {/* Download Section */}
+     {/* Install Section */}
      <div className="text-center mb-16">
-      {loading ? (
-       <div className="flex justify-center items-center py-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        <span className="ml-4 text-muted-foreground">
-         Đang tải thông tin extension...
-        </span>
-       </div>
-      ) : error ? (
-       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-        <p className="text-red-800">⚠️ {error}</p>
-       </div>
-      ) : extensionData ? (
-       <Card className="bg-white shadow-xl max-w-2xl mx-auto">
-        <CardHeader className="text-center">
-         <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+      <Card className="bg-white shadow-xl max-w-2xl mx-auto border-2 border-primary/20">
+       <CardHeader className="text-center pb-4">
+        <div className="w-20 h-20 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+         <svg
+          className="w-10 h-10 text-white"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+         >
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+         </svg>
+        </div>
+        <h2 className="text-3xl font-bold text-foreground mb-2">
+         Cài đặt từ Chrome Web Store
+        </h2>
+        <p className="text-muted-foreground">
+         Đã có sẵn trên cửa hàng chính thức của Google Chrome
+        </p>
+       </CardHeader>
+       <CardContent className="text-center pt-0">
+        <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+         <div className="flex items-center justify-center mb-2">
           <svg
-           className="w-10 h-10 text-white"
-           fill="none"
-           stroke="currentColor"
-           viewBox="0 0 24 24"
+           className="w-5 h-5 text-green-600 mr-2"
+           fill="currentColor"
+           viewBox="0 0 20 20"
           >
            <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+            fillRule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clipRule="evenodd"
            />
           </svg>
+          <span className="text-green-800 font-semibold">
+           Được Google xác minh
+          </span>
          </div>
-         <h2 className="text-2xl font-bold text-foreground">
-          aigiare.vn Extension v{extensionData.version}
-         </h2>
-         <p className="text-muted-foreground">
-          Phát hành:{" "}
-          {new Date(extensionData.publishedAt).toLocaleDateString("vi-VN")}
+         <p className="text-green-700 text-sm">
+          Extension đã được Google kiểm tra và phê duyệt, đảm bảo an toàn cho
+          thiết bị của bạn
          </p>
-        </CardHeader>
-        <CardContent className="text-center">
-         {extensionData.releaseNotes && (
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-           <h3 className="font-semibold text-blue-800 mb-2">
-            📝 Ghi chú phiên bản:
-           </h3>
-           <p className="text-blue-700 text-sm">{extensionData.releaseNotes}</p>
-          </div>
-         )}
-         <Button onClick={handleDownload} size="lg" className="w-full mb-4">
-          📥 Tải Extension về máy
-         </Button>
-         <p className="text-sm text-muted-foreground">
-          Tệp zip sẽ được tải về, sau đó bạn cần giải nén và cài đặt thủ công
-          vào Chrome
-         </p>
-        </CardContent>
-       </Card>
-      ) : null}
+        </div>
+
+        <Button
+         onClick={handleInstallExtension}
+         size="lg"
+         className="w-full mb-4 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white font-semibold py-3 text-lg shadow-lg"
+        >
+         <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+         </svg>
+         Cài đặt từ Chrome Web Store
+        </Button>
+
+        <p className="text-sm text-muted-foreground">
+         Miễn phí • Cài đặt chỉ trong 1 cú click • Cập nhật tự động
+        </p>
+       </CardContent>
+      </Card>
      </div>
 
      {/* Features */}
@@ -188,7 +171,7 @@ export default function ExtensionPage() {
        ✨ Tính năng nổi bật
       </h2>
       <div className="grid md:grid-cols-3 gap-8">
-       <Card className="text-center">
+       <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
         <CardContent className="p-8">
          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
@@ -213,7 +196,7 @@ export default function ExtensionPage() {
         </CardContent>
        </Card>
 
-       <Card className="text-center">
+       <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
         <CardContent className="p-8">
          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
@@ -237,7 +220,7 @@ export default function ExtensionPage() {
         </CardContent>
        </Card>
 
-       <Card className="text-center">
+       <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
         <CardContent className="p-8">
          <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
@@ -254,125 +237,51 @@ export default function ExtensionPage() {
            />
           </svg>
          </div>
-         <h3 className="text-xl font-semibold mb-3">Hiệu suất cao</h3>
+         <h3 className="text-xl font-semibold mb-3">Cập nhật tự động</h3>
          <p className="text-muted-foreground">
-          Giao diện đơn giản, sử dụng ít tài nguyên hệ thống
+          Luôn được cập nhật phiên bản mới nhất từ Chrome Web Store
          </p>
         </CardContent>
        </Card>
       </div>
      </div>
 
-     {/* Installation Guide */}
+     {/* How to Use */}
      <div className="mb-16">
-      <h2 className="text-3xl font-bold text-center mb-12">
-       🔧 Hướng dẫn cài đặt
-      </h2>
+      <h2 className="text-3xl font-bold text-center mb-12">🚀 Cách sử dụng</h2>
       <div className="max-w-4xl mx-auto">
-       <Card>
-        <CardContent className="p-8">
-         <div className="space-y-8">
-          {/* Step 1 */}
-          <div className="flex items-start space-x-4">
-           <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">
+       <Card className="overflow-hidden">
+        <CardContent className="p-0">
+         <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x">
+          <div className="p-8 text-center">
+           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl">
             1
            </div>
-           <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-3">
-             Tải và giải nén extension
-            </h3>{" "}
-            <p className="text-muted-foreground mb-4">
-             Nhấn nút &quot;Tải Extension về máy&quot; ở trên để tải file zip về
-             máy tính của bạn.
-            </p>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-             <p className="text-yellow-800 text-sm">
-              💡 <strong>Lưu ý:</strong> Giải nén file zip vào một thư mục mà
-              bạn không sẽ xóa (ví dụ: D:\Extensions\aigiare-extension)
-             </p>
-            </div>
-           </div>
+           <h3 className="text-xl font-semibold mb-3">Cài đặt Extension</h3>
+           <p className="text-muted-foreground">
+            Click vào nút &quot;Cài đặt từ Chrome Web Store&quot; và thêm vào
+            Chrome
+           </p>
           </div>
 
-          {/* Step 2 */}
-          <div className="flex items-start space-x-4">
-           <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">
+          <div className="p-8 text-center">
+           <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl">
             2
            </div>
-           <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-3">Mở Chrome Extensions</h3>
-            <p className="text-muted-foreground mb-4">
-             Mở trình duyệt Chrome và truy cập vào:
-            </p>
-            <div className="bg-gray-100 rounded-lg p-4 font-mono text-sm">
-             chrome://extensions/
-            </div>
-            <p className="text-muted-foreground mt-2 text-sm">
-             Hoặc vào menu Chrome → More tools → Extensions
-            </p>
-           </div>
+           <h3 className="text-xl font-semibold mb-3">Đăng nhập tài khoản</h3>
+           <p className="text-muted-foreground">
+            Click vào icon extension và đăng nhập bằng tài khoản aigiare.vn
+           </p>
           </div>
 
-          {/* Step 3 */}
-          <div className="flex items-start space-x-4">
-           <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">
+          <div className="p-8 text-center">
+           <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl">
             3
            </div>
-           <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-3">Bật Developer mode</h3>{" "}
-            <p className="text-muted-foreground mb-4">
-             Ở góc trên bên phải trang Extensions, bật công tắc &quot;Developer
-             mode&quot;
-            </p>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-             <p className="text-blue-800 text-sm">
-              ℹ️ Developer mode cho phép bạn cài đặt extension từ mã nguồn cục
-              bộ
-             </p>
-            </div>
-           </div>
-          </div>
-
-          {/* Step 4 */}
-          <div className="flex items-start space-x-4">
-           <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">
-            4
-           </div>
-           <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-3">
-             Load unpacked extension
-            </h3>{" "}
-            <p className="text-muted-foreground mb-4">
-             Nhấn nút &quot;Load unpacked&quot; và chọn thư mục đã giải nén
-             extension
-            </p>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-             <p className="text-green-800 text-sm">
-              ✅ Extension sẽ xuất hiện trong danh sách với tên &quot;aigiare.vn
-              Extension&quot;
-             </p>
-            </div>
-           </div>
-          </div>
-
-          {/* Step 5 */}
-          <div className="flex items-start space-x-4">
-           <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">
-            5
-           </div>
-           <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-3">Cài đặt và sử dụng</h3>
-            <p className="text-muted-foreground mb-4">
-             Nhấn vào icon extension trên thanh công cụ Chrome để mở popup và
-             đăng nhập với tài khoản aigiare.vn của bạn
-            </p>
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-             <p className="text-purple-800 text-sm">
-              🎉 Bây giờ bạn có thể tự động đăng nhập vào các nền tảng AI một
-              cách dễ dàng!
-             </p>
-            </div>
-           </div>
+           <h3 className="text-xl font-semibold mb-3">Sử dụng ngay</h3>
+           <p className="text-muted-foreground">
+            Truy cập các nền tảng AI và tự động đăng nhập một cách dễ dàng
+           </p>
           </div>
          </div>
         </CardContent>
@@ -387,21 +296,42 @@ export default function ExtensionPage() {
       </h2>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
        {[
-        { name: "ChatGPT", icon: "🤖", description: "OpenAI ChatGPT" },
-        { name: "Google Gemini", icon: "💎", description: "Google Gemini AI" },
-        { name: "Leonardo AI", icon: "🎨", description: "Leonardo AI Art" },
-        { name: "HailuoAI", icon: "🌊", description: "Hailuo AI Video" },
+        {
+         name: "ChatGPT",
+         icon: "🤖",
+         description: "OpenAI ChatGPT",
+         url: "chat.openai.com",
+        },
+        {
+         name: "Google Gemini",
+         icon: "💎",
+         description: "Google Gemini AI",
+         url: "gemini.google.com",
+        },
+        {
+         name: "Leonardo AI",
+         icon: "🎨",
+         description: "Leonardo AI Art",
+         url: "leonardo.ai",
+        },
+        {
+         name: "HailuoAI",
+         icon: "🌊",
+         description: "Hailuo AI Video",
+         url: "hailuoai.com",
+        },
        ].map((platform) => (
         <Card
          key={platform.name}
-         className="text-center hover:shadow-lg transition-shadow"
+         className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
         >
          <CardContent className="p-6">
           <div className="text-4xl mb-3">{platform.icon}</div>
           <h3 className="font-semibold text-lg mb-2">{platform.name}</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mb-2">
            {platform.description}
           </p>
+          <p className="text-xs text-primary font-mono">{platform.url}</p>
          </CardContent>
         </Card>
        ))}
@@ -418,29 +348,35 @@ export default function ExtensionPage() {
         {
          question: "Extension có an toàn không?",
          answer:
-          "Có, extension được thiết kế với bảo mật cao. Tất cả dữ liệu được mã hóa và lưu trữ cục bộ trên thiết bị của bạn, không gửi về server.",
+          "Có, extension đã được Google xem xét và phê duyệt trên Chrome Web Store. Tất cả dữ liệu được mã hóa và lưu trữ cục bộ trên thiết bị của bạn.",
         },
         {
-         question:
-          "Tại sao phải cài đặt thủ công thay vì tải từ Chrome Web Store?",
+         question: "Extension có miễn phí không?",
          answer:
-          "Extension đang trong quá trình được xem xét để đưa lên Chrome Web Store. Hiện tại bạn có thể cài đặt thủ công để sử dụng ngay.",
+          "Có, extension hoàn toàn miễn phí để tải và sử dụng từ Chrome Web Store. Không có phí ẩn hay chi phí đăng ký.",
         },
         {
          question: "Extension có tương thích với các trình duyệt khác không?",
          answer:
-          "Hiện tại extension chỉ hỗ trợ Chrome và các trình duyệt dựa trên Chromium như Edge, Brave.",
+          "Extension được thiết kế cho Chrome và các trình duyệt dựa trên Chromium như Edge, Brave. Hiện tại chưa hỗ trợ Firefox hay Safari.",
         },
         {
          question: "Làm thế nào để cập nhật extension?",
          answer:
-          "Khi có phiên bản mới, bạn cần tải file zip mới, giải nén và cập nhật thư mục extension, sau đó reload extension trong Chrome.",
+          "Extension sẽ tự động cập nhật thông qua Chrome Web Store. Bạn không cần thực hiện bất kỳ thao tác nào để nhận phiên bản mới nhất.",
+        },
+        {
+         question: "Tôi có cần tài khoản aigiare.vn không?",
+         answer:
+          "Có, bạn cần có tài khoản aigiare.vn để sử dụng extension. Nếu chưa có, bạn có thể đăng ký miễn phí tại aigiare.vn.",
         },
        ].map((faq, index) => (
-        <Card key={index}>
+        <Card key={index} className="hover:shadow-md transition-shadow">
          <CardContent className="p-6">
-          <h3 className="font-semibold text-lg mb-3">{faq.question}</h3>
-          <p className="text-muted-foreground">{faq.answer}</p>
+          <h3 className="font-semibold text-lg mb-3 text-primary">
+           {faq.question}
+          </h3>
+          <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
          </CardContent>
         </Card>
        ))}
@@ -448,32 +384,8 @@ export default function ExtensionPage() {
      </div>
 
      {/* Support */}
-     <div className="text-center">
-      <Card className="bg-gradient-to-r from-primary/10 to-blue-50 max-w-2xl mx-auto">
-       <CardContent className="p-8">
-        <h2 className="text-2xl font-bold mb-4">🆘 Cần hỗ trợ?</h2>
-        <p className="text-muted-foreground mb-6">
-         Nếu bạn gặp khó khăn trong quá trình cài đặt hoặc sử dụng extension,
-         đừng ngần ngại liên hệ với chúng tôi
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-         <Button
-          variant="outline"
-          onClick={() => window.open("https://zalo.me/0943487968", "_blank")}
-         >
-          📞 Chat Zalo
-         </Button>
-         <Button
-          variant="outline"
-          onClick={() =>
-           window.open("https://www.facebook.com/1001thuocphimhay/", "_blank")
-          }
-         >
-          💬 Facebook
-         </Button>
-        </div>
-       </CardContent>
-      </Card>
+     <div className="mt-16">
+      <ContactInfo />
      </div>
     </div>
    </div>
