@@ -13,6 +13,11 @@ export function middleware(request: NextRequest) {
    // Redirect to login page
    return NextResponse.redirect(new URL("/login", request.url));
   }
+
+  // Redirect từ trang chủ "/" sang "/orders"
+  if (request.nextUrl.pathname === "/") {
+   return NextResponse.redirect(new URL("/orders", request.url));
+  }
  }
 
  return NextResponse.next();
