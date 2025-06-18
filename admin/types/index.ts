@@ -117,3 +117,20 @@ export interface Advertisement {
  createdAt: Date;
  updatedAt: Date;
 }
+
+// Pagination types
+export interface PaginationOptions {
+ page: number;
+ limit: number;
+ orderByField?: string;
+ orderDirection?: "asc" | "desc";
+}
+
+export interface PaginatedResult<T> {
+ data: T[];
+ totalCount: number;
+ currentPage: number;
+ totalPages: number;
+ hasNextPage: boolean;
+ hasPrevPage: boolean;
+}

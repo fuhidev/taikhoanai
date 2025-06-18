@@ -6,6 +6,8 @@ import {
  LoginResponse,
  Order,
  Page,
+ PaginatedResult,
+ PaginationOptions,
  Product,
  ProductAccess,
  User,
@@ -16,13 +18,18 @@ import {
  collection,
  deleteDoc,
  doc,
+ DocumentData,
  getDoc,
  getDocs,
+ limit,
  orderBy,
  query,
+ QueryDocumentSnapshot,
+ startAfter,
  Timestamp,
  updateDoc,
  where,
+ WhereFilterOp,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -244,29 +251,6 @@ export const getUserSubscriptions = async (
  });
 };
 
-export const getAllUserSubscriptions = async (): Promise<
- UserSubscription[]
-> => {
- const q = query(
-  collection(db, "userSubscriptions"),
-  orderBy("createdAt", "desc")
- );
- const querySnapshot = await getDocs(q);
-
- return querySnapshot.docs.map((doc) => {
-  const data = doc.data();
-  return {
-   id: doc.id,
-   userId: data.userId,
-   productId: data.productId,
-   startDate: data.startDate.toDate(),
-   endDate: data.endDate.toDate(),
-   isActive: data.isActive,
-   createdAt: data.createdAt.toDate(),
-  };
- });
-};
-
 export const revokeUserSubscription = async (
  subscriptionId: string
 ): Promise<void> => {
@@ -299,24 +283,6 @@ export const createOrder = async (
  });
 
  return docRef.id;
-};
-
-export const getAllOrders = async (): Promise<Order[]> => {
- const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
- const querySnapshot = await getDocs(q);
-
- return querySnapshot.docs.map((doc) => {
-  const data = doc.data();
-  return {
-   id: doc.id,
-   userId: data.userId,
-   productId: data.productId,
-   duration: data.duration,
-   totalAmount: data.totalAmount,
-   status: data.status,
-   createdAt: data.createdAt.toDate(),
-  };
- });
 };
 
 export const updateOrderStatus = async (
@@ -894,4 +860,248 @@ export const deleteAdvertisement = async (id: string): Promise<void> => {
   console.error("Error deleting advertisement:", error);
   throw error;
  }
+};
+
+// ============ PAGINATION FUNCTIONS ============
+
+// Generic pagination function
+export const getPaginatedData = async <T>(
+ collectionName: string,
+ options: PaginationOptions,
+ whereConditions: Array<{
+  field: string;
+  operator: WhereFilterOp;
+  value: unknown;
+ }> = [],
+ transformer: (doc: QueryDocumentSnapshot<DocumentData>) => T
+): Promise<PaginatedResult<T>> => {
+ const {
+  page,
+  limit: pageLimit,
+  orderByField = "createdAt",
+  orderDirection = "desc",
+ } = options;
+
+ try {
+  // Get total count first
+  let countQuery = query(collection(db, collectionName));
+  whereConditions.forEach((condition) => {
+   countQuery = query(
+    countQuery,
+    where(condition.field, condition.operator, condition.value)
+   );
+  });
+  const countSnapshot = await getDocs(countQuery);
+  const totalCount = countSnapshot.size;
+
+  // Calculate pagination
+  const totalPages = Math.ceil(totalCount / pageLimit);
+  const offset = (page - 1) * pageLimit;
+
+  // Build data query
+  let dataQuery = query(collection(db, collectionName));
+  whereConditions.forEach((condition) => {
+   dataQuery = query(
+    dataQuery,
+    where(condition.field, condition.operator, condition.value)
+   );
+  });
+  dataQuery = query(dataQuery, orderBy(orderByField, orderDirection));
+
+  // Apply pagination
+  if (offset > 0) {
+   // For pages after the first, we need to get the starting document
+   const offsetQuery = query(dataQuery, limit(offset));
+   const offsetSnapshot = await getDocs(offsetQuery);
+   if (offsetSnapshot.docs.length > 0) {
+    const lastDoc = offsetSnapshot.docs[offsetSnapshot.docs.length - 1];
+    dataQuery = query(dataQuery, startAfter(lastDoc), limit(pageLimit));
+   } else {
+    // If offset is beyond available data, return empty result
+    return {
+     data: [],
+     totalCount,
+     currentPage: page,
+     totalPages,
+     hasNextPage: false,
+     hasPrevPage: page > 1,
+    };
+   }
+  } else {
+   dataQuery = query(dataQuery, limit(pageLimit));
+  }
+
+  const dataSnapshot = await getDocs(dataQuery);
+  const data = dataSnapshot.docs.map(transformer);
+
+  return {
+   data,
+   totalCount,
+   currentPage: page,
+   totalPages,
+   hasNextPage: page < totalPages,
+   hasPrevPage: page > 1,
+  };
+ } catch (error) {
+  console.error(`Error getting paginated data from ${collectionName}:`, error);
+  throw error;
+ }
+};
+
+// Paginated Users
+export const getPaginatedUsers = async (
+ options: PaginationOptions
+): Promise<PaginatedResult<User>> => {
+ return getPaginatedData("users", options, [], (doc) => {
+  const data = doc.data();
+  return {
+   id: doc.id,
+   phoneNumber: data.phoneNumber,
+   password: data.password,
+   fullName: data.fullName || "",
+   isAdmin: data.isAdmin || false,
+   createdAt: data.createdAt.toDate(),
+   updatedAt: data.updatedAt.toDate(),
+  };
+ });
+};
+
+// Paginated Products
+export const getPaginatedProducts = async (
+ options: PaginationOptions
+): Promise<PaginatedResult<Product>> => {
+ return getPaginatedData("products", options, [], (doc) => {
+  const data = doc.data();
+  return {
+   id: doc.id,
+   ...data,
+   createdAt: data.createdAt.toDate() as Date,
+   updatedAt: data.updatedAt.toDate() as Date,
+  } as Product;
+ });
+};
+
+// Paginated Orders
+export const getPaginatedOrders = async (
+ options: PaginationOptions
+): Promise<PaginatedResult<Order>> => {
+ return getPaginatedData("orders", options, [], (doc) => {
+  const data = doc.data();
+  return {
+   id: doc.id,
+   userId: data.userId,
+   productId: data.productId,
+   duration: data.duration,
+   totalAmount: data.totalAmount,
+   status: data.status,
+   createdAt: data.createdAt.toDate(),
+  };
+ });
+};
+
+// Paginated User Subscriptions
+export const getPaginatedUserSubscriptions = async (
+ options: PaginationOptions
+): Promise<PaginatedResult<UserSubscription>> => {
+ return getPaginatedData("userSubscriptions", options, [], (doc) => {
+  const data = doc.data();
+  return {
+   id: doc.id,
+   userId: data.userId,
+   productId: data.productId,
+   startDate: data.startDate.toDate(),
+   endDate: data.endDate.toDate(),
+   isActive: data.isActive,
+   createdAt: data.createdAt.toDate(),
+  };
+ });
+};
+
+// Paginated Sessions
+export const getPaginatedSessions = async (
+ options: PaginationOptions,
+ activeOnly: boolean = false
+): Promise<PaginatedResult<UserSession>> => {
+ const whereConditions = activeOnly
+  ? [{ field: "isActive", operator: "==" as WhereFilterOp, value: true }]
+  : [];
+
+ const result = await getPaginatedData(
+  "userSessions",
+  { ...options, orderByField: "lastActive" },
+  whereConditions,
+  (doc) => {
+   const data = doc.data();
+   return {
+    id: doc.id,
+    ...data,
+    loginTime: data.loginTime?.toMillis() || 0,
+    lastActive: data.lastActive?.toMillis() || 0,
+    revokedAt: data.revokedAt?.toMillis(),
+   } as UserSession;
+  }
+ );
+
+ // Fetch user info for sessions
+ const sessionsWithUserInfo = await Promise.all(
+  result.data.map(async (session: UserSession) => {
+   if (!session.userInfo && session.userId) {
+    try {
+     const userDoc = await getUserById(session.userId);
+     if (userDoc) {
+      session.userInfo = {
+       phoneNumber: userDoc.phoneNumber || "N/A",
+       fullName: userDoc.fullName || "",
+      };
+     }
+    } catch (error) {
+     console.error(`Error fetching user info for ${session.userId}:`, error);
+    }
+   }
+   return session;
+  })
+ );
+
+ return { ...result, data: sessionsWithUserInfo };
+};
+
+// Paginated Pages
+export const getPaginatedPages = async (
+ options: PaginationOptions
+): Promise<PaginatedResult<Page>> => {
+ return getPaginatedData("pages", options, [], (doc) => {
+  const data = doc.data();
+  return {
+   id: doc.id,
+   slug: data.slug,
+   title: data.title,
+   content: data.content,
+   isPublished: data.isPublished || false,
+   createdAt: data.createdAt.toDate(),
+   updatedAt: data.updatedAt.toDate(),
+  };
+ });
+};
+
+// Paginated Advertisements
+export const getPaginatedAdvertisements = async (
+ options: PaginationOptions
+): Promise<PaginatedResult<Advertisement>> => {
+ return getPaginatedData(
+  "advertisements",
+  { ...options, orderByField: "priority", orderDirection: "desc" },
+  [],
+  (doc) => {
+   const data = doc.data();
+   return {
+    id: doc.id,
+    name: data.name,
+    imageUrl: data.imageUrl,
+    isActive: data.isActive,
+    priority: data.priority || 0,
+    createdAt: data.createdAt.toDate(),
+    updatedAt: data.updatedAt.toDate(),
+   };
+  }
+ );
 };

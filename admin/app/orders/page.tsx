@@ -1,38 +1,29 @@
 "use client";
 
-import PaginatedTable from "@/components/PaginatedTable";
+import { IntegratedServerTable } from "@/components";
+import type { IntegratedServerTableRef } from "@/components/IntegratedServerTable";
 import {
  createOrder,
  createUser,
  createUserSubscription,
  deleteOrder,
- getAllOrders,
  getAllProducts,
  getAllUsers,
+ getPaginatedOrders,
  updateOrderStatus,
 } from "@/lib/firebaseService";
 import { Order, Product, User } from "@/types";
-import {
- Add,
- Delete,
- FilterList,
- PersonAdd,
- ShoppingCart,
-} from "@mui/icons-material";
+import { Add, Delete, PersonAdd, ShoppingCart } from "@mui/icons-material";
 import {
  Alert,
  Box,
  Button,
- Card,
- CardContent,
  Chip,
- Collapse,
  Dialog,
  DialogActions,
  DialogContent,
  DialogTitle,
  FormControl,
- Grid,
  IconButton,
  InputLabel,
  MenuItem,
@@ -44,7 +35,7 @@ import {
  Typography,
 } from "@mui/material";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface CreateOrderForm {
@@ -73,21 +64,12 @@ const statusLabels = {
 };
 
 export default function OrdersPage() {
- const [orders, setOrders] = useState<Order[]>([]);
- const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+ // Ref to access table methods
+ const tableRef = useRef<IntegratedServerTableRef<Order>>(null);
  const [users, setUsers] = useState<User[]>([]);
  const [products, setProducts] = useState<Product[]>([]);
- const [loading, setLoading] = useState(true);
  const [open, setOpen] = useState(false);
  const [createUserOpen, setCreateUserOpen] = useState(false);
- const [showFilter, setShowFilter] = useState(false);
-
- // Filter states
- const [filterUserId, setFilterUserId] = useState("");
- const [filterProductId, setFilterProductId] = useState("");
- const [filterStatus, setFilterStatus] = useState<Order["status"] | "">("");
- const [filterStartDate, setFilterStartDate] = useState("");
- const [filterEndDate, setFilterEndDate] = useState("");
 
  const [alert, setAlert] = useState<{
   type: "success" | "error";
@@ -107,69 +89,21 @@ export default function OrdersPage() {
   reset: resetUser,
   formState: { errors: userErrors },
  } = useForm<CreateUserForm>();
-
- const loadData = async () => {
+ const loadStaticData = async () => {
   try {
-   setLoading(true);
-   const [ordersData, usersData, productsData] = await Promise.all([
-    getAllOrders(),
+   const [usersData, productsData] = await Promise.all([
     getAllUsers(),
     getAllProducts(),
    ]);
-   setOrders(ordersData);
    setUsers(usersData);
    setProducts(productsData);
-   setFilteredOrders(ordersData); // Khởi tạo danh sách đã lọc
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi tải dữ liệu" });
-  } finally {
-   setLoading(false);
   }
  };
- // Logic lọc đơn hàng
- useEffect(() => {
-  let filtered = [...orders];
-
-  // Lọc theo khách hàng
-  if (filterUserId) {
-   filtered = filtered.filter((order) => order.userId === filterUserId);
-  }
-
-  // Lọc theo sản phẩm
-  if (filterProductId) {
-   filtered = filtered.filter((order) => order.productId === filterProductId);
-  }
-
-  // Lọc theo trạng thái
-  if (filterStatus) {
-   filtered = filtered.filter((order) => order.status === filterStatus);
-  }
-
-  // Lọc theo ngày bắt đầu
-  if (filterStartDate) {
-   const startDate = new Date(filterStartDate);
-   filtered = filtered.filter((order) => order.createdAt >= startDate);
-  }
-
-  // Lọc theo ngày kết thúc
-  if (filterEndDate) {
-   const endDate = new Date(filterEndDate);
-   endDate.setHours(23, 59, 59, 999); // Cuối ngày
-   filtered = filtered.filter((order) => order.createdAt <= endDate);
-  }
-
-  setFilteredOrders(filtered);
- }, [
-  orders,
-  filterUserId,
-  filterProductId,
-  filterStatus,
-  filterStartDate,
-  filterEndDate,
- ]);
 
  useEffect(() => {
-  loadData();
+  loadStaticData();
  }, []);
  const onSubmit = async (data: CreateOrderForm) => {
   try {
@@ -182,7 +116,7 @@ export default function OrdersPage() {
    setAlert({ type: "success", message: "Tạo đơn hàng thành công" });
    setOpen(false);
    reset();
-   loadData();
+   tableRef.current?.refresh();
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi tạo đơn hàng" });
   }
@@ -194,7 +128,7 @@ export default function OrdersPage() {
    setAlert({ type: "success", message: "Tạo khách hàng thành công" });
    setCreateUserOpen(false);
    resetUser();
-   loadData(); // Reload data để lấy user mới tạo
+   loadStaticData(); // Reload static data để lấy user mới tạo
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi tạo khách hàng" });
   }
@@ -204,7 +138,8 @@ export default function OrdersPage() {
   newStatus: Order["status"]
  ) => {
   // Không cho phép thay đổi trạng thái đơn hàng đã hoàn thành
-  const order = orders.find((o) => o.id === orderId);
+  const currentData = tableRef.current?.getCurrentData() || [];
+  const order = currentData.find((o: Order) => o.id === orderId);
   if (order?.status === "completed") {
    setAlert({
     type: "error",
@@ -227,7 +162,7 @@ export default function OrdersPage() {
     }
    }
    setAlert({ type: "success", message: "Cập nhật trạng thái thành công" });
-   loadData();
+   tableRef.current?.refresh();
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi cập nhật trạng thái" });
   }
@@ -250,18 +185,11 @@ export default function OrdersPage() {
    try {
     await deleteOrder(order.id);
     setAlert({ type: "success", message: "Xóa đơn hàng thành công" });
-    loadData();
+    tableRef.current?.refresh();
    } catch {
     setAlert({ type: "error", message: "Có lỗi khi xóa đơn hàng" });
    }
   }
- };
- const clearFilters = () => {
-  setFilterUserId("");
-  setFilterProductId("");
-  setFilterStatus("");
-  setFilterStartDate("");
-  setFilterEndDate("");
  };
 
  const getUserName = (userId: string) => {
@@ -291,144 +219,33 @@ export default function OrdersPage() {
    <Box
     sx={{
      display: "flex",
-     justifyContent: "space-between",
+     justifyContent: "flex-end",
      alignItems: "center",
      mb: 3,
     }}
    >
-    <Typography variant="h4" component="h1">
-     Quản lý đơn hàng
-    </Typography>
-    <Box sx={{ display: "flex", gap: 2 }}>
-     <Button
-      variant="outlined"
-      startIcon={<FilterList />}
-      onClick={() => setShowFilter(!showFilter)}
-     >
-      Lọc đơn hàng
-     </Button>
-     <Button
-      variant="contained"
-      startIcon={<Add />}
-      onClick={() => setOpen(true)}
-     >
-      Tạo đơn hàng
-     </Button>
-    </Box>
+    <Button
+     variant="contained"
+     startIcon={<Add />}
+     onClick={() => setOpen(true)}
+    >
+     Tạo đơn hàng
+    </Button>
    </Box>
-   {/* Bộ lọc */}
-   <Collapse in={showFilter}>
-    <Card sx={{ mb: 3 }}>
-     <CardContent>
-      <Typography variant="h6" gutterBottom>
-       Bộ lọc đơn hàng
-      </Typography>
-      <Grid container spacing={2}>
-       {" "}
-       <Grid item xs={12} md={3}>
-        <FormControl fullWidth size="small">
-         <InputLabel>Khách hàng</InputLabel>
-         <Select
-          value={filterUserId}
-          onChange={(e) => setFilterUserId(e.target.value)}
-          label="Khách hàng"
-         >
-          <MenuItem value="">Tất cả</MenuItem>
-          {users.map((user) => (
-           <MenuItem key={user.id} value={user.id}>
-            {user.phoneNumber} ({user.fullName})
-           </MenuItem>
-          ))}
-         </Select>
-        </FormControl>
-       </Grid>
-       <Grid item xs={12} md={3}>
-        <FormControl fullWidth size="small">
-         <InputLabel>Sản phẩm</InputLabel>
-         <Select
-          value={filterProductId}
-          onChange={(e) => setFilterProductId(e.target.value)}
-          label="Sản phẩm"
-         >
-          <MenuItem value="">Tất cả</MenuItem>
-          {products.map((product) => (
-           <MenuItem key={product.id} value={product.id}>
-            {product.name}
-           </MenuItem>
-          ))}
-         </Select>
-        </FormControl>
-       </Grid>
-       <Grid item xs={12} md={2}>
-        <FormControl fullWidth size="small">
-         <InputLabel>Trạng thái</InputLabel>
-         <Select
-          value={filterStatus}
-          onChange={(e) =>
-           setFilterStatus(e.target.value as Order["status"] | "")
-          }
-          label="Trạng thái"
-         >
-          <MenuItem value="">Tất cả</MenuItem>
-          <MenuItem value="pending">Chờ xử lý</MenuItem>
-          <MenuItem value="completed">Hoàn thành</MenuItem>
-          <MenuItem value="cancelled">Đã hủy</MenuItem>
-         </Select>
-        </FormControl>
-       </Grid>
-       <Grid item xs={12} md={2}>
-        <TextField
-         value={filterStartDate}
-         onChange={(e) => setFilterStartDate(e.target.value)}
-         label="Từ ngày"
-         type="date"
-         size="small"
-         fullWidth
-         InputLabelProps={{
-          shrink: true,
-         }}
-        />
-       </Grid>
-       <Grid item xs={12} md={2}>
-        <TextField
-         value={filterEndDate}
-         onChange={(e) => setFilterEndDate(e.target.value)}
-         label="Đến ngày"
-         type="date"
-         size="small"
-         fullWidth
-         InputLabelProps={{
-          shrink: true,
-         }}
-        />
-       </Grid>
-      </Grid>
-
-      <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-       <Button variant="outlined" size="small" onClick={clearFilters}>
-        Xóa bộ lọc
-       </Button>
-       <Typography variant="body2" sx={{ alignSelf: "center", ml: 2 }}>
-        Hiển thị {filteredOrders.length} / {orders.length} đơn hàng
-       </Typography>
-      </Box>
-     </CardContent>
-    </Card>
-   </Collapse>
    {alert && (
     <Alert severity={alert.type} sx={{ mb: 2 }} onClose={() => setAlert(null)}>
+     {" "}
      {alert.message}
     </Alert>
    )}{" "}
-   <PaginatedTable
-    data={filteredOrders}
-    loading={loading}
-    itemsPerPage={15}
-    emptyMessage={
-     orders.length === 0
-      ? "Chưa có đơn hàng nào"
-      : "Không có đơn hàng nào phù hợp với bộ lọc"
-    }
+   <IntegratedServerTable<Order>
+    ref={tableRef}
+    fetchFunction={getPaginatedOrders}
+    initialLimit={15}
+    orderByField="createdAt"
+    orderDirection="desc"
+    title="Quản lý đơn hàng"
+    emptyMessage="Chưa có đơn hàng nào"
     renderHeader={() => (
      <TableHead>
       <TableRow>

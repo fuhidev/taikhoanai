@@ -4,7 +4,6 @@ import {
  Assignment,
  Campaign,
  Description,
- Extension,
  Home,
  Inventory,
  People,
@@ -25,7 +24,6 @@ const Navigation = () => {
   if (pathname.startsWith("/products")) return 2;
   if (pathname.startsWith("/orders")) return 3;
   if (pathname.startsWith("/subscriptions")) return 4;
-  if (pathname.startsWith("/extension-versions")) return 5;
   if (pathname.startsWith("/pages")) return 6;
   if (pathname.startsWith("/sessions")) return 7;
   if (pathname.startsWith("/advertisements")) return 8;
@@ -38,11 +36,6 @@ const Navigation = () => {
   { label: "Sản phẩm", href: "/products", icon: <Inventory /> },
   { label: "Đơn hàng", href: "/orders", icon: <ShoppingCart /> },
   { label: "Subscription", href: "/subscriptions", icon: <Assignment /> },
-  {
-   label: "Extension Versions",
-   href: "/extension-versions",
-   icon: <Extension />,
-  },
   { label: "Pages", href: "/pages", icon: <Description /> },
   { label: "Sessions", href: "/sessions", icon: <Security /> },
   { label: "Quảng cáo", href: "/advertisements", icon: <Campaign /> },

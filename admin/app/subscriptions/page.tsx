@@ -1,11 +1,12 @@
 "use client";
 
-import SearchableTable from "@/components/SearchableTable";
+import { IntegratedServerTable } from "@/components";
+import type { IntegratedServerTableRef } from "@/components/IntegratedServerTable";
 import {
  createUserSubscription,
  getAllProducts,
- getAllUserSubscriptions,
  getAllUsers,
+ getPaginatedUserSubscriptions,
  revokeUserSubscription,
 } from "@/lib/firebaseService";
 import { Product, User, UserSubscription } from "@/types";
@@ -22,7 +23,6 @@ import {
  FormControl,
  InputLabel,
  MenuItem,
- Paper,
  Select,
  TableCell,
  TableHead,
@@ -31,7 +31,7 @@ import {
  Typography,
 } from "@mui/material";
 import { format, isAfter } from "date-fns";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface CreateSubscriptionForm {
@@ -41,15 +41,15 @@ interface CreateSubscriptionForm {
 }
 
 export default function SubscriptionsPage() {
- const [subscriptions, setSubscriptions] = useState<UserSubscription[]>([]);
+ // Ref to access table methods
+ const tableRef = useRef<IntegratedServerTableRef<UserSubscription>>(null);
+
  const [users, setUsers] = useState<User[]>([]);
  const [products, setProducts] = useState<Product[]>([]);
- const [loading, setLoading] = useState(true);
  const [open, setOpen] = useState(false);
  const [revokeDialogOpen, setRevokeDialogOpen] = useState(false);
  const [selectedSubscription, setSelectedSubscription] =
   useState<UserSubscription | null>(null);
- const [statusFilter, setStatusFilter] = useState<string>("all");
  const [alert, setAlert] = useState<{
   type: "success" | "error";
   message: string;
@@ -64,26 +64,21 @@ export default function SubscriptionsPage() {
  } = useForm<CreateSubscriptionForm>();
  const watchedProductId = watch("productId");
 
- const loadData = async () => {
+ const loadStaticData = async () => {
   try {
-   setLoading(true);
-   const [subscriptionsData, usersData, productsData] = await Promise.all([
-    getAllUserSubscriptions(),
+   const [usersData, productsData] = await Promise.all([
     getAllUsers(),
     getAllProducts(),
    ]);
-   setSubscriptions(subscriptionsData);
    setUsers(usersData);
    setProducts(productsData);
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi tải dữ liệu" });
-  } finally {
-   setLoading(false);
   }
  };
 
  useEffect(() => {
-  loadData();
+  loadStaticData();
  }, []);
  const onSubmit = async (data: CreateSubscriptionForm) => {
   try {
@@ -91,7 +86,7 @@ export default function SubscriptionsPage() {
    setAlert({ type: "success", message: "Tạo subscription thành công" });
    setOpen(false);
    reset();
-   loadData();
+   tableRef.current?.refresh();
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi tạo subscription" });
   }
@@ -105,7 +100,7 @@ export default function SubscriptionsPage() {
    setAlert({ type: "success", message: "Thu hồi subscription thành công" });
    setRevokeDialogOpen(false);
    setSelectedSubscription(null);
-   loadData();
+   tableRef.current?.refresh();
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi thu hồi subscription" });
   }
@@ -136,46 +131,7 @@ export default function SubscriptionsPage() {
   const product = products.find((p) => p.id === productId);
   return product ? product.name : "Unknown";
  };
-
  const isExpired = (endDate: Date) => !isAfter(endDate, new Date());
-
- // Filter subscriptions theo trạng thái
- const getFilteredSubscriptions = () => {
-  if (statusFilter === "all") return subscriptions;
-
-  return subscriptions.filter((subscription) => {
-   const expired = isExpired(subscription.endDate);
-   const active = subscription.isActive && !expired;
-
-   switch (statusFilter) {
-    case "active":
-     return active;
-    case "expired":
-     return expired;
-    case "inactive":
-     return !subscription.isActive && !expired;
-    default:
-     return true;
-   }
-  });
- };
-
- // Thống kê subscriptions
- const getStats = () => {
-  const total = subscriptions.length;
-  const active = subscriptions.filter((sub) => {
-   const expired = isExpired(sub.endDate);
-   return sub.isActive && !expired;
-  }).length;
-  const expired = subscriptions.filter((sub) => isExpired(sub.endDate)).length;
-  const inactive = subscriptions.filter(
-   (sub) => !sub.isActive && !isExpired(sub.endDate)
-  ).length;
-
-  return { total, active, expired, inactive };
- };
-
- const stats = getStats();
 
  const selectedProduct = products.find((p) => p.id === watchedProductId);
 
@@ -184,101 +140,34 @@ export default function SubscriptionsPage() {
    <Box
     sx={{
      display: "flex",
-     justifyContent: "space-between",
+     justifyContent: "end",
      alignItems: "center",
      mb: 3,
     }}
    >
-    <Typography variant="h4" component="h1">
-     Quản lý Subscription
-    </Typography>
-    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-     <FormControl size="small" sx={{ minWidth: 150 }}>
-      <InputLabel>Lọc theo trạng thái</InputLabel>
-      <Select
-       value={statusFilter}
-       onChange={(e) => setStatusFilter(e.target.value)}
-       label="Lọc theo trạng thái"
-      >
-       <MenuItem value="all">Tất cả</MenuItem>
-       <MenuItem value="active">Hoạt động</MenuItem>
-       <MenuItem value="expired">Hết hạn</MenuItem>
-       <MenuItem value="inactive">Không hoạt động</MenuItem>
-      </Select>
-     </FormControl>
-     <Button
-      variant="contained"
-      startIcon={<Add />}
-      onClick={() => setOpen(true)}
-     >
-      Thêm Subscription
-     </Button>
-    </Box>
+    {" "}
+    <Button
+     variant="contained"
+     startIcon={<Add />}
+     onClick={() => setOpen(true)}
+    >
+     Thêm Subscription
+    </Button>
    </Box>
-
    {alert && (
     <Alert severity={alert.type} sx={{ mb: 2 }} onClose={() => setAlert(null)}>
      {alert.message}
     </Alert>
    )}
-
    {/* Thống kê nhanh */}
-   <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-    <Paper sx={{ p: 2, flex: 1, textAlign: "center" }}>
-     <Typography variant="h4" color="primary">
-      {stats.total}
-     </Typography>
-     <Typography variant="body2" color="text.secondary">
-      Tổng cộng
-     </Typography>
-    </Paper>
-    <Paper sx={{ p: 2, flex: 1, textAlign: "center" }}>
-     <Typography variant="h4" color="success.main">
-      {stats.active}
-     </Typography>
-     <Typography variant="body2" color="text.secondary">
-      Hoạt động
-     </Typography>
-    </Paper>
-    <Paper sx={{ p: 2, flex: 1, textAlign: "center" }}>
-     <Typography variant="h4" color="error.main">
-      {stats.expired}
-     </Typography>
-     <Typography variant="body2" color="text.secondary">
-      Hết hạn
-     </Typography>
-    </Paper>
-    <Paper sx={{ p: 2, flex: 1, textAlign: "center" }}>
-     <Typography variant="h4" color="warning.main">
-      {stats.inactive}
-     </Typography>
-     <Typography variant="body2" color="text.secondary">
-      Không hoạt động
-     </Typography>
-    </Paper>
-   </Box>
-
-   <SearchableTable
-    data={getFilteredSubscriptions().map((subscription) => ({
-     ...subscription,
-     userName: getUserName(subscription.userId),
-     productName: getProductName(subscription.productId),
-    }))}
-    searchFields={["userName", "productName"]}
-    loading={loading}
-    itemsPerPage={12}
-    searchPlaceholder="Tìm kiếm theo khách hàng hoặc sản phẩm..."
-    emptyMessage={
-     statusFilter === "all"
-      ? "Chưa có subscription nào"
-      : `Không có subscription nào ở trạng thái "${
-         statusFilter === "active"
-          ? "hoạt động"
-          : statusFilter === "expired"
-          ? "hết hạn"
-          : "không hoạt động"
-        }"`
-    }
+   <IntegratedServerTable<UserSubscription>
+    ref={tableRef}
+    fetchFunction={getPaginatedUserSubscriptions}
+    initialLimit={12}
+    orderByField="createdAt"
+    orderDirection="desc"
+    title="Quản lý Subscriptions"
+    emptyMessage="Chưa có subscription nào"
     renderHeader={() => (
      <TableHead>
       <TableRow>
@@ -293,15 +182,15 @@ export default function SubscriptionsPage() {
       </TableRow>
      </TableHead>
     )}
-    renderRow={(subscription) => {
+    renderRow={(subscription: UserSubscription) => {
      const expired = isExpired(subscription.endDate);
      const active = subscription.isActive && !expired;
 
      return (
       <TableRow key={subscription.id}>
        <TableCell>{subscription.id.slice(-8)}</TableCell>
-       <TableCell>{subscription.userName}</TableCell>
-       <TableCell>{subscription.productName}</TableCell>
+       <TableCell>{getUserName(subscription.userId)}</TableCell>
+       <TableCell>{getProductName(subscription.productId)}</TableCell>
        <TableCell>{format(subscription.startDate, "dd/MM/yyyy")}</TableCell>
        <TableCell>{format(subscription.endDate, "dd/MM/yyyy")}</TableCell>
        <TableCell>
@@ -331,7 +220,6 @@ export default function SubscriptionsPage() {
      );
     }}
    />
-
    {/* Dialog tạo subscription */}
    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -397,7 +285,6 @@ export default function SubscriptionsPage() {
      </DialogActions>
     </form>
    </Dialog>
-
    {/* Dialog xác nhận thu hồi subscription */}
    <Dialog
     open={revokeDialogOpen}

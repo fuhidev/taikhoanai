@@ -1,10 +1,11 @@
 "use client";
 
-import PaginatedTable from "@/components/PaginatedTable";
+import { IntegratedServerTable } from "@/components";
+import type { IntegratedServerTableRef } from "@/components/IntegratedServerTable";
 import {
  createProduct,
  deleteProduct,
- getAllProducts,
+ getPaginatedProducts,
  updateProduct,
 } from "@/lib/firebaseService";
 import { Product } from "@/types";
@@ -32,20 +33,20 @@ import {
  Typography,
 } from "@mui/material";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 type ProductForm = Omit<Product, "id">;
 export default function ProductsPage() {
- const [products, setProducts] = useState<Product[]>([]);
- const [loading, setLoading] = useState(true);
+ // Ref to access table methods
+ const tableRef = useRef<IntegratedServerTableRef<Product>>(null);
+
  const [open, setOpen] = useState(false);
  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
  const [alert, setAlert] = useState<{
   type: "success" | "error";
   message: string;
  } | null>(null);
-
  const {
   register,
   handleSubmit,
@@ -53,22 +54,6 @@ export default function ProductsPage() {
   setValue,
   formState: { errors },
  } = useForm<ProductForm>();
-
- const loadProducts = async () => {
-  try {
-   setLoading(true);
-   const productsData = await getAllProducts();
-   setProducts(productsData);
-  } catch {
-   setAlert({ type: "error", message: "Có lỗi khi tải danh sách sản phẩm" });
-  } finally {
-   setLoading(false);
-  }
- };
-
- useEffect(() => {
-  loadProducts();
- }, []);
 
  const handleOpenDialog = (product?: Product) => {
   if (product) {
@@ -105,7 +90,7 @@ export default function ProductsPage() {
    setOpen(false);
    reset();
    setEditingProduct(null);
-   loadProducts();
+   tableRef.current?.refresh();
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi lưu sản phẩm" });
   }
@@ -116,7 +101,7 @@ export default function ProductsPage() {
    try {
     await deleteProduct(product.id);
     setAlert({ type: "success", message: "Xóa sản phẩm thành công" });
-    loadProducts();
+    tableRef.current?.refresh();
    } catch {
     setAlert({ type: "error", message: "Có lỗi khi xóa sản phẩm" });
    }
@@ -156,10 +141,13 @@ export default function ProductsPage() {
      {alert.message}
     </Alert>
    )}{" "}
-   <PaginatedTable
-    data={products}
-    loading={loading}
-    itemsPerPage={10}
+   <IntegratedServerTable<Product>
+    ref={tableRef}
+    fetchFunction={getPaginatedProducts}
+    initialLimit={10}
+    orderByField="createdAt"
+    orderDirection="desc"
+    title="Quản lý sản phẩm"
     emptyMessage="Chưa có sản phẩm nào"
     renderHeader={() => (
      <TableHead>
@@ -175,7 +163,7 @@ export default function ProductsPage() {
       </TableRow>
      </TableHead>
     )}
-    renderRow={(product) => (
+    renderRow={(product: Product) => (
      <TableRow key={product.id}>
       <TableCell>
        <Avatar

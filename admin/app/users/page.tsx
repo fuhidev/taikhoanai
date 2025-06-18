@@ -1,9 +1,10 @@
 "use client";
 
-import PaginatedTable from "@/components/PaginatedTable";
+import { IntegratedServerTable } from "@/components";
+import type { IntegratedServerTableRef } from "@/components/IntegratedServerTable";
 import {
  createUser,
- getAllUsers,
+ getPaginatedUsers,
  updateUserAdmin,
 } from "@/lib/firebaseService";
 import { User } from "@/types";
@@ -24,10 +25,9 @@ import {
  TableHead,
  TableRow,
  TextField,
- Typography,
 } from "@mui/material";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface CreateUserForm {
@@ -44,8 +44,9 @@ interface EditUserForm {
 }
 
 export default function UsersPage() {
- const [users, setUsers] = useState<User[]>([]);
- const [loading, setLoading] = useState(true);
+ // Ref to access table methods
+ const tableRef = useRef<IntegratedServerTableRef<User>>(null);
+
  const [open, setOpen] = useState(false);
  const [editOpen, setEditOpen] = useState(false);
  const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -60,7 +61,6 @@ export default function UsersPage() {
   reset,
   formState: { errors },
  } = useForm<CreateUserForm>();
-
  const {
   register: registerEdit,
   handleSubmit: handleSubmitEdit,
@@ -69,21 +69,6 @@ export default function UsersPage() {
   formState: { errors: errorsEdit },
  } = useForm<EditUserForm>();
 
- const loadUsers = async () => {
-  try {
-   setLoading(true);
-   const usersData = await getAllUsers();
-   setUsers(usersData);
-  } catch {
-   setAlert({ type: "error", message: "Có lỗi khi tải danh sách người dùng" });
-  } finally {
-   setLoading(false);
-  }
- };
-
- useEffect(() => {
-  loadUsers();
- }, []);
  const onSubmit = async (data: CreateUserForm) => {
   try {
    const userId = await createUser(
@@ -96,16 +81,14 @@ export default function UsersPage() {
    if (data.isAdmin) {
     await updateUserAdmin(userId, true);
    }
-
    setAlert({ type: "success", message: "Tạo người dùng thành công" });
    setOpen(false);
    reset();
-   loadUsers();
+   tableRef.current?.refresh(); // Refresh server pagination
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi tạo người dùng" });
   }
  };
-
  const onEditSubmit = async (data: EditUserForm) => {
   if (!editingUser) return;
 
@@ -131,7 +114,7 @@ export default function UsersPage() {
    setEditOpen(false);
    resetEdit();
    setEditingUser(null);
-   loadUsers();
+   tableRef.current?.refresh();
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi cập nhật người dùng" });
   }
@@ -158,7 +141,7 @@ export default function UsersPage() {
    }
 
    setAlert({ type: "success", message: "Xóa người dùng thành công" });
-   loadUsers();
+   tableRef.current?.refresh();
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi xóa người dùng" });
   }
@@ -174,25 +157,21 @@ export default function UsersPage() {
     type: "success",
     message: `Đã ${!currentAdminStatus ? "cấp" : "thu hồi"} quyền admin`,
    });
-   loadUsers();
+   tableRef.current?.refresh();
   } catch {
    setAlert({ type: "error", message: "Có lỗi khi cập nhật quyền admin" });
   }
  };
-
  return (
   <Box>
    <Box
     sx={{
      display: "flex",
-     justifyContent: "space-between",
+     justifyContent: "flex-end",
      alignItems: "center",
      mb: 3,
     }}
    >
-    <Typography variant="h4" component="h1">
-     Quản lý người dùng
-    </Typography>
     <Button
      variant="contained"
      startIcon={<Add />}
@@ -206,10 +185,13 @@ export default function UsersPage() {
      {alert.message}
     </Alert>
    )}{" "}
-   <PaginatedTable
-    data={users}
-    loading={loading}
-    itemsPerPage={10}
+   <IntegratedServerTable<User>
+    ref={tableRef}
+    fetchFunction={getPaginatedUsers}
+    initialLimit={10}
+    orderByField="createdAt"
+    orderDirection="desc"
+    title="Quản lý người dùng"
     emptyMessage="Chưa có người dùng nào"
     renderHeader={() => (
      <TableHead>
@@ -225,9 +207,9 @@ export default function UsersPage() {
       </TableRow>
      </TableHead>
     )}
-    renderRow={(user) => (
+    renderRow={(user: User) => (
      <TableRow key={user.id}>
-      <TableCell>{user.id}</TableCell>
+      <TableCell>{user.id.slice(-8)}</TableCell>
       <TableCell>{user.phoneNumber}</TableCell>
       <TableCell>{user.fullName}</TableCell>
       <TableCell>{format(user.createdAt, "dd/MM/yyyy HH:mm")}</TableCell>

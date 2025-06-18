@@ -1,6 +1,7 @@
 // Pagination system exports
 export { usePagination } from "../hooks/usePagination";
 export { useSearchablePagination } from "../hooks/useSearchablePagination";
+export { default as IntegratedServerTable } from "./IntegratedServerTable";
 export { default as PaginatedTable } from "./PaginatedTable";
 export { default as Pagination } from "./Pagination";
 export { default as PaginationWrapper } from "./PaginationWrapper";
