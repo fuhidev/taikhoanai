@@ -163,7 +163,7 @@ export default function SubscriptionsPage() {
    <IntegratedServerTable<UserSubscription>
     ref={tableRef}
     fetchFunction={getPaginatedUserSubscriptions}
-    initialLimit={12}
+    initialLimit={10}
     orderByField="createdAt"
     orderDirection="desc"
     title="Quản lý Subscriptions"

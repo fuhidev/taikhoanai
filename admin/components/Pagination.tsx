@@ -1,9 +1,4 @@
-import {
- ChevronLeft,
- ChevronRight,
- FirstPage,
- LastPage,
-} from "@mui/icons-material";
+import { FirstPage, LastPage } from "@mui/icons-material";
 import {
  Box,
  FormControl,
@@ -60,18 +55,6 @@ export default function Pagination({
 
  const handleLastPage = () => {
   onPageChange(totalPages);
- };
-
- const handlePrevPage = () => {
-  if (hasPrevPage) {
-   onPageChange(currentPage - 1);
-  }
- };
-
- const handleNextPage = () => {
-  if (hasNextPage) {
-   onPageChange(currentPage + 1);
-  }
  };
 
  if (totalItems === 0) {
@@ -140,15 +123,6 @@ export default function Pagination({
      </IconButton>
     )}
 
-    <IconButton
-     onClick={handlePrevPage}
-     disabled={!hasPrevPage}
-     size={size}
-     title="Trang trước"
-    >
-     <ChevronLeft />
-    </IconButton>
-
     <MuiPagination
      count={totalPages}
      page={currentPage}
@@ -159,15 +133,6 @@ export default function Pagination({
      siblingCount={1}
      boundaryCount={1}
     />
-
-    <IconButton
-     onClick={handleNextPage}
-     disabled={!hasNextPage}
-     size={size}
-     title="Trang sau"
-    >
-     <ChevronRight />
-    </IconButton>
 
     {showFirstLast && (
      <IconButton

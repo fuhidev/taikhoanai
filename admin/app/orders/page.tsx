@@ -241,7 +241,7 @@ export default function OrdersPage() {
    <IntegratedServerTable<Order>
     ref={tableRef}
     fetchFunction={getPaginatedOrders}
-    initialLimit={15}
+    initialLimit={10}
     orderByField="createdAt"
     orderDirection="desc"
     title="Quản lý đơn hàng"
