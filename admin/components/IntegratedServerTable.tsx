@@ -43,6 +43,7 @@ interface IntegratedServerTableProps<T> {
 
  // Callback when data changes (optional)
  onDataChange?: (data: T[], pagination: PaginatedResult<T>) => void;
+ actions?: React.ReactNode;
 }
 
 export interface IntegratedServerTableRef<T = unknown> {
@@ -70,6 +71,7 @@ function IntegratedServerTableComponent<T>(
   emptyMessage = "Không có dữ liệu",
   refreshKey,
   onDataChange,
+  actions,
  }: IntegratedServerTableProps<T>,
  ref: React.Ref<IntegratedServerTableRef<T>>
 ) {
@@ -181,11 +183,23 @@ function IntegratedServerTableComponent<T>(
 
  return (
   <Box>
-   {title && (
-    <Typography variant="h4" gutterBottom>
-     {title}
-    </Typography>
-   )}
+   <Box
+    sx={{
+     display: "flex",
+     justifyContent: "space-between",
+     alignItems: "center",
+     mb: 3,
+    }}
+   >
+    {title ? (
+     <Typography variant="h4" gutterBottom>
+      {title}
+     </Typography>
+    ) : (
+     <div></div>
+    )}
+    {actions}
+   </Box>
 
    <TableContainer component={Paper}>
     <Table>

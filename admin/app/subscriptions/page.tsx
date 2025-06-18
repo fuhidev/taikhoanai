@@ -137,23 +137,6 @@ export default function SubscriptionsPage() {
 
  return (
   <Box>
-   <Box
-    sx={{
-     display: "flex",
-     justifyContent: "end",
-     alignItems: "center",
-     mb: 3,
-    }}
-   >
-    {" "}
-    <Button
-     variant="contained"
-     startIcon={<Add />}
-     onClick={() => setOpen(true)}
-    >
-     Thêm Subscription
-    </Button>
-   </Box>
    {alert && (
     <Alert severity={alert.type} sx={{ mb: 2 }} onClose={() => setAlert(null)}>
      {alert.message}
@@ -162,6 +145,15 @@ export default function SubscriptionsPage() {
    {/* Thống kê nhanh */}
    <IntegratedServerTable<UserSubscription>
     ref={tableRef}
+    actions={
+     <Button
+      variant="contained"
+      startIcon={<Add />}
+      onClick={() => setOpen(true)}
+     >
+      Thêm Subscription
+     </Button>
+    }
     fetchFunction={getPaginatedUserSubscriptions}
     initialLimit={10}
     orderByField="createdAt"

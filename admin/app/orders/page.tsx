@@ -37,6 +37,7 @@ import {
 import { format } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { formatPrice } from "../utils/formatNumber";
 
 interface CreateOrderForm {
  userId: string;
@@ -216,22 +217,6 @@ export default function OrdersPage() {
  const selectedProduct = products.find((p) => p.id === watchedProductId);
  return (
   <Box>
-   <Box
-    sx={{
-     display: "flex",
-     justifyContent: "flex-end",
-     alignItems: "center",
-     mb: 3,
-    }}
-   >
-    <Button
-     variant="contained"
-     startIcon={<Add />}
-     onClick={() => setOpen(true)}
-    >
-     Tạo đơn hàng
-    </Button>
-   </Box>
    {alert && (
     <Alert severity={alert.type} sx={{ mb: 2 }} onClose={() => setAlert(null)}>
      {" "}
@@ -246,6 +231,15 @@ export default function OrdersPage() {
     orderDirection="desc"
     title="Quản lý đơn hàng"
     emptyMessage="Chưa có đơn hàng nào"
+    actions={
+     <Button
+      variant="contained"
+      startIcon={<Add />}
+      onClick={() => setOpen(true)}
+     >
+      Tạo đơn hàng
+     </Button>
+    }
     renderHeader={() => (
      <TableHead>
       <TableRow>
@@ -266,9 +260,7 @@ export default function OrdersPage() {
       <TableCell>{getUserName(order.userId)}</TableCell>
       <TableCell>{getProductName(order.productId)}</TableCell>
       <TableCell>{order.duration} ngày</TableCell>
-      <TableCell>
-       {order.totalAmount ? `${order.totalAmount.toLocaleString()}đ` : "-"}
-      </TableCell>
+      <TableCell>{formatPrice(order.totalAmount)}</TableCell>
       <TableCell>
        <Chip
         label={statusLabels[order.status]}

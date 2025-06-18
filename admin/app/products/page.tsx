@@ -3,38 +3,39 @@
 import { IntegratedServerTable } from "@/components";
 import type { IntegratedServerTableRef } from "@/components/IntegratedServerTable";
 import {
- createProduct,
- deleteProduct,
- getPaginatedProducts,
- updateProduct,
+  createProduct,
+  deleteProduct,
+  getPaginatedProducts,
+  updateProduct,
 } from "@/lib/firebaseService";
 import { Product } from "@/types";
 import {
- Add,
- Delete,
- Edit,
- Image as ImageIcon,
- Inventory,
+  Add,
+  Delete,
+  Edit,
+  Image as ImageIcon,
+  Inventory,
 } from "@mui/icons-material";
 import {
- Alert,
- Avatar,
- Box,
- Button,
- Dialog,
- DialogActions,
- DialogContent,
- DialogTitle,
- IconButton,
- TableCell,
- TableHead,
- TableRow,
- TextField,
- Typography,
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { format } from "date-fns";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { formatPrice } from "../utils/formatNumber";
 
 type ProductForm = Omit<Product, "id">;
 export default function ProductsPage() {
@@ -108,26 +109,18 @@ export default function ProductsPage() {
   }
  };
 
- const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-   style: "currency",
-   currency: "VND",
-  }).format(price);
- };
+
 
  return (
   <Box>
    <Box
     sx={{
      display: "flex",
-     justifyContent: "space-between",
+     justifyContent: "end",
      alignItems: "center",
      mb: 3,
     }}
    >
-    <Typography variant="h4" component="h1">
-     Quản lý sản phẩm
-    </Typography>
     <Button
      variant="contained"
      startIcon={<Add />}
