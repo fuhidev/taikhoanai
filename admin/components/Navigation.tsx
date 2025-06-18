@@ -4,7 +4,6 @@ import {
  Assignment,
  Campaign,
  Description,
- Home,
  Inventory,
  People,
  Security,
@@ -13,38 +12,29 @@ import {
 import { Box, Tab, Tabs, useMediaQuery, useTheme } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useMemo } from "react";
+const navigationItems = [
+ { label: "Người dùng", href: "/users", icon: <People /> },
+ { label: "Sản phẩm", href: "/products", icon: <Inventory /> },
+ { label: "Đơn hàng", href: "/orders", icon: <ShoppingCart /> },
+ { label: "Subscription", href: "/subscriptions", icon: <Assignment /> },
+ { label: "Pages", href: "/pages", icon: <Description /> },
+ { label: "Sessions", href: "/sessions", icon: <Security /> },
+ { label: "Quảng cáo", href: "/advertisements", icon: <Campaign /> },
+];
 
 const Navigation = () => {
  const pathname = usePathname();
  const theme = useTheme();
  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
- const getTabValue = () => {
-  if (pathname === "/") return 0;
-  if (pathname.startsWith("/users")) return 1;
-  if (pathname.startsWith("/products")) return 2;
-  if (pathname.startsWith("/orders")) return 3;
-  if (pathname.startsWith("/subscriptions")) return 4;
-  if (pathname.startsWith("/pages")) return 6;
-  if (pathname.startsWith("/sessions")) return 7;
-  if (pathname.startsWith("/advertisements")) return 8;
-  if (pathname.startsWith("/test-data")) return 9;
-  return 0;
- };
- const navigationItems = [
-  { label: "Dashboard", href: "/", icon: <Home /> },
-  { label: "Người dùng", href: "/users", icon: <People /> },
-  { label: "Sản phẩm", href: "/products", icon: <Inventory /> },
-  { label: "Đơn hàng", href: "/orders", icon: <ShoppingCart /> },
-  { label: "Subscription", href: "/subscriptions", icon: <Assignment /> },
-  { label: "Pages", href: "/pages", icon: <Description /> },
-  { label: "Sessions", href: "/sessions", icon: <Security /> },
-  { label: "Quảng cáo", href: "/advertisements", icon: <Campaign /> },
- ];
+ const tabValue = useMemo(() => {
+  return navigationItems.findIndex((item) => item.href.includes(pathname));
+ }, [pathname]);
 
  return (
   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
    <Tabs
-    value={getTabValue()}
+    value={tabValue}
     variant={isMobile ? "scrollable" : "standard"}
     scrollButtons={isMobile ? "auto" : false}
     sx={{
