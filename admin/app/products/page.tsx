@@ -20,7 +20,6 @@ import {
  Avatar,
  Box,
  Button,
- Chip,
  Dialog,
  DialogActions,
  DialogContent,
@@ -188,9 +187,9 @@ export default function ProductsPage() {
        </Avatar>
       </TableCell>
       <TableCell>
-       <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Chip label={product.name} color="primary" sx={{ mr: 1 }} />
-       </Box>
+       <Typography variant="body1" fontWeight="medium">
+        {product.name}
+       </Typography>
       </TableCell>
       <TableCell>
        <Box>

@@ -33,7 +33,7 @@ import { useForm } from "react-hook-form";
 interface CreateUserForm {
  phoneNumber: string;
  password: string;
- fullName?: string;
+ fullName: string;
  isAdmin?: boolean;
 }
 
@@ -229,7 +229,7 @@ export default function UsersPage() {
      <TableRow key={user.id}>
       <TableCell>{user.id}</TableCell>
       <TableCell>{user.phoneNumber}</TableCell>
-      <TableCell>{user.fullName || "-"}</TableCell>
+      <TableCell>{user.fullName}</TableCell>
       <TableCell>{format(user.createdAt, "dd/MM/yyyy HH:mm")}</TableCell>
       <TableCell>{format(user.updatedAt, "dd/MM/yyyy HH:mm")}</TableCell>
       <TableCell>
@@ -292,10 +292,18 @@ export default function UsersPage() {
        helperText={errors.phoneNumber?.message}
       />
       <TextField
-       {...register("fullName")}
-       label="Tên đầy đủ (tùy chọn)"
+       {...register("fullName", {
+        required: "Tên đầy đủ là bắt buộc",
+        minLength: {
+         value: 2,
+         message: "Tên phải có ít nhất 2 ký tự",
+        },
+       })}
+       label="Tên đầy đủ"
        fullWidth
        margin="normal"
+       error={!!errors.fullName}
+       helperText={errors.fullName?.message}
       />
       <TextField
        {...register("password", {

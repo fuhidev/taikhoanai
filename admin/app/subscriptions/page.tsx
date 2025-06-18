@@ -118,7 +118,18 @@ export default function SubscriptionsPage() {
 
  const getUserName = (userId: string) => {
   const user = users.find((u) => u.id === userId);
-  return user ? user.phoneNumber : "Unknown";
+  return user ? (
+   <Box>
+    <Typography variant="body2" fontWeight="medium">
+     {user.phoneNumber}
+    </Typography>
+    <Typography variant="body2" color="text.secondary">
+     {user.fullName}
+    </Typography>
+   </Box>
+  ) : (
+   "Unknown"
+  );
  };
 
  const getProductName = (productId: string) => {
@@ -340,7 +351,7 @@ export default function SubscriptionsPage() {
        >
         {users.map((user) => (
          <MenuItem key={user.id} value={user.id}>
-          {user.phoneNumber}
+          {user.phoneNumber} ({user.fullName})
          </MenuItem>
         ))}
        </Select>

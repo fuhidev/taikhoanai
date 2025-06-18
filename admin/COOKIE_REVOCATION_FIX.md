@@ -48,14 +48,14 @@
 
 1. **Heartbeat check mỗi 1 phút**: Kiểm tra user còn login không
 2. **Access check mỗi 2 phút**: Kiểm tra access cho domain hiện tại
-3. **Subscription check mỗi 5 phút**: Kiểm tra subscription status
-4. **Focus/Visibility check**: Kiểm tra khi user chuyển tab về
+3. **Subscription check mỗi 5 phút**: Kiểm tra subscription status từ server
+4. **Focus/Visibility check**: Kiểm tra khi user chuyển tab về hoặc focus window
 
 ### Khi User reload page:
 
-1. **Content script load** → Kiểm tra access
-2. **Nếu không có access** → Xóa cookies + session → Hiển thị notification
-3. **Nếu có access hợp lệ** → Inject cookies → Validate lại sau 1s
+1. **Content script load** → Kiểm tra access ngay lập tức
+2. **Nếu không có access** → Xóa cookies + session → Hiển thị notification → Redirect
+3. **Nếu có access hợp lệ** → Inject cookies → Validate lại sau 1s để đảm bảo
 
 ## Kết quả
 

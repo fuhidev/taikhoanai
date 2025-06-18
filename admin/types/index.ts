@@ -2,7 +2,7 @@ export interface User {
  id: string;
  phoneNumber: string;
  password: string;
- fullName?: string;
+ fullName: string;
  isAdmin?: boolean;
  createdAt: Date;
  updatedAt: Date;

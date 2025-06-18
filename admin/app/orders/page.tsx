@@ -57,6 +57,7 @@ interface CreateOrderForm {
 interface CreateUserForm {
  phoneNumber: string;
  password: string;
+ fullName: string;
 }
 
 const statusColors = {
@@ -189,7 +190,7 @@ export default function OrdersPage() {
 
  const onSubmitCreateUser = async (data: CreateUserForm) => {
   try {
-   await createUser(data.phoneNumber, data.password);
+   await createUser(data.phoneNumber, data.password, data.fullName);
    setAlert({ type: "success", message: "Tạo khách hàng thành công" });
    setCreateUserOpen(false);
    resetUser();
@@ -265,7 +266,18 @@ export default function OrdersPage() {
 
  const getUserName = (userId: string) => {
   const user = users.find((u) => u.id === userId);
-  return user ? user.phoneNumber : "Unknown";
+  return user ? (
+   <Box>
+    <Typography variant="body2" fontWeight="medium">
+     {user.phoneNumber}
+    </Typography>
+    <Typography variant="body2" color="text.secondary">
+     {user.fullName}
+    </Typography>
+   </Box>
+  ) : (
+   "Unknown"
+  );
  };
 
  const getProductName = (productId: string) => {
@@ -324,7 +336,7 @@ export default function OrdersPage() {
           <MenuItem value="">Tất cả</MenuItem>
           {users.map((user) => (
            <MenuItem key={user.id} value={user.id}>
-            {user.phoneNumber}
+            {user.phoneNumber} ({user.fullName})
            </MenuItem>
           ))}
          </Select>
@@ -495,7 +507,7 @@ export default function OrdersPage() {
        >
         {users.map((user) => (
          <MenuItem key={user.id} value={user.id}>
-          {user.phoneNumber}
+          {user.phoneNumber} ({user.fullName})
          </MenuItem>
         ))}
        </Select>
@@ -607,6 +619,21 @@ export default function OrdersPage() {
        margin="normal"
        error={!!userErrors.password}
        helperText={userErrors.password?.message}
+      />
+
+      <TextField
+       {...registerUser("fullName", {
+        required: "Tên đầy đủ là bắt buộc",
+        minLength: {
+         value: 2,
+         message: "Tên phải có ít nhất 2 ký tự",
+        },
+       })}
+       label="Tên đầy đủ"
+       fullWidth
+       margin="normal"
+       error={!!userErrors.fullName}
+       helperText={userErrors.fullName?.message}
       />
      </DialogContent>
      <DialogActions>

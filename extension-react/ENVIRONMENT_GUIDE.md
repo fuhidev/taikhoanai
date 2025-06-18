@@ -83,8 +83,9 @@ npm run package
 
 - Tên: "aigiare.vn"
 - Version chính thức
-- Không có localhost permissions
-- Icon tiêu chuẩn
+- Không có localhost permissions (chỉ production domains)
+- Icon tiêu chuẩn màu xanh
+- Optimized cho môi trường production
 
 ## Automatic Configuration
 

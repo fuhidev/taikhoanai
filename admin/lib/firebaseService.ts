@@ -30,7 +30,7 @@ import { db } from "./firebase";
 export const createUser = async (
  phoneNumber: string,
  password: string,
- fullName?: string
+ fullName: string
 ): Promise<string> => {
  const user: Omit<User, "id"> = {
   phoneNumber,

@@ -15,38 +15,18 @@ import {
 
 // Mock data cho demo
 const generateMockUsers = (count: number) => {
- const firstNames = [
-  "Nguyễn",
-  "Trần",
-  "Lê",
-  "Phạm",
-  "Hoàng",
-  "Huỳnh",
-  "Phan",
-  "Vũ",
-  "Võ",
-  "Đặng",
- ];
- const lastNames = [
-  "Văn A",
-  "Thị B",
-  "Minh C",
-  "Hoàng D",
-  "Thu E",
-  "Nam F",
-  "Lan G",
-  "Hùng H",
-  "Mai I",
-  "Dũng J",
- ];
+ const lastNames = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Võ", "Đặng"];
+ const middleNames = ["Văn", "Thị", "Minh", "Hoàng", "Thu", "Hồng", "Quang", "Thanh", "Ngọc", "Bảo"];
+ const firstNames = ["An", "Bình", "Cường", "Dũng", "Hà", "Linh", "Nam", "Oanh", "Phương", "Quân"];
  const domains = ["gmail.com", "yahoo.com", "hotmail.com", "example.com"];
  const roles = ["admin", "user", "moderator"];
  const statuses = ["active", "inactive", "pending"];
 
  return Array.from({ length: count }, (_, index) => {
-  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
   const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-  const name = `${firstName} ${lastName}`;
+  const middleName = middleNames[Math.floor(Math.random() * middleNames.length)];
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const name = `${lastName} ${middleName} ${firstName}`;
   const email = `${name.toLowerCase().replace(/\s+/g, ".")}${index}@${
    domains[Math.floor(Math.random() * domains.length)]
   }`;
@@ -179,6 +159,26 @@ export default function SearchDemo() {
     <Typography variant="h6" gutterBottom>
      💡 Hướng dẫn sử dụng
     </Typography>
+    <Typography variant="body2" paragraph>
+     • <strong>Tìm kiếm:</strong> Nhập từ khóa vào ô tìm kiếm để lọc dữ liệu
+     theo tên, email hoặc số điện thoại
+    </Typography>
+    <Typography variant="body2" paragraph>
+     • <strong>Phân trang:</strong> Sử dụng các nút điều hướng để chuyển trang
+     hoặc thay đổi số items trên mỗi trang
+    </Typography>
+    <Typography variant="body2" paragraph>
+     • <strong>Xóa tìm kiếm:</strong> Click vào icon X trong ô tìm kiếm để xóa
+     bộ lọc
+    </Typography>
+    <Typography variant="body2">
+     • <strong>Tổ hợp:</strong> Component này kết hợp tìm kiếm và phân trang một
+     cách mượt mà
+    </Typography>
+   </Box>
+  </Box>
+ );
+}
     <Typography variant="body2" paragraph>
      • <strong>Tìm kiếm:</strong> Nhập từ khóa vào ô tìm kiếm để lọc dữ liệu
      theo tên, email hoặc số điện thoại
