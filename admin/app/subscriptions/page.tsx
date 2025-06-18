@@ -1,5 +1,6 @@
 "use client";
 
+import SearchableTable from "@/components/SearchableTable";
 import {
  createUserSubscription,
  getAllProducts,
@@ -23,10 +24,7 @@ import {
  MenuItem,
  Paper,
  Select,
- Table,
- TableBody,
  TableCell,
- TableContainer,
  TableHead,
  TableRow,
  TextField,
@@ -51,6 +49,7 @@ export default function SubscriptionsPage() {
  const [revokeDialogOpen, setRevokeDialogOpen] = useState(false);
  const [selectedSubscription, setSelectedSubscription] =
   useState<UserSubscription | null>(null);
+ const [statusFilter, setStatusFilter] = useState<string>("all");
  const [alert, setAlert] = useState<{
   type: "success" | "error";
   message: string;
@@ -129,6 +128,44 @@ export default function SubscriptionsPage() {
 
  const isExpired = (endDate: Date) => !isAfter(endDate, new Date());
 
+ // Filter subscriptions theo trạng thái
+ const getFilteredSubscriptions = () => {
+  if (statusFilter === "all") return subscriptions;
+
+  return subscriptions.filter((subscription) => {
+   const expired = isExpired(subscription.endDate);
+   const active = subscription.isActive && !expired;
+
+   switch (statusFilter) {
+    case "active":
+     return active;
+    case "expired":
+     return expired;
+    case "inactive":
+     return !subscription.isActive && !expired;
+    default:
+     return true;
+   }
+  });
+ };
+
+ // Thống kê subscriptions
+ const getStats = () => {
+  const total = subscriptions.length;
+  const active = subscriptions.filter((sub) => {
+   const expired = isExpired(sub.endDate);
+   return sub.isActive && !expired;
+  }).length;
+  const expired = subscriptions.filter((sub) => isExpired(sub.endDate)).length;
+  const inactive = subscriptions.filter(
+   (sub) => !sub.isActive && !isExpired(sub.endDate)
+  ).length;
+
+  return { total, active, expired, inactive };
+ };
+
+ const stats = getStats();
+
  const selectedProduct = products.find((p) => p.id === watchedProductId);
 
  return (
@@ -144,13 +181,28 @@ export default function SubscriptionsPage() {
     <Typography variant="h4" component="h1">
      Quản lý Subscription
     </Typography>
-    <Button
-     variant="contained"
-     startIcon={<Add />}
-     onClick={() => setOpen(true)}
-    >
-     Thêm subscription
-    </Button>
+    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+     <FormControl size="small" sx={{ minWidth: 150 }}>
+      <InputLabel>Lọc theo trạng thái</InputLabel>
+      <Select
+       value={statusFilter}
+       onChange={(e) => setStatusFilter(e.target.value)}
+       label="Lọc theo trạng thái"
+      >
+       <MenuItem value="all">Tất cả</MenuItem>
+       <MenuItem value="active">Hoạt động</MenuItem>
+       <MenuItem value="expired">Hết hạn</MenuItem>
+       <MenuItem value="inactive">Không hoạt động</MenuItem>
+      </Select>
+     </FormControl>
+     <Button
+      variant="contained"
+      startIcon={<Add />}
+      onClick={() => setOpen(true)}
+     >
+      Thêm Subscription
+     </Button>
+    </Box>
    </Box>
 
    {alert && (
@@ -159,9 +211,64 @@ export default function SubscriptionsPage() {
     </Alert>
    )}
 
-   <TableContainer component={Paper}>
-    <Table>
-     {" "}
+   {/* Thống kê nhanh */}
+   <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+    <Paper sx={{ p: 2, flex: 1, textAlign: "center" }}>
+     <Typography variant="h4" color="primary">
+      {stats.total}
+     </Typography>
+     <Typography variant="body2" color="text.secondary">
+      Tổng cộng
+     </Typography>
+    </Paper>
+    <Paper sx={{ p: 2, flex: 1, textAlign: "center" }}>
+     <Typography variant="h4" color="success.main">
+      {stats.active}
+     </Typography>
+     <Typography variant="body2" color="text.secondary">
+      Hoạt động
+     </Typography>
+    </Paper>
+    <Paper sx={{ p: 2, flex: 1, textAlign: "center" }}>
+     <Typography variant="h4" color="error.main">
+      {stats.expired}
+     </Typography>
+     <Typography variant="body2" color="text.secondary">
+      Hết hạn
+     </Typography>
+    </Paper>
+    <Paper sx={{ p: 2, flex: 1, textAlign: "center" }}>
+     <Typography variant="h4" color="warning.main">
+      {stats.inactive}
+     </Typography>
+     <Typography variant="body2" color="text.secondary">
+      Không hoạt động
+     </Typography>
+    </Paper>
+   </Box>
+
+   <SearchableTable
+    data={getFilteredSubscriptions().map((subscription) => ({
+     ...subscription,
+     userName: getUserName(subscription.userId),
+     productName: getProductName(subscription.productId),
+    }))}
+    searchFields={["userName", "productName"]}
+    loading={loading}
+    itemsPerPage={12}
+    searchPlaceholder="Tìm kiếm theo khách hàng hoặc sản phẩm..."
+    emptyMessage={
+     statusFilter === "all"
+      ? "Chưa có subscription nào"
+      : `Không có subscription nào ở trạng thái "${
+         statusFilter === "active"
+          ? "hoạt động"
+          : statusFilter === "expired"
+          ? "hết hạn"
+          : "không hoạt động"
+        }"`
+    }
+    renderHeader={() => (
      <TableHead>
       <TableRow>
        <TableCell>ID</TableCell>
@@ -174,64 +281,45 @@ export default function SubscriptionsPage() {
        <TableCell>Thao tác</TableCell>
       </TableRow>
      </TableHead>
-     <TableBody>
-      {" "}
-      {loading ? (
-       <TableRow>
-        <TableCell colSpan={8} align="center">
-         Đang tải...
-        </TableCell>
-       </TableRow>
-      ) : subscriptions.length === 0 ? (
-       <TableRow>
-        <TableCell colSpan={8} align="center">
-         Chưa có subscription nào
-        </TableCell>
-       </TableRow>
-      ) : (
-       subscriptions.map((subscription) => {
-        const expired = isExpired(subscription.endDate);
-        const active = subscription.isActive && !expired;
+    )}
+    renderRow={(subscription) => {
+     const expired = isExpired(subscription.endDate);
+     const active = subscription.isActive && !expired;
 
-        return (
-         <TableRow key={subscription.id}>
-          <TableCell>{subscription.id.slice(-8)}</TableCell>
-          <TableCell>{getUserName(subscription.userId)}</TableCell>
-          <TableCell>{getProductName(subscription.productId)}</TableCell>
-          <TableCell>{format(subscription.startDate, "dd/MM/yyyy")}</TableCell>
-          <TableCell>{format(subscription.endDate, "dd/MM/yyyy")}</TableCell>
-          <TableCell>
-           <Chip
-            label={
-             active ? "Hoạt động" : expired ? "Hết hạn" : "Không hoạt động"
-            }
-            color={active ? "success" : expired ? "error" : "default"}
-            size="small"
-           />
-          </TableCell>{" "}
-          <TableCell>
-           {format(subscription.createdAt, "dd/MM/yyyy HH:mm")}
-          </TableCell>
-          <TableCell>
-           {active && (
-            <Button
-             variant="outlined"
-             color="error"
-             size="small"
-             startIcon={<Block />}
-             onClick={() => openRevokeDialog(subscription)}
-            >
-             Thu hồi
-            </Button>
-           )}
-          </TableCell>
-         </TableRow>
-        );
-       })
-      )}
-     </TableBody>
-    </Table>
-   </TableContainer>
+     return (
+      <TableRow key={subscription.id}>
+       <TableCell>{subscription.id.slice(-8)}</TableCell>
+       <TableCell>{subscription.userName}</TableCell>
+       <TableCell>{subscription.productName}</TableCell>
+       <TableCell>{format(subscription.startDate, "dd/MM/yyyy")}</TableCell>
+       <TableCell>{format(subscription.endDate, "dd/MM/yyyy")}</TableCell>
+       <TableCell>
+        <Chip
+         label={active ? "Hoạt động" : expired ? "Hết hạn" : "Không hoạt động"}
+         color={active ? "success" : expired ? "error" : "default"}
+         size="small"
+        />
+       </TableCell>
+       <TableCell>
+        {format(subscription.createdAt, "dd/MM/yyyy HH:mm")}
+       </TableCell>
+       <TableCell>
+        {active && (
+         <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          startIcon={<Block />}
+          onClick={() => openRevokeDialog(subscription)}
+         >
+          Thu hồi
+         </Button>
+        )}
+       </TableCell>
+      </TableRow>
+     );
+    }}
+   />
 
    {/* Dialog tạo subscription */}
    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>

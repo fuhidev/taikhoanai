@@ -1,5 +1,6 @@
 "use client";
 
+import PaginatedTable from "@/components/PaginatedTable";
 import {
  createOrder,
  createUser,
@@ -35,12 +36,8 @@ import {
  IconButton,
  InputLabel,
  MenuItem,
- Paper,
  Select,
- Table,
- TableBody,
  TableCell,
- TableContainer,
  TableHead,
  TableRow,
  TextField,
@@ -307,7 +304,6 @@ export default function OrdersPage() {
      </Button>
     </Box>
    </Box>
-
    {/* Bộ lọc */}
    <Collapse in={showFilter}>
     <Card sx={{ mb: 3 }}>
@@ -407,15 +403,21 @@ export default function OrdersPage() {
      </CardContent>
     </Card>
    </Collapse>
-
    {alert && (
     <Alert severity={alert.type} sx={{ mb: 2 }} onClose={() => setAlert(null)}>
      {alert.message}
     </Alert>
-   )}
-
-   <TableContainer component={Paper}>
-    <Table>
+   )}{" "}
+   <PaginatedTable
+    data={filteredOrders}
+    loading={loading}
+    itemsPerPage={15}
+    emptyMessage={
+     orders.length === 0
+      ? "Chưa có đơn hàng nào"
+      : "Không có đơn hàng nào phù hợp với bộ lọc"
+    }
+    renderHeader={() => (
      <TableHead>
       <TableRow>
        <TableCell>ID</TableCell>
@@ -427,72 +429,53 @@ export default function OrdersPage() {
        <TableCell>Ngày tạo</TableCell>
        <TableCell>Thao tác</TableCell>
       </TableRow>
-     </TableHead>{" "}
-     <TableBody>
-      {loading ? (
-       <TableRow>
-        <TableCell colSpan={8} align="center">
-         Đang tải...
-        </TableCell>
-       </TableRow>
-      ) : filteredOrders.length === 0 ? (
-       <TableRow>
-        <TableCell colSpan={8} align="center">
-         {orders.length === 0
-          ? "Chưa có đơn hàng nào"
-          : "Không có đơn hàng nào phù hợp với bộ lọc"}
-        </TableCell>
-       </TableRow>
-      ) : (
-       filteredOrders.map((order) => (
-        <TableRow key={order.id}>
-         <TableCell>{order.id.slice(-8)}</TableCell>
-         <TableCell>{getUserName(order.userId)}</TableCell>
-         <TableCell>{getProductName(order.productId)}</TableCell>
-         <TableCell>{order.duration} ngày</TableCell>
-         <TableCell>
-          {order.totalAmount ? `${order.totalAmount.toLocaleString()}đ` : "-"}
-         </TableCell>
-         <TableCell>
-          <Chip
-           label={statusLabels[order.status]}
-           color={statusColors[order.status]}
-           size="small"
-          />
-         </TableCell>{" "}
-         <TableCell>{format(order.createdAt, "dd/MM/yyyy HH:mm")}</TableCell>{" "}
-         <TableCell>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-           <FormControl size="small" sx={{ minWidth: 120 }}>
-            <Select
-             value={order.status}
-             onChange={(e) =>
-              handleStatusChange(order.id, e.target.value as Order["status"])
-             }
-             disabled={order.status === "completed"}
-            >
-             <MenuItem value="pending">Chờ xử lý</MenuItem>
-             <MenuItem value="completed">Hoàn thành</MenuItem>
-             <MenuItem value="cancelled">Đã hủy</MenuItem>
-            </Select>
-           </FormControl>
-           <IconButton
-            onClick={() => handleDeleteOrder(order)}
-            color="error"
-            size="small"
-            disabled={order.status === "completed"}
-           >
-            <Delete />
-           </IconButton>
-          </Box>
-         </TableCell>
-        </TableRow>
-       ))
-      )}
-     </TableBody>
-    </Table>
-   </TableContainer>
-
+     </TableHead>
+    )}
+    renderRow={(order) => (
+     <TableRow key={order.id}>
+      <TableCell>{order.id.slice(-8)}</TableCell>
+      <TableCell>{getUserName(order.userId)}</TableCell>
+      <TableCell>{getProductName(order.productId)}</TableCell>
+      <TableCell>{order.duration} ngày</TableCell>
+      <TableCell>
+       {order.totalAmount ? `${order.totalAmount.toLocaleString()}đ` : "-"}
+      </TableCell>
+      <TableCell>
+       <Chip
+        label={statusLabels[order.status]}
+        color={statusColors[order.status]}
+        size="small"
+       />
+      </TableCell>
+      <TableCell>{format(order.createdAt, "dd/MM/yyyy HH:mm")}</TableCell>
+      <TableCell>
+       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+         <Select
+          value={order.status}
+          onChange={(e) =>
+           handleStatusChange(order.id, e.target.value as Order["status"])
+          }
+          disabled={order.status === "completed"}
+         >
+          <MenuItem value="pending">Chờ xử lý</MenuItem>
+          <MenuItem value="completed">Hoàn thành</MenuItem>
+          <MenuItem value="cancelled">Đã hủy</MenuItem>
+         </Select>
+        </FormControl>
+        <IconButton
+         onClick={() => handleDeleteOrder(order)}
+         color="error"
+         size="small"
+         disabled={order.status === "completed"}
+        >
+         <Delete />
+        </IconButton>
+       </Box>
+      </TableCell>
+     </TableRow>
+    )}
+   />
    {/* Dialog tạo đơn hàng */}
    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -580,7 +563,6 @@ export default function OrdersPage() {
      </DialogActions>
     </form>
    </Dialog>
-
    {/* Dialog tạo khách hàng mới */}
    <Dialog
     open={createUserOpen}

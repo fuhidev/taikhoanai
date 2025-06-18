@@ -1,5 +1,6 @@
 "use client";
 
+import PaginatedTable from "@/components/PaginatedTable";
 import {
  createProduct,
  deleteProduct,
@@ -25,11 +26,7 @@ import {
  DialogContent,
  DialogTitle,
  IconButton,
- Paper,
- Table,
- TableBody,
  TableCell,
- TableContainer,
  TableHead,
  TableRow,
  TextField,
@@ -155,15 +152,17 @@ export default function ProductsPage() {
      Thêm sản phẩm
     </Button>
    </Box>
-
    {alert && (
     <Alert severity={alert.type} sx={{ mb: 2 }} onClose={() => setAlert(null)}>
      {alert.message}
     </Alert>
-   )}
-
-   <TableContainer component={Paper}>
-    <Table>
+   )}{" "}
+   <PaginatedTable
+    data={products}
+    loading={loading}
+    itemsPerPage={10}
+    emptyMessage="Chưa có sản phẩm nào"
+    renderHeader={() => (
      <TableHead>
       <TableRow>
        <TableCell>Hình ảnh</TableCell>
@@ -176,91 +175,74 @@ export default function ProductsPage() {
        <TableCell>Thao tác</TableCell>
       </TableRow>
      </TableHead>
-     <TableBody>
-      {loading ? (
-       <TableRow>
-        <TableCell colSpan={8} align="center">
-         Đang tải...
-        </TableCell>
-       </TableRow>
-      ) : products.length === 0 ? (
-       <TableRow>
-        <TableCell colSpan={8} align="center">
-         Chưa có sản phẩm nào
-        </TableCell>
-       </TableRow>
-      ) : (
-       products.map((product) => (
-        <TableRow key={product.id}>
-         <TableCell>
-          <Avatar
-           src={product.image}
-           sx={{ width: 60, height: 60 }}
-           variant="rounded"
-          >
-           <ImageIcon />
-          </Avatar>
-         </TableCell>
-         <TableCell>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-           <Chip label={product.name} color="primary" sx={{ mr: 1 }} />
-          </Box>
-         </TableCell>
-         <TableCell>
-          <Box>
-           <Typography variant="body1" fontWeight="bold" color="primary">
-            {formatPrice(product.price || 0)}
-           </Typography>
-           {product.originalPrice &&
-            product.originalPrice > (product.price || 0) && (
-             <Typography
-              variant="body2"
-              sx={{ textDecoration: "line-through", color: "text.secondary" }}
-             >
-              {formatPrice(product.originalPrice)}
-             </Typography>
-            )}
-          </Box>
-         </TableCell>
-         <TableCell>{product.duration} ngày</TableCell>
-         <TableCell>
-          <a href={product.website} target="_blank" rel="noopener noreferrer">
-           {product.website}
-          </a>
-         </TableCell>
-         <TableCell>
+    )}
+    renderRow={(product) => (
+     <TableRow key={product.id}>
+      <TableCell>
+       <Avatar
+        src={product.image}
+        sx={{ width: 60, height: 60 }}
+        variant="rounded"
+       >
+        <ImageIcon />
+       </Avatar>
+      </TableCell>
+      <TableCell>
+       <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Chip label={product.name} color="primary" sx={{ mr: 1 }} />
+       </Box>
+      </TableCell>
+      <TableCell>
+       <Box>
+        <Typography variant="body1" fontWeight="bold" color="primary">
+         {formatPrice(product.price || 0)}
+        </Typography>
+        {product.originalPrice &&
+         product.originalPrice > (product.price || 0) && (
           <Typography
            variant="body2"
-           sx={{
-            maxWidth: 200,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
-            fontFamily: "monospace",
-            lineHeight: 1.2,
-           }}
+           sx={{ textDecoration: "line-through", color: "text.secondary" }}
           >
-           {product.cookie}
+           {formatPrice(product.originalPrice)}
           </Typography>
-         </TableCell>
-         <TableCell>{format(product.createdAt, "dd/MM/yyyy")}</TableCell>
-         <TableCell>
-          <IconButton onClick={() => handleOpenDialog(product)} color="primary">
-           <Edit />
-          </IconButton>
-          <IconButton onClick={() => handleDelete(product)} color="error">
-           <Delete />
-          </IconButton>
-         </TableCell>
-        </TableRow>
-       ))
-      )}
-     </TableBody>
-    </Table>
-   </TableContainer>
-
+         )}
+       </Box>
+      </TableCell>
+      <TableCell>{product.duration} ngày</TableCell>
+      <TableCell>
+       <a href={product.website} target="_blank" rel="noopener noreferrer">
+        {product.website}
+       </a>
+      </TableCell>
+      <TableCell>
+       <Typography
+        variant="body2"
+        sx={{
+         maxWidth: 200,
+         overflow: "hidden",
+         textOverflow: "ellipsis",
+         display: "-webkit-box",
+         WebkitLineClamp: 3,
+         WebkitBoxOrient: "vertical",
+         fontFamily: "monospace",
+         lineHeight: 1.2,
+        }}
+       >
+        {product.cookie}
+       </Typography>
+      </TableCell>
+      <TableCell>{format(product.createdAt, "dd/MM/yyyy")}</TableCell>
+      <TableCell>
+       <IconButton onClick={() => handleOpenDialog(product)} color="primary">
+        <Edit />
+       </IconButton>
+       <IconButton onClick={() => handleDelete(product)} color="error">
+        <Delete />
+       </IconButton>
+      </TableCell>
+     </TableRow>
+    )}
+   />
    {/* Dialog tạo/sửa sản phẩm */}
    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
     <form onSubmit={handleSubmit(onSubmit)}>

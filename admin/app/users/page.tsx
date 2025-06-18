@@ -1,5 +1,6 @@
 "use client";
 
+import PaginatedTable from "@/components/PaginatedTable";
 import {
  createUser,
  getAllUsers,
@@ -18,12 +19,8 @@ import {
  DialogTitle,
  FormControlLabel,
  IconButton,
- Paper,
  Switch,
- Table,
- TableBody,
  TableCell,
- TableContainer,
  TableHead,
  TableRow,
  TextField,
@@ -204,16 +201,17 @@ export default function UsersPage() {
      Thêm người dùng
     </Button>
    </Box>
-
    {alert && (
     <Alert severity={alert.type} sx={{ mb: 2 }} onClose={() => setAlert(null)}>
      {alert.message}
     </Alert>
-   )}
-
-   <TableContainer component={Paper}>
-    <Table>
-     {" "}
+   )}{" "}
+   <PaginatedTable
+    data={users}
+    loading={loading}
+    itemsPerPage={10}
+    emptyMessage="Chưa có người dùng nào"
+    renderHeader={() => (
      <TableHead>
       <TableRow>
        <TableCell>ID</TableCell>
@@ -226,66 +224,48 @@ export default function UsersPage() {
        <TableCell>Thao tác</TableCell>
       </TableRow>
      </TableHead>
-     <TableBody>
-      {" "}
-      {loading ? (
-       <TableRow>
-        <TableCell colSpan={8} align="center">
-         Đang tải...
-        </TableCell>
-       </TableRow>
-      ) : users.length === 0 ? (
-       <TableRow>
-        <TableCell colSpan={8} align="center">
-         Chưa có người dùng nào
-        </TableCell>
-       </TableRow>
-      ) : (
-       users.map((user) => (
-        <TableRow key={user.id}>
-         <TableCell>{user.id}</TableCell>
-         <TableCell>{user.phoneNumber}</TableCell>
-         <TableCell>{user.fullName || "-"}</TableCell>
-         <TableCell>{format(user.createdAt, "dd/MM/yyyy HH:mm")}</TableCell>
-         <TableCell>{format(user.updatedAt, "dd/MM/yyyy HH:mm")}</TableCell>
-         <TableCell>
-          <Chip label="Hoạt động" color="success" size="small" />
-         </TableCell>
-         <TableCell>
-          <FormControlLabel
-           control={
-            <Switch
-             checked={user.isAdmin || false}
-             onChange={() => handleToggleAdmin(user.id, user.isAdmin || false)}
-             color="primary"
-            />
-           }
-           label={user.isAdmin ? "Admin" : "User"}
-          />
-         </TableCell>
-         <TableCell>
-          <IconButton
-           onClick={() => handleEditUser(user)}
-           color="primary"
-           size="small"
-          >
-           <Edit />
-          </IconButton>
-          <IconButton
-           onClick={() => handleDeleteUser(user.id)}
-           color="error"
-           size="small"
-          >
-           <Delete />
-          </IconButton>
-         </TableCell>
-        </TableRow>
-       ))
-      )}
-     </TableBody>
-    </Table>
-   </TableContainer>
-
+    )}
+    renderRow={(user) => (
+     <TableRow key={user.id}>
+      <TableCell>{user.id}</TableCell>
+      <TableCell>{user.phoneNumber}</TableCell>
+      <TableCell>{user.fullName || "-"}</TableCell>
+      <TableCell>{format(user.createdAt, "dd/MM/yyyy HH:mm")}</TableCell>
+      <TableCell>{format(user.updatedAt, "dd/MM/yyyy HH:mm")}</TableCell>
+      <TableCell>
+       <Chip label="Hoạt động" color="success" size="small" />
+      </TableCell>
+      <TableCell>
+       <FormControlLabel
+        control={
+         <Switch
+          checked={user.isAdmin || false}
+          onChange={() => handleToggleAdmin(user.id, user.isAdmin || false)}
+          color="primary"
+         />
+        }
+        label={user.isAdmin ? "Admin" : "User"}
+       />
+      </TableCell>
+      <TableCell>
+       <IconButton
+        onClick={() => handleEditUser(user)}
+        color="primary"
+        size="small"
+       >
+        <Edit />
+       </IconButton>
+       <IconButton
+        onClick={() => handleDeleteUser(user.id)}
+        color="error"
+        size="small"
+       >
+        <Delete />
+       </IconButton>
+      </TableCell>
+     </TableRow>
+    )}
+   />
    {/* Dialog tạo người dùng */}
    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -346,7 +326,6 @@ export default function UsersPage() {
      </DialogActions>
     </form>{" "}
    </Dialog>
-
    {/* Dialog chỉnh sửa người dùng */}
    <Dialog
     open={editOpen}
