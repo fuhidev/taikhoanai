@@ -1,589 +1,172 @@
 // Content script for platform access management
 // aigiare.vn content script loaded on: ${window.location.href}
 
-// Flags to prevent infinite refresh loop
-const COOKIE_INJECTED_FLAG = "aigiare_cookies_injected";
-const LAST_ACCESS_CHECK = "aigiare_last_access_check";
-const LAST_HEARTBEAT = "aigiare_last_heartbeat";
-const ACCESS_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
-const HEARTBEAT_INTERVAL = 1 * 60 * 1000; // 1 minute
+import { AccessManager } from "./managers/AccessManager";
+import { IntervalManager } from "./managers/IntervalManager";
+import { NotificationManager } from "./managers/NotificationManager";
+import { DomainService } from "./services/DomainService";
+import { SessionService } from "./services/SessionService";
+import { INTERVALS, STORAGE_KEYS } from "./utils/constants";
 
-// Only run on supported domains (check against user's product access)
-async function shouldRunOnThisDomain(): Promise<boolean> {
- try {
-  const response: any = await new Promise((resolve) => {
-   chrome.runtime.sendMessage({ type: "GET_USER_DATA" }, resolve);
-  });
-
-  if (
-   response.success &&
-   response.userData &&
-   response.userData.productAccess
-  ) {
-   const currentDomain = window.location.hostname;
-   const hasAccess = response.userData.productAccess.some((access: any) => {
-    try {
-     const accessDomain = new URL(access.website).hostname;
-     return accessDomain === currentDomain;
-    } catch (err) {
-     return false;
-    }
-   }); // Domain check - Current: currentDomain, Has access: hasAccess
-   return hasAccess;
-  }
-
-  return false;
- } catch (error) {
-  // Error checking domain access: error
-  return false;
- }
-}
-
-// Initialize content script
-async function initContentScript() {
- const shouldRun = await shouldRunOnThisDomain();
-
- if (!shouldRun) {
-  // Skipping content script - no access to this domain
-  return;
- }
-
- // Check if cookies were already injected to prevent infinite refresh
- const lastCheck = sessionStorage.getItem(LAST_ACCESS_CHECK);
- const needsCheck =
-  !lastCheck || Date.now() - parseInt(lastCheck) > ACCESS_CHECK_INTERVAL;
-
- if (sessionStorage.getItem(COOKIE_INJECTED_FLAG) && !needsCheck) {
-  // Cookies already injected and recently checked, skipping...
- } else {
-  // Check if user has access to this website
-  checkUserAccess();
- }
-}
-
-// Start the content script
-initContentScript();
-
-async function checkUserAccess() {
- try {
-  // Checking user access for: window.location.href
-
-  // Update last access check time
-  sessionStorage.setItem(LAST_ACCESS_CHECK, Date.now().toString());
-
-  // Get user data from background script
-  const response: any = await new Promise((resolve) => {
-   chrome.runtime.sendMessage({ type: "GET_USER_DATA" }, resolve);
-  });
-
-  // User data response: response
-
-  if (response.success && response.userData) {
-   const userData = response.userData;
-   const currentDomain = window.location.hostname;
-
-   // Current domain: currentDomain
-   // User product access: userData.productAccess
-
-   // Find matching product access for this domain
-   const matchingAccess = userData.productAccess.find((access: any) => {
-    try {
-     const accessDomain = new URL(access.website).hostname;
-     // Comparing: accessDomain with currentDomain
-     return accessDomain === currentDomain;
-    } catch (err) {
-     // Error parsing access website URL: access.website, err
-     return false;
-    }
-   });
-
-   if (matchingAccess) {
-    // Found matching access: matchingAccess    // Check if access is still valid
-    const endDate = new Date(matchingAccess.endDate);
-    const now = new Date();
-
-    // Access end date: endDate
-    // Current date: now
-
-    if (endDate > now) {
-     // User has valid access to this website
-
-     // Check if cookies were already injected
-     if (!sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
-      injectCookies(matchingAccess);
-     } else {
-      // Cookies already injected, access still valid
-     }
-    } else {
-     // User access has expired for this website
-     clearCookiesAndSession();
-     showAccessExpiredNotification();
-    }
-   } else {
-    // User does not have access to this website
-    clearCookiesAndSession();
-    showNoAccessNotification();
-   }
-  } else {
-   // User not logged in or no user data
-   clearCookiesAndSession();
-  }
- } catch (error) {
-  // Error checking user access: error
- }
-}
-
-function injectCookies(access: any) {
- try {
-  // Injecting cookies and localStorage for access: access
-  // Website: access.website
-  // Cookies: access.cookies
-  // LocalStorage: access.localStorage
-
-  // Double-check access is still valid before injecting
-  const endDate = new Date(access.endDate);
-  const now = new Date();
-
-  if (endDate <= now) {
-   // Access expired during injection, aborting
-   clearCookiesAndSession();
-   showAccessExpiredNotification();
+class ContentScript {
+ private isPageVisible = !document.hidden;
+ async init(): Promise<void> {
+  const shouldRun = await DomainService.shouldRunOnThisDomain();
+  if (!shouldRun) {
    return;
   }
 
-  // Set flag to prevent re-injection
-  sessionStorage.setItem(COOKIE_INJECTED_FLAG, "true");
-
-  // Request background script to inject cookies if available
-  if (access.cookies && access.cookies.trim()) {
-   chrome.runtime.sendMessage({
-    type: "INJECT_COOKIES",
-    data: {
-     website: access.website,
-     cookies: access.cookies,
-     expirationDate: Math.floor(endDate.getTime() / 1000),
-    },
-   });
-  }
-
-  // Inject localStorage if available
-  if (access.localStorage && access.localStorage.trim()) {
-   injectLocalStorage(access.localStorage);
-  }
-
-  // Cookie and localStorage injection request sent
- } catch (error) {
-  // Error requesting injection: error
- }
-}
-
-function injectLocalStorage(localStorageData: string) {
- try {
-  // Injecting localStorage data: localStorageData
-
-  // Parse localStorage data
-  const data = JSON.parse(localStorageData);
-
-  // Set each key-value pair in localStorage
-  Object.keys(data).forEach((key) => {
-   const value =
-    typeof data[key] === "string" ? data[key] : JSON.stringify(data[key]);
-   localStorage.setItem(key, value);
-  });
- } catch (error) {
-  showNotification("Lỗi khi inject localStorage: " + error, "error");
- }
-}
-
-function clearCookiesAndSession() {
- // Clearing cookies, localStorage and session data
-
- // Clear localStorage data (keep only extension-related data)
- clearInjectedLocalStorage();
-
- // Clear session storage flags
- sessionStorage.removeItem(COOKIE_INJECTED_FLAG);
- sessionStorage.removeItem(COOKIE_INJECTED_FLAG + "_refreshed");
- sessionStorage.removeItem(LAST_ACCESS_CHECK);
-
- // Request background script to clear cookies for current domain
- chrome.runtime.sendMessage({
-  type: "CLEAR_COOKIES",
-  data: {
-   domain: window.location.hostname,
-  },
- });
-}
-
-function clearInjectedLocalStorage() {
- try {
-  // Get list of keys to preserve (extension-related)
-  const preserveKeys = ["aigiare_", "extension_", "chrome_"];
-
-  // Get all localStorage keys
-  const keysToRemove: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-   const key = localStorage.key(i);
-   if (key && !preserveKeys.some((prefix) => key.startsWith(prefix))) {
-    keysToRemove.push(key);
-   }
-  }
-
-  // Remove non-extension keys
-  keysToRemove.forEach((key) => {
-   localStorage.removeItem(key);
-  });
- } catch (error) {}
-}
-
-function showAccessExpiredNotification() {
- showNotification("Quyền truy cập đã hết hạn", "error");
-}
-
-function showNoAccessNotification() {
- showNotification("Bạn chưa có quyền truy cập website này", "warning");
-}
-
-function showNotification(
- message: string,
- type: "success" | "error" | "warning"
-) {
- // Create notification element
- const notification = document.createElement("div");
- notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 10000;
-    padding: 12px 20px;
-    border-radius: 8px;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-    max-width: 300px;
-    animation: slideIn 0.3s ease-out;
-  `;
- // Set colors based on type
- switch (type) {
-  case "success":
-   notification.style.backgroundColor = "rgba(227, 255, 60, 0.95)";
-   notification.style.color = "#000000";
-   break;
-  case "error":
-   notification.style.backgroundColor = "rgba(244, 67, 54, 0.9)";
-   break;
-  case "warning":
-   notification.style.backgroundColor = "rgba(70, 64, 190, 0.9)";
-   break;
+  this.setupEventListeners();
+  this.setupSchedulers();
+  await this.performInitialCheck();
  }
 
- notification.textContent = message;
-
- // Add animation keyframes
- if (!document.querySelector("#ai-access-keyframes")) {
-  const style = document.createElement("style");
-  style.id = "ai-access-keyframes";
-  style.textContent = `
-      @keyframes slideIn {
-        from {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-    `;
-  document.head.appendChild(style);
- }
-
- document.body.appendChild(notification);
-
- // Auto remove after 5 seconds
- setTimeout(() => {
-  if (notification.parentNode) {
-   notification.style.animation = "slideIn 0.3s ease-out reverse";
-   setTimeout(() => {
-    notification.remove();
-   }, 300);
-  }
- }, 5000);
-}
-
-// Function to clear injection flags (useful for debugging or when user logs out)
-function clearInjectionFlags() {
- sessionStorage.removeItem(COOKIE_INJECTED_FLAG);
- sessionStorage.removeItem(COOKIE_INJECTED_FLAG + "_refreshed");
- sessionStorage.removeItem(LAST_ACCESS_CHECK);
- sessionStorage.removeItem(LAST_HEARTBEAT);
- // Injection flags cleared
-}
-
-// Function to perform heartbeat check (lighter than full access check)
-async function performHeartbeat() {
- try {
-  const lastHeartbeat = sessionStorage.getItem(LAST_HEARTBEAT);
-  const needsHeartbeat =
-   !lastHeartbeat || Date.now() - parseInt(lastHeartbeat) > HEARTBEAT_INTERVAL;
-
-  if (!needsHeartbeat) return;
-
-  // Performing heartbeat check...
-  sessionStorage.setItem(LAST_HEARTBEAT, Date.now().toString());
-
-  // Quick check to see if user data still exists
-  const response: any = await new Promise((resolve) => {
-   chrome.runtime.sendMessage({ type: "GET_USER_DATA" }, resolve);
+ private setupEventListeners(): void {
+  // Page visibility
+  document.addEventListener("visibilitychange", () => {
+   this.handleVisibilityChange();
   });
 
-  if (!response.success || !response.userData) {
-   // Heartbeat failed - user not logged in
-   clearCookiesAndSession();
-   showNotification("Phiên đăng nhập đã hết hạn", "warning");
-   return false;
-  }
-
-  return true;
- } catch (error) {
-  // Heartbeat error: error
-  return false;
- }
-}
-
-// Function to refresh user access status (check for revoked access, expired subscriptions)
-async function refreshAccessStatus() {
- try {
-  // Refreshing access status for: window.location.hostname
-
-  // Force refresh user data from server
-  const response: any = await new Promise((resolve) => {
-   chrome.runtime.sendMessage({ type: "REFRESH_USER_DATA" }, resolve);
+  // Window focus
+  window.addEventListener("focus", () => {
+   this.handleWindowFocus();
   });
 
-  if (response.success && response.userData) {
-   const userData = response.userData;
-   const currentDomain = window.location.hostname;
+  // Cleanup on unload
+  window.addEventListener("beforeunload", () => {
+   this.cleanup();
+  });
 
-   // Find matching product access for this domain
-   const matchingAccess = userData.productAccess.find((access: any) => {
-    try {
-     const accessDomain = new URL(access.website).hostname;
-     return accessDomain === currentDomain;
-    } catch (err) {
-     return false;
-    }
-   });
+  // Chrome messages
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+   this.handleChromeMessage(message);
+   sendResponse({ received: true });
+  });
+ }
 
-   if (!matchingAccess) {
-    // Access revoked for this website
-    clearCookiesAndSession();
-    showNotification("Quyền truy cập đã bị thu hồi", "error");
-    return false;
-   }
+ private setupSchedulers(): void {
+  if (!SessionService.hasFlag(STORAGE_KEYS.COOKIE_INJECTED)) return;
 
-   // Check if access is still valid
-   const endDate = new Date(matchingAccess.endDate);
-   const now = new Date();
+  // Heartbeat - always running (lightweight)
+  IntervalManager.set(
+   "heartbeat",
+   () => {
+    AccessManager.performHeartbeat();
+   },
+   INTERVALS.HEARTBEAT
+  );
 
-   if (endDate <= now) {
-    // Access expired for this website
-    clearCookiesAndSession();
-    showAccessExpiredNotification();
-    return false;
-   }
+  // Intensive checks only when page visible
+  if (this.isPageVisible) {
+   this.startIntensiveChecks();
+  }
+ }
 
-   // Access still valid
-   return true;
+ private startIntensiveChecks(): void {
+  IntervalManager.set(
+   "accessCheck",
+   () => {
+    AccessManager.refreshAccessStatus();
+   },
+   INTERVALS.ACCESS_CHECK
+  );
+
+  IntervalManager.set(
+   "subscriptionCheck",
+   () => {
+    this.checkSubscriptionStatus();
+   },
+   INTERVALS.SUBSCRIPTION_CHECK
+  );
+ }
+
+ private stopIntensiveChecks(): void {
+  IntervalManager.clear("accessCheck");
+  IntervalManager.clear("subscriptionCheck");
+ }
+
+ private async performInitialCheck(): Promise<void> {
+  const lastCheck = SessionService.getFlag(STORAGE_KEYS.LAST_ACCESS_CHECK);
+  const needsCheck =
+   !lastCheck || Date.now() - parseInt(lastCheck) > INTERVALS.ACCESS_CHECK;
+  if (SessionService.hasFlag(STORAGE_KEYS.COOKIE_INJECTED) && !needsCheck) {
   } else {
-   // User not logged in anymore
-   clearCookiesAndSession();
-   showNotification("Phiên đăng nhập đã hết hạn", "warning");
-   return false;
+   await AccessManager.checkUserAccess();
   }
- } catch (error) {
-  // Error refreshing access status: error
-  return false;
  }
-}
 
-// Function to clear all cookies for current domain
-async function clearAllCookiesForDomain() {
- try {
-  // Clearing all cookies for domain: window.location.hostname
-
-  const response: any = await new Promise((resolve) => {
-   chrome.runtime.sendMessage(
-    {
-     type: "CLEAR_ALL_COOKIES",
-     data: { domain: window.location.hostname },
-    },
-    resolve
-   );
-  });
-  if (response.success) {
-   // Cookies cleared successfully, count: response.cleared
+ private handleVisibilityChange(): void {
+  this.isPageVisible = !document.hidden;
+  if (this.isPageVisible) {
+   this.startIntensiveChecks();
+   this.performImmediateCheck();
   } else {
-   // Failed to clear cookies: response.error
+   this.stopIntensiveChecks();
   }
- } catch (error) {
-  // Error clearing cookies: error
  }
-}
-
-// Function to handle access revocation
-function handleAccessRevoked(reason: string) {
- // Access revoked: reason
-
- // Clear session flags
- clearInjectionFlags();
-
- // Clear cookies
- clearAllCookiesForDomain();
-
- // Show notification
- showNotification(reason, "error");
-
- // Optionally redirect to login page after a delay
- setTimeout(() => {
-  // You can customize this behavior
-  window.location.reload();
- }, 3000);
-}
-
-// Function to check if subscription is still valid
-async function checkSubscriptionStatus() {
- try {
-  const response: any = await new Promise((resolve) => {
-   chrome.runtime.sendMessage({ type: "CHECK_SUBSCRIPTION_STATUS" }, resolve);
-  });
-
-  if (response.success) {
-   const currentDomain = window.location.hostname;
-   const hasValidAccess = response.userData?.productAccess?.some(
-    (access: any) => {
-     try {
-      const accessDomain = new URL(access.website).hostname;
-      if (accessDomain === currentDomain) {
-       const endDate = new Date(access.endDate);
-       return endDate > new Date();
-      }
-      return false;
-     } catch (err) {
-      return false;
-     }
-    }
-   );
-
-   if (!hasValidAccess) {
-    handleAccessRevoked("Gói đăng ký đã hết hạn hoặc bị thu hồi");
-    return false;
-   }
-
-   return true;
+ private handleWindowFocus(): void {
+  if (SessionService.hasFlag(STORAGE_KEYS.COOKIE_INJECTED)) {
+   this.performImmediateCheck();
   }
-
-  return false;
- } catch (error) {
-  // Error checking subscription status: error
-  return false;
  }
-}
 
-// Set up more frequent access check (every 2 minutes) to detect revoked access quickly
-setInterval(() => {
- if (sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
-  // Running periodic access check...
-  refreshAccessStatus();
+ private async performImmediateCheck(): Promise<void> {
+  if (SessionService.hasFlag(STORAGE_KEYS.COOKIE_INJECTED)) {
+   await AccessManager.refreshAccessStatus();
+  }
  }
-}, 60 * 60 * 1000); // 2 minutes
+ private handleChromeMessage(message: any): void {
+  switch (message.type) {
+   case "COOKIES_INJECTED":
+    break;
 
-// Set up periodic subscription check (every 5 minutes)
-setInterval(() => {
- if (sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
-  // Running periodic subscription check...
-  checkSubscriptionStatus();
- }
-}, 60 * 60 * 1000); // 5 minutes
+   case "USER_LOGGED_OUT":
+    AccessManager.clearCookiesAndSession();
+    break;
 
-// Set up heartbeat check (every 1 minute) - lighter check
-setInterval(() => {
- if (sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
-  performHeartbeat();
- }
-}, HEARTBEAT_INTERVAL);
-
-// Check access when page becomes visible/focused (user switches back to tab)
-document.addEventListener("visibilitychange", () => {
- if (!document.hidden && sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
-  // Page visible again, checking access status...
-  refreshAccessStatus();
- }
-});
-
-// Check access when window gains focus
-window.addEventListener("focus", () => {
- if (sessionStorage.getItem(COOKIE_INJECTED_FLAG)) {
-  // Window focused, checking access status...
-  refreshAccessStatus();
- }
-});
-
-// Listen for messages from background script
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
- // Content script received message: message
- switch (message.type) {
-  case "COOKIES_INJECTED":
-   if (message.success) {
-    // Cookies injected successfully
-
-    // Validate access is still valid after injection
-    setTimeout(async () => {
-     const stillValid = await refreshAccessStatus();
-     if (stillValid) {
-      showNotification("Đã tự động đăng nhập!", "success");
-      // Only refresh if this is the first time injecting cookies
-      if (!sessionStorage.getItem(COOKIE_INJECTED_FLAG + "_refreshed")) {
-       sessionStorage.setItem(COOKIE_INJECTED_FLAG + "_refreshed", "true");
-       // Refresh page to apply cookies and localStorage after a short delay
-       setTimeout(() => {
-        // Refreshing page to apply cookies and localStorage
-        window.location.reload();
-       }, 2000);
-      } else {
-      }
-     } else {
-     }
-    }, 1000); // Check after 1 second
-   } else {
-    showNotification(
-     "Lỗi khi đăng nhập tự động: " + (message.error || "Unknown error"),
-     "error"
+   case "ACCESS_REVOKED":
+    this.handleAccessRevoked(
+     message.data?.reason || "Quyền truy cập đã bị thu hồi"
     );
-   }
-   break;
-  case "USER_LOGGED_OUT":
-   clearInjectionFlags();
-   clearAllCookiesForDomain();
-   clearInjectedLocalStorage();
-   showNotification("Đã đăng xuất khỏi hệ thống", "warning");
-   break;
-  case "ACCESS_REVOKED":
-   handleAccessRevoked("Quyền truy cập đã bị thu hồi bởi quản trị viên");
-   break;
-  case "SUBSCRIPTION_EXPIRED":
-   handleAccessRevoked("Gói đăng ký đã hết hạn");
-   break;
-  case "CLEAR_COOKIES":
-   clearAllCookiesForDomain();
-   clearInjectedLocalStorage();
-   break;
-  default:
+    break;
+
+   case "SUBSCRIPTION_EXPIRED":
+    this.handleAccessRevoked("Gói dịch vụ đã hết hạn");
+    break;
+  }
  }
 
- // Always send response to prevent errors
- sendResponse({ received: true });
-});
+ private handleAccessRevoked(reason: string): void {
+  SessionService.clearAllFlags();
+  AccessManager.clearCookiesAndSession();
+  NotificationManager.show(reason, "error");
+
+  setTimeout(() => {
+   window.location.reload();
+  }, 3000);
+ }
+
+ private async checkSubscriptionStatus(): Promise<boolean> {
+  try {
+   const response: any = await new Promise((resolve) => {
+    chrome.runtime.sendMessage({ type: "CHECK_SUBSCRIPTION" }, resolve);
+   });
+
+   if (response.success) {
+    return true;
+   }
+
+   this.handleAccessRevoked("Gói dịch vụ không còn hiệu lực");
+   return false;
+  } catch (error) {
+   return false;
+  }
+ }
+ private cleanup(): void {
+  IntervalManager.clearAll();
+ }
+}
+
+// Initialize
+const contentScript = new ContentScript();
+contentScript.init();
