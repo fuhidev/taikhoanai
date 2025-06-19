@@ -499,7 +499,7 @@ setInterval(() => {
   // Running periodic access check...
   refreshAccessStatus();
  }
-}, 2 * 60 * 1000); // 2 minutes
+}, 60 * 60 * 1000); // 2 minutes
 
 // Set up periodic subscription check (every 5 minutes)
 setInterval(() => {
@@ -507,7 +507,7 @@ setInterval(() => {
   // Running periodic subscription check...
   checkSubscriptionStatus();
  }
-}, 5 * 60 * 1000); // 5 minutes
+}, 60 * 60 * 1000); // 5 minutes
 
 // Set up heartbeat check (every 1 minute) - lighter check
 setInterval(() => {
