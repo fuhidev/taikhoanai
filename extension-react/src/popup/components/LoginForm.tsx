@@ -320,13 +320,3 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 };
 
 export default LoginForm;
-       </div>
-      </div>
-     </div>
-    </form>
-   </div>
-  </div>
- );
-};
-
-export default LoginForm;

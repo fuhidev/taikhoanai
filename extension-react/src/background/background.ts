@@ -391,13 +391,3 @@ async function validateCurrentSession() {
   }
  } catch (error) {}
 }
-       })
-       .catch(() => {
-        // Ignore errors for tabs without content scripts
-       });
-     }
-    }
-   }
-  }
- } catch (error) {}
-}

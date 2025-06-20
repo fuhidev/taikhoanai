@@ -328,12 +328,3 @@ const Dashboard: React.FC<DashboardProps> = ({
 };
 
 export default Dashboard;
-      </div>
-     </div>
-    </div>
-   </div>
-  </div>
- );
-};
-
-export default Dashboard;
