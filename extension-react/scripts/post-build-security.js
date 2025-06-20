@@ -35,10 +35,10 @@ function addIntegrityHashes() {
   };
 
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-  console.log("✅ Security hashes added to manifest.json");
  }
 }
 
+addIntegrityHashes();
 console.log("🔒 Running post-build security...");
 addIntegrityHashes();
 console.log("✅ Post-build security completed!");

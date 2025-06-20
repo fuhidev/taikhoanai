@@ -31,17 +31,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
   setDeviceConflictError({ show: false, message: "" });
 
   try {
-   console.log("Attempting login...");
    const response = await ApiService.login({
     phoneNumber: phoneNumber.trim(),
     password: password.trim(),
    });
-   console.log("Login response:", response);
 
    if (response.success && response.user && response.sessionId) {
     const deviceId = await DeviceUtils.getStoredDeviceId();
-
-    console.log("Login successful, getting product access...");
 
     // Create user data object
     const userData: StoredUserData = {
@@ -58,25 +54,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
      const productAccessResponse = await ApiService.getProductAccess(
       response.user.id
      );
-     console.log("Product access response:", productAccessResponse);
 
      if (productAccessResponse.success && productAccessResponse.data) {
       userData.productAccess = productAccessResponse.data;
      }
     } catch (productError) {
-     console.warn("Failed to fetch product access:", productError);
      // Continue with empty product access
     }
 
     // Store user data
     await StorageService.setUserData(userData);
-    console.log("User data stored:", userData);
 
     // Notify parent component
     onLoginSuccess(userData);
    } else {
-    console.log("Login failed:", response.message);
-
     // Kiểm tra nếu là lỗi device conflict
     if (response.deviceConflict) {
      setDeviceConflictError({
@@ -89,7 +80,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     }
    }
   } catch (error) {
-   console.error("Login error:", error);
    setError("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.");
   } finally {
    setIsLoading(false);
@@ -320,6 +310,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
          </svg>
          <span className="text-sm font-medium">Facebook Support</span>
         </button>
+       </div>
+      </div>
+     </div>
+    </form>
+   </div>
+  </div>
+ );
+};
+
+export default LoginForm;
        </div>
       </div>
      </div>

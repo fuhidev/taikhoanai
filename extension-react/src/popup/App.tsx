@@ -35,7 +35,6 @@ const App: React.FC = () => {
     setUserData(null);
    }
   } catch (error) {
-   console.error("Check login status error:", error);
    setUserData(null);
   } finally {
    setIsLoading(false);
@@ -64,7 +63,7 @@ const App: React.FC = () => {
     }
    }
   } catch (error) {
-   console.error("Check update status error:", error);
+   // Check update status error
   }
  };
 
@@ -78,7 +77,6 @@ const App: React.FC = () => {
     await ApiService.logout(userData.sessionId);
    }
   } catch (error) {
-   console.error("Logout API error:", error);
    // Vẫn tiếp tục clear local data dù API lỗi
   }
 

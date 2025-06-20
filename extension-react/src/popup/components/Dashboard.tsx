@@ -40,7 +40,6 @@ const Dashboard: React.FC<DashboardProps> = ({
  const refreshProductList = async () => {
   setIsRefreshing(true);
   try {
-   console.log("Refreshing product list from server...");
    // Store previous product access for comparison
    const previousAccess = userData.productAccess || [];
    const previousDomains = previousAccess
@@ -75,7 +74,6 @@ const Dashboard: React.FC<DashboardProps> = ({
     );
 
     if (revokedDomains.length > 0) {
-     console.log("Detected revoked access for domains:", revokedDomains);
      // Notify tabs about access revocation
      await StorageService.notifyAccessRevoked(revokedDomains);
     }
@@ -94,16 +92,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     if (onUserDataUpdate) {
      onUserDataUpdate(updatedUserData);
     }
-
-    console.log("Product list refreshed successfully");
-   } else {
-    console.error(
-     "Failed to refresh product list:",
-     productAccessResponse.message
-    );
    }
   } catch (error) {
-   console.error("Error refreshing product list:", error);
+   // Error refreshing product list
   } finally {
    setIsRefreshing(false);
   }
@@ -121,7 +112,7 @@ const Dashboard: React.FC<DashboardProps> = ({
    // Mở tab mới với website
    chrome.tabs.create({ url: url });
   } catch (error) {
-   console.error("Error opening website:", error);
+   // Error opening website
   }
  };
 
@@ -328,6 +319,15 @@ const Dashboard: React.FC<DashboardProps> = ({
         </svg>
         <span className="text-xs font-medium">Facebook</span>
        </button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ );
+};
+
+export default Dashboard;
       </div>
      </div>
     </div>

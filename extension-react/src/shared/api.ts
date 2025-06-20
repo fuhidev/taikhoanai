@@ -5,8 +5,6 @@ import { LoginRequest, LoginResponse, ProductAccessResponse } from "./types";
 const API_BASE_URL =
  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
 
-console.log("Extension using API base URL:", API_BASE_URL);
-
 export class ApiService {
  static async login(credentials: LoginRequest): Promise<LoginResponse> {
   try {
@@ -31,7 +29,6 @@ export class ApiService {
 
    return await response.json();
   } catch (error) {
-   console.error("Login API error:", error);
    throw error;
   }
  }
@@ -94,7 +91,10 @@ export class ApiService {
 
    return await response.json();
   } catch (error) {
-   console.error("Product Access API error:", error);
+   throw error;
+  }
+ }
+}
    throw error;
   }
  }
