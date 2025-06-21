@@ -145,10 +145,11 @@ export const updateUser = async (
 export const createProduct = async ({
  product: updatedProduct,
 }: {
- product: Omit<Product, "id" | "updatedAt" | "createdAt">;
+ product: Omit<Product, "id" | "updatedAt" | "createdAt" | "soldCount">;
 }): Promise<string> => {
  const product = {
   ...updatedProduct,
+  soldCount: 0, // Khởi tạo số lượng đã bán
   createdAt: new Date(),
   updatedAt: new Date(),
  };
@@ -282,6 +283,7 @@ export const createOrder = async (
   createdAt: Timestamp.fromDate(order.createdAt),
  });
 
+ // Không tăng soldCount ở đây, chỉ tăng khi đơn hàng hoàn thành
  return docRef.id;
 };
 
@@ -291,6 +293,22 @@ export const updateOrderStatus = async (
 ): Promise<void> => {
  const docRef = doc(db, "orders", id);
  await updateDoc(docRef, { status });
+
+ // Nếu chuyển sang completed thì tăng soldCount cho sản phẩm
+ if (status === "completed") {
+  // Lấy thông tin đơn hàng
+  const orderSnap = await getDoc(docRef);
+  if (orderSnap.exists()) {
+   const orderData = orderSnap.data();
+   const productId = orderData.productId;
+   if (productId) {
+    const productRef = doc(db, "products", productId);
+    await updateDoc(productRef, {
+     soldCount: (orderData.soldCount || 0) + 1,
+    });
+   }
+  }
+ }
 };
 
 export const deleteOrder = async (id: string): Promise<void> => {

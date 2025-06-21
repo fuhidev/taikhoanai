@@ -3,34 +3,34 @@
 import { IntegratedServerTable } from "@/components";
 import type { IntegratedServerTableRef } from "@/components/IntegratedServerTable";
 import {
-  createProduct,
-  deleteProduct,
-  getPaginatedProducts,
-  updateProduct,
+ createProduct,
+ deleteProduct,
+ getPaginatedProducts,
+ updateProduct,
 } from "@/lib/firebaseService";
 import { Product } from "@/types";
 import {
-  Add,
-  Delete,
-  Edit,
-  Image as ImageIcon,
-  Inventory,
+ Add,
+ Delete,
+ Edit,
+ Image as ImageIcon,
+ Inventory,
 } from "@mui/icons-material";
 import {
-  Alert,
-  Avatar,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
+ Alert,
+ Avatar,
+ Box,
+ Button,
+ Dialog,
+ DialogActions,
+ DialogContent,
+ DialogTitle,
+ IconButton,
+ TableCell,
+ TableHead,
+ TableRow,
+ TextField,
+ Typography,
 } from "@mui/material";
 import { format } from "date-fns";
 import { useRef, useState } from "react";
@@ -109,8 +109,6 @@ export default function ProductsPage() {
   }
  };
 
-
-
  return (
   <Box>
    <Box
@@ -149,6 +147,7 @@ export default function ProductsPage() {
        <TableCell>Tên sản phẩm</TableCell>
        <TableCell>Giá</TableCell>
        <TableCell>Thời hạn (ngày)</TableCell>
+       <TableCell>Đã bán</TableCell>
        <TableCell>Website</TableCell>
        <TableCell>Cookie</TableCell>
        <TableCell>Ngày tạo</TableCell>
@@ -189,6 +188,11 @@ export default function ProductsPage() {
        </Box>
       </TableCell>
       <TableCell>{product.duration} ngày</TableCell>
+      <TableCell>
+       <Typography variant="body2" color="secondary">
+        {product.soldCount ?? 0}
+       </Typography>
+      </TableCell>
       <TableCell>
        <a href={product.website} target="_blank" rel="noopener noreferrer">
         {product.website}

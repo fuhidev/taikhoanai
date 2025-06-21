@@ -30,6 +30,7 @@ export interface Product {
  image: string;
  price: number;
  originalPrice?: number;
+ soldCount?: number; // số lượng đã bán
 }
 
 export interface UserSubscription {

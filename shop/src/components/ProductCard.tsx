@@ -120,6 +120,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
        <span>Thời hạn: {formatDuration(product.duration)}</span>
       </div>
 
+      <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+       <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+       >
+        <path
+         strokeLinecap="round"
+         strokeLinejoin="round"
+         strokeWidth={2}
+         d="M16 11V5a1 1 0 00-1-1H9a1 1 0 00-1 1v6M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2z"
+        />
+       </svg>
+       <span>Đã bán: {product.soldCount ?? 0}</span>
+      </div>
       {/* <div className="text-xs text-muted-foreground">
        Danh mục: {product.category}
       </div> */}

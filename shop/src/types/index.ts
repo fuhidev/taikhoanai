@@ -10,6 +10,7 @@ export interface Product {
  image: string;
  price: number;
  description?: string;
+ soldCount: number; // số lượng đã bán
 }
 
 export interface Page {
