@@ -1,7 +1,7 @@
 {
     "manifest_version":  3,
     "name":  "aigiare.vn",
-    "version":  "1.0.15",
+    "version":  "1.0.16",
     "description":  "Extension chính thức aigiare.vn - Hỗ trợ đăng nhập và quản lý phiên làm việc",
     "permissions":  [
                         "storage",
