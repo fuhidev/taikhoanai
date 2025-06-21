@@ -107,6 +107,19 @@ export default function RootLayout({
             fbq('track', 'PageView');
           `}
     </Script>
+    <Script
+     async
+     src="https://www.googletagmanager.com/gtag/js?id=G-FE9Z5VQ771"
+     strategy="afterInteractive"
+    />
+    <Script id="gtag-init" strategy="afterInteractive">
+     {`
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FE9Z5VQ771');
+     `}
+    </Script>
    </head>
    <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
     <MouseTracker />
