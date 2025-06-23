@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 export default function ProductDetailPage() {
  const params = useParams();
@@ -267,12 +268,8 @@ export default function ProductDetailPage() {
        {product.description && (
         <div className="space-y-4">
          <h3 className="text-xl font-semibold text-foreground">Mô tả</h3>
-         <div className="text-muted-foreground leading-relaxed">
-          {product.description.split("\n").map((line, index) => (
-           <p key={index} className="mb-2">
-            {line}
-           </p>
-          ))}
+         <div className="prose prose-neutral max-w-none text-muted-foreground leading-relaxed">
+          <ReactMarkdown>{product.description}</ReactMarkdown>
          </div>
         </div>
        )}

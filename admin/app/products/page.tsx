@@ -69,6 +69,7 @@ export default function ProductsPage() {
    setValue("originalPrice", product.originalPrice || 0);
    // Thêm setValue cho soldCount nếu có
    setValue("soldCount", product.soldCount ?? 0);
+   setValue("description", product.description || "");
   } else {
    setEditingProduct(null);
    reset();
@@ -355,9 +356,25 @@ export default function ProductsPage() {
         fullWidth
         margin="normal"
         error={!!errors.soldCount}
-        helperText={errors.soldCount?.message || "Số lượng đã bán (chỉ chỉnh sửa)"}
+        helperText={
+         errors.soldCount?.message || "Số lượng đã bán (chỉ chỉnh sửa)"
+        }
        />
       )}
+
+      <TextField
+       {...register("description")}
+       label="Mô tả (Markdown)"
+       fullWidth
+       multiline
+       rows={6}
+       margin="normal"
+       error={!!errors.description}
+       helperText={
+        errors.description?.message || "Bạn có thể nhập mô tả bằng Markdown"
+       }
+       placeholder="Nhập mô tả sản phẩm ở đây..."
+      />
      </DialogContent>
      <DialogActions>
       <Button onClick={() => setOpen(false)}>Hủy</Button>

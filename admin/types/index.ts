@@ -31,6 +31,7 @@ export interface Product {
  price: number;
  originalPrice?: number;
  soldCount?: number; // số lượng đã bán
+ description?: string; // mô tả sản phẩm (markdown)
 }
 
 export interface UserSubscription {
