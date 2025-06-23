@@ -1,6 +1,7 @@
 "use client";
 
 import { Product } from "@/types";
+import { formatPrice } from "@/utils/formatPrice";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -12,14 +13,6 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
- const formatPrice = (price?: number) => {
-  if (!price) return "Liên hệ";
-  return new Intl.NumberFormat("vi-VN", {
-   style: "currency",
-   currency: "VND",
-  }).format(price);
- };
-
  const formatDuration = (days: number) => {
   if (days >= 365) {
    const years = Math.floor(days / 365);
