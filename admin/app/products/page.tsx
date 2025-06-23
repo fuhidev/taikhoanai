@@ -67,6 +67,8 @@ export default function ProductsPage() {
    setValue("image", product.image || "");
    setValue("price", product.price || 0);
    setValue("originalPrice", product.originalPrice || 0);
+   // Thêm setValue cho soldCount nếu có
+   setValue("soldCount", product.soldCount ?? 0);
   } else {
    setEditingProduct(null);
    reset();
@@ -74,11 +76,13 @@ export default function ProductsPage() {
   setOpen(true);
  };
 
- const onSubmit = async (data: ProductForm) => {
+ const onSubmit = async (data: ProductForm & { soldCount?: number }) => {
   try {
    const productData = {
     ...data,
     originalPrice: data.originalPrice || undefined,
+    // Đảm bảo truyền soldCount khi cập nhật
+    ...(editingProduct ? { soldCount: data.soldCount ?? 0 } : {}),
    };
 
    if (editingProduct) {
@@ -339,6 +343,21 @@ export default function ProductsPage() {
        }
        placeholder='{"token": "...", "user_id": "..."}'
       />
+
+      {/* Chỉ hiển thị trường soldCount khi chỉnh sửa sản phẩm */}
+      {editingProduct && (
+       <TextField
+        {...register("soldCount", {
+         min: { value: 0, message: "Đã bán phải >= 0" },
+        })}
+        label="Đã bán"
+        type="number"
+        fullWidth
+        margin="normal"
+        error={!!errors.soldCount}
+        helperText={errors.soldCount?.message || "Số lượng đã bán (chỉ chỉnh sửa)"}
+       />
+      )}
      </DialogContent>
      <DialogActions>
       <Button onClick={() => setOpen(false)}>Hủy</Button>

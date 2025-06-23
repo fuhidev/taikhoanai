@@ -19,6 +19,7 @@ export interface Product {
  isActive: boolean;
  createdAt: Date;
  updatedAt: Date;
+ soldCount?: number; // Thêm trường soldCount (nếu chưa có)
 }
 
 export interface ProductAccess {

@@ -413,6 +413,14 @@ export const updateUserAdmin = async (
   isAdmin,
   updatedAt: Timestamp.fromDate(new Date()),
  });
+
+ // Set custom claims trên Firebase Auth (chỉ chạy được ở môi trường server)
+ //  try {
+ //   const { admin } = await import("./firebaseAdmin");
+ //   await admin.auth().setCustomUserClaims(id, { admin: !!isAdmin });
+ //  } catch (error) {
+ //   console.error("Lỗi khi set custom claims cho user:", error);
+ //  }
 };
 
 // ============ SESSION MANAGEMENT FUNCTIONS ============
