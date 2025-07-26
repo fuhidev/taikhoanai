@@ -1,4 +1,4 @@
-# aigiare.vn Management System
+# taikhoanai.io.vn Management System
 
 Hệ thống quản lý bán tài khoản truy cập nền tảng AI (ChatGPT, Gemini, Leonardo, Hailuo...)
 

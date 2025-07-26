@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
- title: "Chính Sách Bảo Mật | aigiare.vn",
+ title: "Chính Sách Bảo Mật | taikhoanai.io.vn",
  description:
-  "Chính sách bảo mật thông tin khách hàng của aigiare.vn - Cam kết bảo vệ dữ liệu cá nhân của bạn khi sử dụng dịch vụ AI accounts.",
+  "Chính sách bảo mật thông tin khách hàng của taikhoanai.io.vn - Cam kết bảo vệ dữ liệu cá nhân của bạn khi sử dụng dịch vụ AI accounts.",
  keywords:
-  "chính sách bảo mật, quyền riêng tư, bảo vệ dữ liệu, aigiare, ai accounts",
+  "chính sách bảo mật, quyền riêng tư, bảo vệ dữ liệu, taikhoanai, ai accounts",
 };
 
 export default function PrivacyPage() {
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
         Cam Kết Của Chúng Tôi
        </h2>{" "}
        <p className="text-muted-foreground leading-relaxed mb-4">
-        aigiare.vn cam kết bảo vệ quyền riêng tư và thông tin cá nhân của khách
+        taikhoanai.io.vn cam kết bảo vệ quyền riêng tư và thông tin cá nhân của khách
         hàng. Chính sách này mô tả cách chúng tôi thu thập, sử dụng, lưu trữ và
         bảo vệ thông tin của bạn khi sử dụng dịch vụ AI accounts và các sản phẩm
         liên quan của chúng tôi.
@@ -325,7 +325,7 @@ export default function PrivacyPage() {
             <strong>Zalo:</strong> 094 348 79 68
            </li>{" "}
            <li>
-            <strong>Facebook:</strong> aigiare.vn Fanpage
+            <strong>Facebook:</strong> taikhoanai.io.vn Fanpage
            </li>
           </ul>
          </div>

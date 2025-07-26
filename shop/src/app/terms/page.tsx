@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
- title: "Điều Khoản Sử Dụng | aigiare.vn",
+ title: "Điều Khoản Sử Dụng | taikhoanai.io.vn",
  description:
-  "Điều khoản sử dụng dịch vụ của aigiare.vn - Tìm hiểu về quyền và nghĩa vụ khi sử dụng dịch vụ AI accounts của chúng tôi.",
- keywords: "điều khoản sử dụng, quy định, aigiare, ai accounts",
+  "Điều khoản sử dụng dịch vụ của taikhoanai.io.vn - Tìm hiểu về quyền và nghĩa vụ khi sử dụng dịch vụ AI accounts của chúng tôi.",
+ keywords: "điều khoản sử dụng, quy định, taikhoanai, ai accounts",
 };
 
 export default function TermsPage() {
@@ -31,7 +31,7 @@ export default function TermsPage() {
         1. Chấp Nhận Điều Khoản
        </h2>{" "}
        <p className="text-muted-foreground leading-relaxed mb-4">
-        Bằng việc truy cập và sử dụng website aigiare.vn, bạn đồng ý tuân thủ và
+        Bằng việc truy cập và sử dụng website taikhoanai.io.vn, bạn đồng ý tuân thủ và
         bị ràng buộc bởi các điều khoản và điều kiện sử dụng được nêu dưới đây.
         Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này, vui
         lòng không sử dụng dịch vụ của chúng tôi.
@@ -44,7 +44,7 @@ export default function TermsPage() {
         2. Mô Tả Dịch Vụ
        </h2>{" "}
        <p className="text-muted-foreground leading-relaxed mb-4">
-        aigiare.vn cung cấp các sản phẩm và dịch vụ AI accounts (tài khoản trí
+        taikhoanai.io.vn cung cấp các sản phẩm và dịch vụ AI accounts (tài khoản trí
         tuệ nhân tạo) bao gồm nhưng không giới hạn:
        </p>
        <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
@@ -110,7 +110,7 @@ export default function TermsPage() {
         5. Hạn Chế Trách Nhiệm
        </h2>{" "}
        <p className="text-muted-foreground leading-relaxed mb-4">
-        aigiare.vn không chịu trách nhiệm về:
+        taikhoanai.io.vn không chịu trách nhiệm về:
        </p>
        <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
         <li>Thiệt hại gián tiếp phát sinh từ việc sử dụng tài khoản AI</li>
@@ -131,7 +131,7 @@ export default function TermsPage() {
        </h2>{" "}
        <p className="text-muted-foreground leading-relaxed">
         Tất cả nội dung, thiết kế, logo, và tài liệu trên website thuộc quyền sở
-        hữu của aigiare.vn. Nghiêm cấm sao chép, phân phối hoặc sử dụng cho mục
+        hữu của taikhoanai.io.vn. Nghiêm cấm sao chép, phân phối hoặc sử dụng cho mục
         đích thương mại mà không có sự cho phép bằng văn bản.
        </p>
       </section>
@@ -165,7 +165,7 @@ export default function TermsPage() {
           {process.env.NEXT_PUBLIC_ZALO_PHONE || "0123456789"}
          </li>{" "}
          <li>
-          <strong>Facebook:</strong> aigiare.vn Fanpage
+          <strong>Facebook:</strong> taikhoanai.io.vn Fanpage
          </li>
          <li>
           <strong>Thời gian hỗ trợ:</strong> 8:00 - 22:00 hàng ngày

@@ -96,7 +96,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
   <div className="p-6 h-full flex flex-col">
    {/* Header */}
    <div className="text-center mb-6">
-    <h1 className="text-2xl font-bold text-primary-600 mb-2">aigiare.vn</h1>
+    <h1 className="text-2xl font-bold text-primary-600 mb-2">taikhoanai.io.vn</h1>
     <p className="text-gray-600 text-sm">Đăng nhập để quản lý tài khoản AI</p>
    </div>{" "}
    {/* Login Form */}

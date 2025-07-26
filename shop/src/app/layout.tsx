@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
- title: "Tài khoản AI Giá rẻ - aigiare.vn",
+ title: "Tài khoản AI Giá rẻ - taikhoanai.io.vn",
  description:
   "Cung cấp các dịch vụ AI chất lượng cao với giá cả phải chăng. Hệ thống quản lý chuyên nghiệp.",
  robots: {
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
  },
  twitter: {
   card: "summary_large_image",
-  site: "https://aigiare.vn/",
-  title: "Tài khoản AI Giá rẻ - aigiare.vn",
+  site: "https://taikhoanai.io.vn/",
+  title: "Tài khoản AI Giá rẻ - taikhoanai.io.vn",
   description:
    "Cung cấp các dịch vụ AI chất lượng cao với giá cả phải chăng. Hệ thống quản lý chuyên nghiệp.",
   images: ["/meta-img.jpg"],
@@ -80,10 +80,10 @@ export default function RootLayout({
       __html: JSON.stringify({
        "@context": "https://schema.org",
        "@type": "Organization",
-       name: "aigiare.vn",
-       url: "https://aigiare.vn",
+       name: "taikhoanai.io.vn",
+       url: "https://taikhoanai.io.vn",
        description: "Cung cấp tài khoản AI giá rẻ với chất lượng cao",
-       sameAs: ["https://aigiare.vn"],
+       sameAs: ["https://taikhoanai.io.vn"],
        contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer service",
@@ -128,7 +128,7 @@ export default function RootLayout({
     <footer className="bg-card border-t border-border">
      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center text-muted-foreground">
-       <p>&copy; 2024 aigiare.vn. Tất cả quyền được bảo lưu.</p>
+       <p>&copy; 2024 taikhoanai.io.vn. Tất cả quyền được bảo lưu.</p>
        <p className="mt-2 text-sm">
         Tài khoản AI chất lượng cao - Giá cả hợp lý - Hỗ trợ 24/7
        </p>

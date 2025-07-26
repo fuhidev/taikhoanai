@@ -1,5 +1,5 @@
 // Content script for platform access management
-// aigiare.vn content script loaded on: ${window.location.href}
+// taikhoanai.io.vn content script loaded on: ${window.location.href}
 
 import { AccessManager } from "./managers/AccessManager";
 import { IntervalManager } from "./managers/IntervalManager";

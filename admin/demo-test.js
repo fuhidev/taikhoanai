@@ -1,7 +1,7 @@
-// Test script for aigiare.vn Management System
+// Test script for taikhoanai.io.vn Management System
 // Chạy script này trong browser console để test functionality
 
-// 🎉 aigiare.vn Management System - Demo Script
+// 🎉 taikhoanai.io.vn Management System - Demo Script
 
 // Test 1: Check if app is running
 // ✅ Web Application đang chạy tại: ${window.location.origin}

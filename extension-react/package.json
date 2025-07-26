@@ -1,7 +1,6 @@
-{
- "name": "aigiare.vn-extension",
- "version": "1.0.1",
- "description": "aigiare.vn Management Chrome Extension with React",
+{ "name": "taikhoanai.io.vn-extension",
+ "version": "1.0.16",
+ "description": "taikhoanai.io.vn Management Chrome Extension with React",
  "type": "module",
  "scripts": {
   "dev": "vite",

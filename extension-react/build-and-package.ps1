@@ -62,7 +62,7 @@ function Build-Extension {
 
 function Rename-DistFolder($Version) {
     $distPath = "dist"
-    $newFolderName = "aigiare.vn"
+    $newFolderName = "taikhoanai.io.vn"
     $newPath = $newFolderName
     
     try {
@@ -88,7 +88,7 @@ function Rename-DistFolder($Version) {
 }
 
 function Create-ZipPackage($FolderPath, $Version) {
-    $zipFileName = "aigiare.vn-v$Version.zip"
+    $zipFileName = "taikhoanai.io.vn-v$Version.zip"
     
     try {
         # Remove existing zip if exists

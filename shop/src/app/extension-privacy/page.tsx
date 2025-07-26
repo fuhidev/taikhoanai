@@ -2,11 +2,11 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
- title: "Chính Sách Quyền Riêng Tư Extension | aigiare.vn",
+ title: "Chính Sách Quyền Riêng Tư Extension | taikhoanai.io.vn",
  description:
-  "Chính sách quyền riêng tư của aigiare.vn Extension - Cam kết bảo vệ thông tin người dùng extension Chrome.",
+  "Chính sách quyền riêng tư của taikhoanai.io.vn Extension - Cam kết bảo vệ thông tin người dùng extension Chrome.",
  keywords:
-  "chính sách quyền riêng tư, extension, chrome extension, aigiare.vn, bảo mật",
+  "chính sách quyền riêng tư, extension, chrome extension, taikhoanai.io.vn, bảo mật",
 };
 
 export default function ExtensionPrivacyPage() {
@@ -20,7 +20,7 @@ export default function ExtensionPrivacyPage() {
        Chính Sách Quyền Riêng Tư Extension
       </h1>
       <p className="text-xl text-primary-foreground/90">
-       Cam kết bảo vệ quyền riêng tư của bạn khi sử dụng aigiare.vn Extension
+       Cam kết bảo vệ quyền riêng tư của bạn khi sử dụng taikhoanai.io.vn Extension
       </p>
      </div>
     </div>
@@ -38,7 +38,7 @@ export default function ExtensionPrivacyPage() {
      {/* Introduction */}
      <section className="mb-8">
       <p className="text-muted-foreground leading-relaxed mb-4">
-       Chào mừng bạn đến với extension chính thức của aigiare.vn! Chúng tôi cam
+       Chào mừng bạn đến với extension chính thức của taikhoanai.io.vn! Chúng tôi cam
        kết bảo vệ quyền riêng tư của bạn và đảm bảo rằng trải nghiệm của bạn với
        extension là an toàn và minh bạch. Chính sách Quyền riêng tư này giải
        thích cách thức chúng tôi xử lý thông tin khi bạn sử dụng extension của
@@ -51,7 +51,7 @@ export default function ExtensionPrivacyPage() {
        1. Thông tin chúng tôi thu thập
       </h2>
       <p className="text-muted-foreground leading-relaxed mb-4">
-       Extension aigiare.vn được thiết kế để không thu thập bất kỳ thông tin
+       Extension taikhoanai.io.vn được thiết kế để không thu thập bất kỳ thông tin
        nhận dạng cá nhân nào của bạn.
       </p>
 
@@ -66,7 +66,7 @@ export default function ExtensionPrivacyPage() {
          năng này, extension sẽ lưu trữ cục bộ và mã hóa thông tin đăng nhập của
          bạn trên thiết bị của bạn. Thông tin này chỉ được sử dụng để tự động
          điền vào các trường đăng nhập khi bạn truy cập các trang web được hỗ
-         trợ và không bao giờ được gửi về máy chủ của aigiare.vn hoặc bất kỳ bên
+         trợ và không bao giờ được gửi về máy chủ của taikhoanai.io.vn hoặc bất kỳ bên
          thứ ba nào khác.
         </p>
        </div>
@@ -198,17 +198,17 @@ export default function ExtensionPrivacyPage() {
        <div className="space-y-2">
         <p className="font-medium text-foreground">
          🌐 Website:{" "}
-         <a href="https://aigiare.vn" className="text-primary hover:underline">
-          aigiare.vn
+         <a href="https://taikhoanai.io.vn" className="text-primary hover:underline">
+          taikhoanai.io.vn
          </a>
         </p>
         <p className="font-medium text-foreground">
          📧 Email hỗ trợ:{" "}
          <a
-          href="mailto:cskh@aigiare.vn"
+          href="mailto:cskh@taikhoanai.io.vn"
           className="text-primary hover:underline"
          >
-          cskh@aigiare.vn
+          cskh@taikhoanai.io.vn
          </a>
         </p>
        </div>

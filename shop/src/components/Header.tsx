@@ -30,12 +30,12 @@ export const Header: React.FC = () => {
      <Link href="/" className="flex items-center space-x-2">
       <Image
        src="/icon.png"
-       alt="aigiare.vn logo"
+       alt="taikhoanai.io.vn logo"
        width={32}
        height={32}
        className="w-8 h-8"
       />
-      <span className="text-xl font-bold text-primary">aigiare.vn</span>
+      <span className="text-xl font-bold text-primary">taikhoanai.io.vn</span>
      </Link>{" "}
      {/* Desktop Navigation */}
      <nav className="hidden md:flex items-center space-x-6">

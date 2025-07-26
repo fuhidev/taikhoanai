@@ -23,8 +23,8 @@ if %errorlevel% neq 0 (
 )
 
 :: Set folder and zip names
-set FOLDER_NAME=aigiare.vn-v%VERSION%
-set ZIP_NAME=aigiare.vn-v%VERSION%.zip
+set FOLDER_NAME=taikhoanai.io.vn-v%VERSION%
+set ZIP_NAME=taikhoanai.io.vn-v%VERSION%.zip
 
 :: Remove existing files if they exist
 if exist "%FOLDER_NAME%" rmdir /s /q "%FOLDER_NAME%"

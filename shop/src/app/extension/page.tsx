@@ -34,7 +34,7 @@ export default function ExtensionPage() {
        </svg>
       </div>
       <h1 className="text-4xl md:text-5xl font-bold mb-6">
-       aigiare.vn Extension
+       taikhoanai.io.vn Extension
       </h1>
       <p className="text-xl text-primary-foreground/90 mb-8">
        Trình duyệt mở rộng giúp bạn tự động đăng nhập vào các nền tảng AI một
@@ -270,7 +270,7 @@ export default function ExtensionPage() {
            </div>
            <h3 className="text-xl font-semibold mb-3">Đăng nhập tài khoản</h3>
            <p className="text-muted-foreground">
-            Click vào icon extension và đăng nhập bằng tài khoản aigiare.vn
+            Click vào icon extension và đăng nhập bằng tài khoản taikhoanai.io.vn
            </p>
           </div>
 
@@ -366,9 +366,9 @@ export default function ExtensionPage() {
           "Extension sẽ tự động cập nhật thông qua Chrome Web Store. Bạn không cần thực hiện bất kỳ thao tác nào để nhận phiên bản mới nhất.",
         },
         {
-         question: "Tôi có cần tài khoản aigiare.vn không?",
+         question: "Tôi có cần tài khoản taikhoanai.io.vn không?",
          answer:
-          "Có, bạn cần có tài khoản aigiare.vn để sử dụng extension. Nếu chưa có, bạn có thể đăng ký miễn phí tại aigiare.vn.",
+          "Có, bạn cần có tài khoản taikhoanai.io.vn để sử dụng extension. Nếu chưa có, bạn có thể đăng ký miễn phí tại taikhoanai.io.vn.",
         },
        ].map((faq, index) => (
         <Card key={index} className="hover:shadow-md transition-shadow">

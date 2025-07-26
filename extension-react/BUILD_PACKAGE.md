@@ -1,6 +1,6 @@
 # Chrome Extension Build & Package
 
-Scripts tự động build và đóng gói Chrome extension thành file zip với tên theo format `aigiare.vn-v{version}.zip`.
+Scripts tự động build và đóng gói Chrome extension thành file zip với tên theo format `taikhoanai.io.vn-v{version}.zip`.
 
 ## Cách sử dụng
 
@@ -54,13 +54,13 @@ npm run package:version:linux 1.2.3
 1. **Đọc version** từ `public/manifest.json`
 2. **Cập nhật version** (nếu được chỉ định)
 3. **Build extension** bằng `npm run build`
-4. **Đổi tên** thư mục `dist` thành `aigiare.vn-v{version}`
-5. **Tạo file zip** `aigiare.vn-v{version}.zip`
+4. **Đổi tên** thư mục `dist` thành `taikhoanai.io.vn-v{version}`
+5. **Tạo file zip** `taikhoanai.io.vn-v{version}.zip`
 6. **Dọn dẹp** thư mục tạm thời
 
 ## Output
 
-- **File zip**: `aigiare.vn-v{version}.zip`
+- **File zip**: `taikhoanai.io.vn-v{version}.zip`
 - **Vị trí**: Thư mục gốc của project
 - **Sẵn sàng upload** lên Chrome Web Store
 
@@ -68,8 +68,8 @@ npm run package:version:linux 1.2.3
 
 Với version `1.2.3` trong manifest.json:
 
-- Thư mục được tạo: `aigiare.vn-v1.2.3/`
-- File zip: `aigiare.vn-v1.2.3.zip`
+- Thư mục được tạo: `taikhoanai.io.vn-v1.2.3/`
+- File zip: `taikhoanai.io.vn-v1.2.3.zip`
 
 ## Yêu cầu
 

@@ -5,7 +5,7 @@
 Dự án này hỗ trợ 2 môi trường khác nhau với các API endpoints tương ứng:
 
 - **Development**: `http://localhost:3000/api`
-- **Production**: `https://portal.aigiaren.vn/api`
+- **Production**: `https://portal.taikhoanai.io.vn/api`
 
 ## Environment Files
 
@@ -24,7 +24,7 @@ VITE_API_BASE_URL=http://localhost:3000/api
 ### `.env.production`
 
 ```
-VITE_API_BASE_URL=https://portal.aigiaren.vn/api
+VITE_API_BASE_URL=https://portal.taikhoanai.io.vn/api
 ```
 
 ## Build Commands
@@ -67,21 +67,21 @@ npm run package
 
 ## Output Files
 
-- **Development**: `aigiare.vn-v1.0.1-dev.zip`
-- **Production**: `aigiare.vn-v1.0.1.zip`
+- **Development**: `taikhoanai.io.vn-v1.0.1-dev.zip`
+- **Production**: `taikhoanai.io.vn-v1.0.1.zip`
 
 ## Manifests
 
 ### Development Manifest (`manifest.dev.json`)
 
-- Tên: "aigiare.vn (Development)"
+- Tên: "taikhoanai.io.vn (Development)"
 - Version có suffix "-dev"
 - Có host_permissions cho localhost
 - Icon màu cam để dễ phân biệt
 
 ### Production Manifest (`manifest.prod.json`)
 
-- Tên: "aigiare.vn"
+- Tên: "taikhoanai.io.vn"
 - Version chính thức
 - Không có localhost permissions (chỉ production domains)
 - Icon tiêu chuẩn màu xanh
@@ -101,11 +101,11 @@ Khi build, hệ thống sẽ tự động:
 ```bash
 # Development workflow
 npm run build:dev    # Builds với localhost API
-npm run package:dev  # Tạo aigiare.vn-v1.0.1-dev.zip
+npm run package:dev  # Tạo taikhoanai.io.vn-v1.0.1-dev.zip
 
 # Production workflow
 npm run build:prod   # Builds với production API
-npm run package:prod # Tạo aigiare.vn-v1.0.1.zip
+npm run package:prod # Tạo taikhoanai.io.vn-v1.0.1.zip
 
 # Watch during development
 npm run watch:dev    # Auto rebuild khi code thay đổi
