@@ -1,6 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TàiKhoảnAI.io.vn - AI Products Shop
 
-## Getting Started
+Ứng dụng web bán sản phẩm AI được xây dựng bằng [Next.js](https://nextjs.org) với thiết kế hiện đại và trải nghiệm người dùng tối ưu.
+
+## ✨ Tính năng chính
+
+- 🎨 **Thiết kế hiện đại**: Giao diện đẹp mắt với hiệu ứng animation mượt mà
+- 🚀 **Performance tối ưu**: Tối ưu hóa tốc độ tải và trải nghiệm người dùng
+- 📱 **Responsive Design**: Tương thích hoàn hảo trên mọi thiết bị
+- 🤖 **AI Integration**: Tích hợp các công nghệ AI tiên tiến
+- 🛒 **E-commerce**: Hệ thống bán hàng đầy đủ tính năng
+- 🎯 **SEO Optimized**: Tối ưu hóa cho công cụ tìm kiếm
+
+## 🎨 Màu sắc chủ đạo
+
+- **Primary**: `#24996f` (Xanh lá chủ đạo)
+- **Secondary**: `#24996f` (Xanh lá phụ)
+- **Background**: `#ffffff` (Trắng)
+- **Accent**: `#f8f9fa` (Xám nhạt)
+
+## 🚀 Bắt đầu phát triển
 
 First, run the development server:
 

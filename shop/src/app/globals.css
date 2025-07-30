@@ -5,7 +5,7 @@
  --color-foreground: #171717;
  --color-primary: #24996f;
  --color-primary-foreground: #ffffff;
- --color-secondary: #24996f;
+ --color-secondary: #ff6f61;
  --color-secondary-foreground: #ffffff;
  --color-accent: #f8f9fa;
  --color-accent-foreground: #374151;
@@ -30,7 +30,6 @@
 .ai-glow {
  position: relative;
 }
-
 .ai-glow::before {
  content: "";
  position: absolute;
@@ -38,7 +37,7 @@
  left: -2px;
  right: -2px;
  bottom: -2px;
- background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #3b82f6);
+ background: linear-gradient(45deg, #24996f, #2bb573, #32d17f, #24996f);
  background-size: 400% 400%;
  border-radius: inherit;
  z-index: -1;
@@ -146,12 +145,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
- background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+ background: linear-gradient(45deg, #24996f, #ff6f61);
  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
- background: linear-gradient(45deg, #2563eb, #7c3aed);
+ background: linear-gradient(45deg, #1e7a5a, #d14968);
 }
 
 /* Smooth scroll behavior */

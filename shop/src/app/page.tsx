@@ -152,7 +152,7 @@ export default function HomePage() {
    {/* Hero Section */}
    <section className="relative bg-gradient-to-br from-primary via-primary to-primary/80 text-white overflow-hidden">
     {/* <AIParticles /> */}
-    <RobotAnimation className="absolute left-0 scale-75 hidden 2xl:block" />
+    {/* <RobotAnimation className="absolute left-0 scale-75 hidden 2xl:block" /> */}
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
      <HeroAnimations>
       <div className="text-center max-w-4xl mx-auto">
@@ -162,13 +162,13 @@ export default function HomePage() {
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
        >
         <div className="w-24 h-24 md:w-32 md:h-32">
-         <AIBrainAnimation className="w-full h-full" />
+         {/* <AIBrainAnimation className="w-full h-full" /> */}
         </div>
        </div>
 
        <h1 className="hero-title text-4xl md:text-6xl font-bold mb-6 leading-tight">
         Chào mừng đến với
-        <span className="hero-subtitle block text-secondary">AIGiáRẻ.vn</span>
+        <span className="hero-subtitle block text-secondary">TàiKhoảnAIGiáRẻ.vn</span>
        </h1>
        <p className="hero-description text-xl md:text-2xl mb-8 text-white/90 leading-relaxed">
         Khám phá bộ sưu tập sản phẩm chất lượng cao với giá tốt nhất. Chúng tôi
